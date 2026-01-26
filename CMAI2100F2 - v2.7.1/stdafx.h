@@ -78,7 +78,7 @@
 //****************************************************************************
 #define NEW_FINAL		//자화 Final #2호기
 //****************************************************************************
-#define AJIN_BOARD_USE
+//#define AJIN_BOARD_USE
 
 #ifdef NEW_FINAL
 	#define MAIN_VERSION	"Vf 2.7.2"
@@ -234,6 +234,8 @@ typedef struct {
 	int		nLoadAlignRetry;
 	int		nScanRetry[3];	//0:BTM, 1:T1, 2:T2
 	int		nNG_MC[5][2];	//0:MC, 1:GF, 2:Barcode, 3:Vision-timover, 4:MES_NG
+
+	BOOL	bLdStgPass[2]; //로드 스테이지가 스테이지 없이 순환해야 할때 TRUE 
 } GLOVAL_DATA;
 
 typedef struct {

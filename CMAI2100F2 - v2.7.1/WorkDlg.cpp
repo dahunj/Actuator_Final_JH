@@ -827,6 +827,18 @@ BOOL CWorkDlg::Work_Start()
 	}
 #endif
 
+	int nCaseLdStg1 = g_objSequenceMain.Get_MainRunCase(AUTO_LOAD_STAGE_1);
+	int nCaseLdStg2 = g_objSequenceMain.Get_MainRunCase(AUTO_LOAD_STAGE_2);
+
+	if(nCaseLdStg1 == 50)
+	{
+		gData.bLdStgPass[0] = TRUE;
+	}
+	if(nCaseLdStg2 == 50)
+	{
+		gData.bLdStgPass[1] = TRUE;
+	}
+
 	gLot.nJobStatus = 1;
 	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_1, 51);
 	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_2, 51);
