@@ -2670,12 +2670,24 @@ BOOL CSequenceMain::Run_Transfer1()
 
 	switch (m_nTransfer1Case) {
 	case 0:	//작업판단
-		if (Check_Transfer1(nFmTran1Pos, nToTran1Pos, nPort1No)) {
+		if (Check_Transfer1(nFmTran1Pos, nToTran1Pos, nPort1No)) 
+		{
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(60000);
-		} else {
-			if (Check_Load12Empy()) {
-				if (m_nLoadStage1Case == 0 && m_nLoadStage2Case == 50 && m_pDX04->iLoadStage2TrayExist) m_nLoadStage1Case = 10;
-				if (m_nLoadStage2Case == 0 && m_nLoadStage1Case == 50 && m_pDX04->iLoadStage1TrayExist) m_nLoadStage2Case = 10;
+		}
+		else
+		{
+			if (Check_Load12Empy())
+			{
+				if (m_nLoadStage1Case == 0 && m_nLoadStage2Case == 50 && m_pDX04->iLoadStage2TrayExist)
+				{
+					gData.bLdStgPass[0] = TRUE;
+					m_nLoadStage1Case = 10;
+				}
+				if (m_nLoadStage2Case == 0 && m_nLoadStage1Case == 50 && m_pDX04->iLoadStage1TrayExist)
+				{
+					gData.bLdStgPass[1] = TRUE;
+					m_nLoadStage2Case = 10;
+				}
 			}
 		}
 		return TRUE;
@@ -3962,7 +3974,14 @@ BOOL CSequenceMain::Run_LoadStage1()
 {
 	static int nStageNo1 = 0, nPortNo1;	//0고정
 
-	switch (m_nLoadStage1Case) {
+	if(!m_pDX04->iLoadStage1TrayExist &&  m_nLoadStage1Case > 1 && m_nLoadStage1Case < 50 && !gData.bLdStgPass[0])
+	{
+		g_objCommon.Show_Error(4099);
+	}
+
+	switch (m_nLoadStage1Case) 
+	{
+
 	case 0:	// Wait
 		m_tLoadStage1Loop.Set_LoopTime(5000);
 		return TRUE;
@@ -4037,11 +4056,15 @@ BOOL CSequenceMain::Run_LoadStage1()
 		break;
 
 	case 13:
-		if (!m_pEquipData->bUseAlign1 || !m_pDX04->iLoadStage1TrayExist) {
+		//if (!m_pEquipData->bUseAlign1 || !m_pDX04->iLoadStage1TrayExist) {
+		if (!m_pEquipData->bUseAlign1 || gData.bLdStgPass[0]) 
+		{
 			if (m_pDX04->iLoadStage1TrayExist && !m_pEquipData->bUseAlign1) Set_AlignData(gData.nPortNo_LoadStage[nStageNo1]);
 			g_objCommon.Move_Position(AX_LOAD_STAGE_Y1, 5);	//Aling3
 			m_nLoadStage1Case = 19; m_tLoadStage1Loop.Set_LoopTime(30000);
-		} else {
+		}
+		else
+		{
 			Init_AlignTray();
 			gData.bAlignScanDone = FALSE;
 			g_objInspector.Set_AlignRequest(INSPECTOR_PC1, "A1", gData.sLotID_LoadStage[nStageNo1], gData.nPortNo_LoadStage[nStageNo1], gData.nTrayNo_LoadStage[nStageNo1], 1);
@@ -4049,7 +4072,8 @@ BOOL CSequenceMain::Run_LoadStage1()
 		}
 		break;
 	case 14:
-		if (gData.bAlignScanDone) {
+		if (gData.bAlignScanDone) 
+		{
 			if (!m_tLoadStage1Loop.Waiting_Time(m_pEquipData->nDelayTime[5])) break;
 			m_tLoadStage1Loop.Takt_Save(10, 5); m_tLoadStage1Loop.Takt_Start();
 			g_objCommon.Move_Position(AX_LOAD_STAGE_Y1, 4);	//Aling2
@@ -4092,13 +4116,19 @@ BOOL CSequenceMain::Run_LoadStage1()
 		}
 		break;
 	case 19:
-		if (g_objCommon.Check_Position(AX_LOAD_STAGE_Y1, 5)) {
-			if (m_pDX04->iLoadStage1TrayExist) {
-				if (Check_AlignData(gData.nPortNo_LoadStage[nStageNo1])) {
+		if (g_objCommon.Check_Position(AX_LOAD_STAGE_Y1, 5)) 
+		{
+			//if (m_pDX04->iLoadStage1TrayExist) 
+			if(m_pEquipData->bUseAlign1)
+			{
+				if (Check_AlignData(gData.nPortNo_LoadStage[nStageNo1])) 
+				{
 					g_objCommon.Save_Motion(AX_LOAD_STAGE_Y1, 5);
 					m_nLoadStage1Case++; m_tLoadStage1Loop.Set_LoopTime(5000);
 				}
-			} else {
+			} 
+			else
+			{
 				g_objCommon.Save_Motion(AX_LOAD_STAGE_Y1, 5);
 				m_nLoadStage1Case++; m_tLoadStage1Loop.Set_LoopTime(5000);
 			}
@@ -4204,9 +4234,13 @@ BOOL CSequenceMain::Run_LoadStage1()
 		}
 		break;
 	case 54:
-		if (m_pDX04->iLoadStage1TrayExist) {
+		if (m_pDX04->iLoadStage1TrayExist) 
+		{
 			m_nLoadStage1Case = 60; m_tLoadStage1Loop.Set_LoopTime(30000);
-		} else {
+		} 
+		else if(gData.bLdStgPass[0])
+		{
+			gData.bLdStgPass[0] = FALSE;
 			m_tLoadStage1Loop.Takt_Save(10, 19);
 			m_nLoadStage1Case = 0; m_tLoadStage1Loop.Set_LoopTime(30000);
 		}
@@ -4238,6 +4272,11 @@ BOOL CSequenceMain::Run_LoadStage1()
 BOOL CSequenceMain::Run_LoadStage2()
 {
 	static int nStageNo2 = 1, nPortNo2;	//1고정
+
+	if(!m_pDX04->iLoadStage2TrayExist &&  m_nLoadStage2Case > 1 && m_nLoadStage2Case < 50 && !gData.bLdStgPass[1])
+	{
+		g_objCommon.Show_Error(4599);
+	}
 
 	switch (m_nLoadStage2Case) {
 	case 0:	// Wait
@@ -4314,11 +4353,15 @@ BOOL CSequenceMain::Run_LoadStage2()
 		break;
 
 	case 13:
-		if (!m_pEquipData->bUseAlign1 || !m_pDX04->iLoadStage2TrayExist) {
+		//if (!m_pEquipData->bUseAlign1 || !m_pDX04->iLoadStage2TrayExist) 
+		if (!m_pEquipData->bUseAlign1 || gData.bLdStgPass[1]) 
+		{
 			if (m_pDX04->iLoadStage2TrayExist && !m_pEquipData->bUseAlign1) Set_AlignData(gData.nPortNo_LoadStage[nStageNo2]);
 			g_objCommon.Move_Position(AX_LOAD_STAGE_Y2, 5);	//Aling3
 			m_nLoadStage2Case = 19; m_tLoadStage2Loop.Set_LoopTime(30000);
-		} else {
+		} 
+		else
+		{
 			Init_AlignTray();
 			gData.bAlignScanDone = FALSE;
 			g_objInspector.Set_AlignRequest(INSPECTOR_PC1, "A1", gData.sLotID_LoadStage[nStageNo2], gData.nPortNo_LoadStage[nStageNo2], gData.nTrayNo_LoadStage[nStageNo2], 1);
@@ -4369,13 +4412,19 @@ BOOL CSequenceMain::Run_LoadStage2()
 		}
 		break;
 	case 19:
-		if (g_objCommon.Check_Position(AX_LOAD_STAGE_Y2, 5)) {
-			if (m_pDX04->iLoadStage2TrayExist) {
-				if (Check_AlignData(gData.nPortNo_LoadStage[nStageNo2])) {
+		if (g_objCommon.Check_Position(AX_LOAD_STAGE_Y2, 5)) 
+		{
+			//if (m_pDX04->iLoadStage2TrayExist) 
+			if(m_pEquipData->bUseAlign1)
+			{
+				if (Check_AlignData(gData.nPortNo_LoadStage[nStageNo2])) 
+				{
 					g_objCommon.Save_Motion(AX_LOAD_STAGE_Y2, 5);
 					m_nLoadStage2Case++; m_tLoadStage2Loop.Set_LoopTime(5000);
 				}
-			} else {
+			} 
+			else 
+			{
 				g_objCommon.Save_Motion(AX_LOAD_STAGE_Y2, 5);
 				m_nLoadStage2Case++; m_tLoadStage2Loop.Set_LoopTime(5000);
 			}
@@ -4383,10 +4432,13 @@ BOOL CSequenceMain::Run_LoadStage2()
 		break;
 
 	case 20:	//Align Wait
-		if (m_nLoadStage1Case > 20 && m_nLoadStage1Case < 40) {
+		if (m_nLoadStage1Case > 20 && m_nLoadStage1Case < 40) 
+		{
 			g_objCommon.Move_Position(AX_LOAD_STAGE_Y2, 1);	//Wait
 			m_nLoadStage2Case++; m_tLoadStage2Loop.Set_LoopTime(30000);
-		} else if (m_nLoadStage1Case < 20 || m_nLoadStage1Case >= 40) {
+		} 
+		else if (m_nLoadStage1Case < 20 || m_nLoadStage1Case >= 40)
+		{
 			g_objCommon.Move_Position(AX_LOAD_STAGE_Y2, 2);	//Unload
 			m_nLoadStage2Case = 23; m_tLoadStage2Loop.Set_LoopTime(30000);
 		}
@@ -4399,7 +4451,8 @@ BOOL CSequenceMain::Run_LoadStage2()
 		}
 		break;
 	case 22:	//Align Wait
-		if (m_nLoadStage1Case < 20 || m_nLoadStage1Case >= 40) {
+		if (m_nLoadStage1Case < 20 || m_nLoadStage1Case >= 40) 
+		{
 			g_objCommon.Move_Position(AX_LOAD_STAGE_Y2, 2);	//Unload
 			m_nLoadStage2Case++; m_tLoadStage2Loop.Set_LoopTime(30000);
 		}
@@ -4481,9 +4534,12 @@ BOOL CSequenceMain::Run_LoadStage2()
 		}
 		break;
 	case 54:
-		if (m_pDX04->iLoadStage2TrayExist) {
+		if (m_pDX04->iLoadStage2TrayExist) 
+		{
 			m_nLoadStage2Case = 60; m_tLoadStage2Loop.Set_LoopTime(30000);
-		} else {
+		}
+		else if(gData.bLdStgPass[1])
+		{
 			m_tLoadStage2Loop.Takt_Save(11, 19);
 			m_nLoadStage2Case = 0; m_tLoadStage2Loop.Set_LoopTime(30000);
 		}

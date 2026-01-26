@@ -652,7 +652,11 @@ BOOL CWorkDlg::Work_Start()
 			return FALSE;
 		}
 	}
+#ifdef NEW_FINAL
+	if (pEquipData->bUseBottom==FALSE || pEquipData->bUseTop1==FALSE || pEquipData->bUseTop2==FALSE || pEquipData->bUseBotAng==FALSE) {
+#else
 	if (pEquipData->bUseBottom==FALSE || pEquipData->bUseTop1==FALSE || pEquipData->bUseTop2==FALSE || pEquipData->bUseBotAng==FALSE || pEquipData->bUseTopAng==FALSE) {
+#endif
 		sText.Format("Vision Inspection을 사용하지 않고 START 하시겠습니까?");
 		if (g_objCommon.Show_MsgBox(2, sText) != IDOK){
 			m_rdoWorkStop.SetCheck(TRUE);
@@ -742,7 +746,7 @@ BOOL CWorkDlg::Work_Start()
 		}
 	}
 */
-//	if (pEquipData->bUseInspectBlow) {
+	if (pEquipData->bUseInspectBlow) {
 		DY_DATA_04 *pDY04 = g_objAJinAXL.Get_pDY04();
 		pDY04->oBTMIonizerOn = TRUE;
 		pDY04->oBTMIonizerBlow = TRUE;
@@ -752,7 +756,7 @@ BOOL CWorkDlg::Work_Start()
 		pDY04->oTOPIonizerBlow = TRUE;
 		pDY04->oTOPSuctionOn = TRUE;
 		g_objAJinAXL.Write_Output(4);
-//	}
+	}
 
 	// Job처음 Start시 Check
 //	if (g_objSequenceMain.Get_IsAutoRun()) return TRUE;	// Auto Run이면 스킵 gjc
@@ -823,19 +827,10 @@ BOOL CWorkDlg::Work_Start()
 	}
 #endif
 
-	gLot.nJobStatus = 1;
-	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_1, 51);
-	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_2, 51);
-	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_3, 51);
-	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_4, 51);
-	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_5, 51);
-	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_6, 51);
-	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_7, 51);
-
 	int nCaseLdStg1 = g_objSequenceMain.Get_MainRunCase(AUTO_LOAD_STAGE_1);
 	int nCaseLdStg2 = g_objSequenceMain.Get_MainRunCase(AUTO_LOAD_STAGE_2);
 
-	if (nCaseLdStg1 == 50)
+	if(nCaseLdStg1 == 50)
 	{
 		gData.bLdStgPass[0] = TRUE;
 	}
@@ -844,6 +839,14 @@ BOOL CWorkDlg::Work_Start()
 		gData.bLdStgPass[1] = TRUE;
 	}
 
+	gLot.nJobStatus = 1;
+	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_1, 51);
+	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_2, 51);
+	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_3, 51);
+	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_4, 51);
+	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_5, 51);
+	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_6, 51);
+	g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_7, 51);
 
 	return TRUE;
 }
@@ -1208,16 +1211,16 @@ void CWorkDlg::Display_Status()
 	if (gData.nPortNo_GoodTray[1] > 0) strText.Format("%d-%d-%d", gData.nTrayNo_GoodTray[1], gData.nPortNo_GoodTray[1], gLot.nOutTrayCnt[gData.nPortNo_GoodTray[1]-1][0]);
 	else						 strText = "";
 	m_stcJobCarNo[15].SetWindowText(strText);
-	if (gData.nPortNo_NGBuffer > 0) strText.Format("P%d-C%d", gData.nPortNo_NGBuffer, gData.nTrayNo_NGBuffer);
+	if (gData.nPortNo_NGBuffer > 0) strText.Format("P%d-T%d", gData.nPortNo_NGBuffer, gData.nTrayNo_NGBuffer);
 	else						 strText = "";
 	m_stcJobCarNo[16].SetWindowText(strText);
 
 	m_ledVisionSts[0].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC1));
 	m_ledVisionSts[1].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC2));
 	m_ledVisionSts[2].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC3));
-	m_ledVisionSts[3].Set_On(g_objDispatcher.Is_Connected());
 	m_ledVisionSts[4].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC4));
 	m_ledVisionSts[5].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC5));
+	m_ledVisionSts[3].Set_On(g_objDispatcher.Is_Connected());
 
 	if		(gLot.nLotStatus[0] == 1)		m_stcLotsIdS[0].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//작업중일때
 	else if (gMes.nLotStatus[0] == 2 || gMes.nLotStatus[0] == 4)		m_stcLotsIdS[0].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//매거진 있을때
@@ -1666,34 +1669,6 @@ LRESULT CWorkDlg::OnShowLotEndMsg(WPARAM wParam, LPARAM lParam)
 */
 }
 
-void CWorkDlg::OnBnClickedButton1()
-{
-	DY_DATA_14 *pDY14 = g_objAJinAXL.Get_pDY14();
-
-	if (pDY14->oInsideLight)	pDY14->oInsideLight = FALSE;
-	else						pDY14->oInsideLight = TRUE;
-	g_objAJinAXL.Write_Output(14);
-
-	//double click //////////////////////////
-	static int time = GetTickCount();
-	static int cnt=0;
-	if(GetTickCount()-time > 500){
-		cnt = 0;
-		time = GetTickCount();
-	}
-
-	if(cnt == 1){
-		cnt = 0;
-		time = GetTickCount();
-	} else {
-		cnt++;
-		time = GetTickCount();
-		return;
-	}
-	////////////////////////////////////////
-
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 void CWorkDlg::ReadJobList()
 {
@@ -1820,8 +1795,7 @@ void CWorkDlg::ElevatorOpen(int nEleNo)
 			//1(LS1),2(LS2),3(L1),4(L2),5(EN),6(EG),7(NB),8(U1),9(U2),10(NG1),11(NG2),12(Good1),13(Good2)
 			//if ((gData.nTransferX1Pos-2) == nEleNo) { g_objCommon.Show_MsgBox(1, "Transfer 1 Elevator 작업중입니다.  작업후 진행하세요."); return; }
 			//if ((gData.nTransferX2Pos-2) == nEleNo) { g_objCommon.Show_MsgBox(1, "Transfer 2 Elevator 작업중입니다.  작업후 진행하세요."); return; }
-//			DX_DATA_03 *pDX03 = g_objAJinAXL.Get_pDX03();
-//			if (pDX03->iTransferZDown || !pDX03->iTransferZUp)  { g_objSequenceMain.Beep_Post(500); g_objCommon.Show_MsgBox(1, "Transfer Z1 Up상태에서 작업가능합니다.."); return; }
+//			if (!g_objCommon.Check_Position(AX_TRANSFER_Z1, 0)) { g_objSequenceMain.Beep_Post(500); g_objCommon.Show_MsgBox(1, "Transfer Z1 Up상태에서 작업가능합니다.."); return; }
 //			if (!g_objCommon.Check_Position(AX_TRANSFER_Z2, 0)) { g_objSequenceMain.Beep_Post(500); g_objCommon.Show_MsgBox(1, "Transfer Z2 Up상태에서 작업가능합니다.."); return; }
 
 			gData.nElevatorOpen[nEleNo] = 1;
@@ -2346,6 +2320,33 @@ void CWorkDlg::DoEvents(int nSleep)
 	if (nSleep > 0) Sleep(nSleep);
 }
 
+void CWorkDlg::OnBnClickedButton1()
+{
+	DY_DATA_14 *pDY14 = g_objAJinAXL.Get_pDY14();
+
+	if (pDY14->oInsideLight)	pDY14->oInsideLight = FALSE;
+	else						pDY14->oInsideLight = TRUE;
+	g_objAJinAXL.Write_Output(14);
+
+	//double click //////////////////////////
+	static int time = GetTickCount();
+	static int cnt=0;
+	if(GetTickCount()-time > 500){
+		cnt = 0;
+		time = GetTickCount();
+	}
+
+	if(cnt == 1){
+		cnt = 0;
+		time = GetTickCount();
+	} else {
+		cnt++;
+		time = GetTickCount();
+		return;
+	}
+	////////////////////////////////////////
+}
+
 void CWorkDlg::OnBnClickedBtnNGLotEnd()
 {
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
@@ -2476,7 +2477,41 @@ void CWorkDlg::OnBnClickedBtnBuzzerOff()
 {
 	g_objCommon.BuzzerOff();
 
-//	if (gMes.nLotPortNo > 0 && gMes.nLotPortNo < 7) gMes.nLotStatus[gMes.nLotPortNo-1] = 0;
+//	g_objCommon.Show_Error(9310);
+/*
+	CString sLog, sNGCode20[3];
+	sNGCode20[0] = "";
+	for(int i=0; i<5; i++) {
+		if (i==0) sNGCode20[1] = "B1";
+		if (i==1) sNGCode20[1] = "AG";
+		if (i==2) sNGCode20[1] = "T1";
+		if (i==3) sNGCode20[1] = "TG";
+		if (i==4) sNGCode20[1] = "T2";
+		for(int j=0; j<20; j++) {
+			sNGCode20[2].Format(",%sNGCode%02d", sNGCode20[1], j+1);
+			sNGCode20[0] = sNGCode20[0] + sNGCode20[2];
+		}
+	}
+	AfxMessageBox(sNGCode20[0]);
+*/
+/*	
+	CString sLog, sData, sData1, sData2, sData3, sData4;
+	sData1 = "INSPECT,COMPLETE,AG,GPSAA1BBDC6A4A,1,2,16,G,G,0";
+	sData2 = "INSPECT,COMPLETE,B1,GPSAA1BBDC6A4A,1,2,12,N,AB_B_DA,1";
+	sData3 = "INSPECT,COMPLETE,B1,GPSAA1BBDC6A4A,1,2,12,N,AB_B_DA,1,,,,,,,,,,,,,,,,,,,,";
+	sData4 = "INSPECT,COMPLETE,B1,GPSAA1BBDC6A4A,1,2,12,N,AB_B_DA,1,1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,20";
+
+	sData = sData4;
+	CString strArg[10];
+	for (int i = 0; i < 20; i++) AfxExtractSubString(gNG->sNGCode[0][0][0][0][i], sData, i + 10, ',');
+	sLog.Format("[%s] [%s] [%s]", gNG->sNGCode[0][0][0][0][0], gNG->sNGCode[0][0][0][0][9], gNG->sNGCode[0][0][0][0][19]);
+	AfxMessageBox(sLog);
+*/
+//	g_objInspector.Get_ConnectEnd(INSPECTOR_PC5);
+
+//	g_objCommon.Show_Error(5001);
+//	g_objCommon.Show_Error(5002);
+//	g_objCommon.Show_Error(7007);
 /*
 	CString sLog;
 	m_stcCmsCountS[0].GetWindowText(sLog);

@@ -227,6 +227,8 @@ typedef struct {
 	int		nLoadAlignRetry;
 	int		nScanRetry[3];	//0:BTM, 1:T1, 2:T2
 	int		nNG_MC[5][2];	//0:MC, 1:GF, 2:Barcode, 3:Vision-timover, 4:MES_NG
+
+	BOOL	bLdStgPass[2];
 } GLOVAL_DATA;
 
 typedef struct {
