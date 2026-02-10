@@ -902,24 +902,48 @@ BOOL CSequenceMain::Check_AlignData(int nPortNo)
 			if (gData.InfoAlignTray[i][j] > 0) nCMCount++;
 		}
 	}
+	
 	if (nCMCount < 1) return FALSE;
 
-	if (gLot.nTrayCount[nPortNo-1]-1 == 1) {
-		if (gLot.nCmCount[nPortNo-1] != nCMCount) {
+
+	if (m_pEquipData->bUseAlign1) 
+	{
+		if(gLot.nCmCount[nPortNo-1] - TRAY_MAX_CM * gLot.nTrayOutCnt[nPortNo-1] < TRAY_MAX_CM) // 마지막 트레이만 최대 개수 아님 
+		{
+			gLot.nAlignCount[nPortNo-1] = gLot.nCmCount[nPortNo-1] - TRAY_MAX_CM * gLot.nTrayOutCnt[nPortNo-1];
+		}
+		else
+		{
+			gLot.nAlignCount[nPortNo-1] = TRAY_MAX_CM; //마지막 제외 최대 개수 
+		}
+
+		if(gLot.nAlignCount[nPortNo-1] != nCMCount)
+		{
 			gAlm.nPortNo = nPortNo;
-			gLot.nAlignCount[nPortNo-1] = nCMCount;
+			//gLot.nAlignCount[nPortNo-1] = nCMCount;
 			return FALSE;
 		}
 	}
 
-	if (m_pEquipData->bUseAlign1) {
-		if (gLot.nTrayCount[nPortNo-1]-1 == gLot.nTrayOutCnt[nPortNo-1]) {
-			if (gLot.nCmCount[nPortNo-1] != gLot.nAlignCount[nPortNo-1]) {
-				gAlm.nPortNo = nPortNo;
-				return FALSE;
-			}
-		}
+
+
+	/*
+	if (gLot.nTrayCount[nPortNo-1]-1 == 1) {
+	if (gLot.nCmCount[nPortNo-1] != nCMCount) {
+	gAlm.nPortNo = nPortNo;
+	gLot.nAlignCount[nPortNo-1] = nCMCount;
+	return FALSE;
 	}
+	}
+
+	if (m_pEquipData->bUseAlign1) {
+	if (gLot.nTrayCount[nPortNo-1]-1 == gLot.nTrayOutCnt[nPortNo-1]) {
+	if (gLot.nCmCount[nPortNo-1] != gLot.nAlignCount[nPortNo-1]) {
+	gAlm.nPortNo = nPortNo;
+	return FALSE;
+	}
+	}
+	}*/
 
 	return TRUE;
 }
@@ -4356,6 +4380,7 @@ BOOL CSequenceMain::Run_LoadStage1()
 			}
 			else
 			{
+				if (m_pDX04->iLoadStage1TrayExist && !m_pEquipData->bUseAlign1 && !gData.bLdStgPass[0]) Set_AlignData(gData.nPortNo_LoadStage[nStageNo1]);
 				g_objCommon.Save_Motion(AX_LOAD_STAGE_Y1, 5);
 				m_nLoadStage1Case++; m_tLoadStage1Loop.Set_LoopTime(5000);
 			}
@@ -4652,6 +4677,7 @@ BOOL CSequenceMain::Run_LoadStage2()
 			}
 			else
 			{
+				if (m_pDX04->iLoadStage2TrayExist && !m_pEquipData->bUseAlign1 && !gData.bLdStgPass[1]) Set_AlignData(gData.nPortNo_LoadStage[nStageNo2]);
 				g_objCommon.Save_Motion(AX_LOAD_STAGE_Y2, 5);
 				m_nLoadStage2Case++; m_tLoadStage2Loop.Set_LoopTime(5000);
 			}
