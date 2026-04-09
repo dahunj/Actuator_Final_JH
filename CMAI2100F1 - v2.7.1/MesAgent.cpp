@@ -490,7 +490,7 @@ void CMesAgent::Set_CmRequest(CString sLotId, CString sCmId, int nPortNo, int nT
 	m_dwReqStart[nPortNo-1][nTrayNo-1][nCmNo-1] = GetTickCount();
 }
 
-void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nOut, int nNGType)
+void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nOut, int nRosInfo, int nNGType )
 {
 	if (nPortNo < 1 || nPortNo > 6 || nCmNo < 1 || nCmNo > 40) return;
 
@@ -498,21 +498,30 @@ void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nO
 	CString	strCmId = gLot.sBarCode[nPortNo-1][nTrayNo-1][nCmNo-1];
 	int nSpecialNG  = gLot.nSpecialNG[nPortNo-1][nTrayNo-1][nCmNo-1];
 
-	CString strResult, strNgCode;
-	if (nType == 1) {
+	CString strResult, strNgCode, strRosResult;
+	if (nType == 1)
+	{
 //		if (nNGType == 4) { strResult = "MOK"; gMes.nNGCount[0]++; }
 //		else			  { strResult = "NG";  gMes.nNGCount[1]++; }
 //		strResult = "MOK"; gMes.nNGCount[0]++;
 		if (nSpecialNG == 1) { strResult = "NG";  gMes.nNGCount[1]++; }
 		else				 { strResult = "MOK"; gMes.nNGCount[0]++; }
 		strNgCode = Set_NGSort(nPortNo, nTrayNo, nCmNo);
-	} else {
+	}
+	else
+	{
 		strResult = "OK";
 		strNgCode = "00";
 	}
 
+	strRosResult = "OK";
+	if(nRosInfo == 3 || nRosInfo == 4)
+	{
+		strRosResult = "NG";
+	}	
+
 	CString strSend;
-	strSend.Format("CM,END,%s,%s,%s,%s,%d", sLotID, strCmId, strResult, strNgCode, nOut);
+	strSend.Format("CM,END,%s,%s,%s,%s,%d,%s", sLotID, strCmId, strResult, strNgCode, strRosResult, nOut);
 	g_objLogFile.Save_TestLog(strSend);
 	Send_Command(strSend);	
 }
