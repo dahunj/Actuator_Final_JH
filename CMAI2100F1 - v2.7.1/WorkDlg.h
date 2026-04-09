@@ -171,6 +171,8 @@ public:
 	void Set_AutoRun(BOOL bAutoRun);
 	void Set_AutoRunStatus(BOOL bAutoRun) { m_bAutoRunning = bAutoRun; }
 
+	void Set_LotCount(int nPortNo, CString sLotID, int nCount);
+
 };
 
 extern CWorkDlg g_dlgWork;

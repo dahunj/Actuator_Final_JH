@@ -135,14 +135,17 @@ LRESULT CMesAgent::OnClientReceive(WPARAM wParam, LPARAM lParam)
 		CString strArg[5];
 		for (int i = 0; i < 5; i++) AfxExtractSubString(strArg[i], strRecv, i + 2, chSep);
 
-		if (strCmd == "CONTROL") {
+		if (strCmd == "CONTROL") 
+		{
 			if (strOp == "STATE") Get_ControlState(strArg[0]);
 
-		} else if (strCmd == "LOT") {
+		} else if (strCmd == "LOT") 
+		{
 			if (strOp == "START")  Get_LotStart(strArg[0], strArg[1], strArg[2]);
 			if (strOp == "CANCEL") Get_LotCancel(strArg[0], strArg[1],  strArg[2]);
 
-		} else if (strCmd == "TIME") {
+		}
+		else if (strCmd == "TIME") {
 			if (strOp == "UPDATE") Get_TimeSync();
 
 		} else if (strCmd == "RECIPE") {
@@ -221,6 +224,7 @@ void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount)
 	}
 
 	gMes.nLotStatus[nPortNo] = 2;
+	g_objCommon.Set_LotCount(nPortNo+1, sLotId, nCmCount);
 }
 
 void CMesAgent::Get_LotCancel(CString sLotId, CString sCode, CString sText)

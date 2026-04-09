@@ -113,6 +113,10 @@ public:
 	BOOL Read_FocusOffset();
 	void Display_MESRecipe(CString sRecipe);
 
+	void Set_LotCount(int nPortNo, CString sLotID, int nCount);
+
+
+
 	///////////////////////////////////////////////////////////////////////////
 
 	void Wait_Time(int msec);

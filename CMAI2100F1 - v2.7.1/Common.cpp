@@ -20,6 +20,8 @@
 #include <fstream>
 #include "Wininet.h"
 
+#include "WorkDlg.h"
+
 // CCommon
 CCommon g_objCommon;
 
@@ -1125,6 +1127,11 @@ void CCommon::Display_MESRecipe(CString sRecipe)
 
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
 	pMainDlg->Display_EquipName();
+}
+
+void CCommon::Set_LotCount(int nPortNo, CString sLotID, int nCount)
+{
+	g_dlgWork.Set_LotCount(nPortNo, sLotID, nCount);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

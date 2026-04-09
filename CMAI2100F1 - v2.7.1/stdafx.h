@@ -76,7 +76,7 @@
 #endif
 
 //****************************************************************************
-#define AJIN_BOARD_USE
+//#define AJIN_BOARD_USE
 
 #define MAIN_VERSION	"Vf 2.7.1"	//자화 Final #1호기
 #define MES_WAITTIME	10000//5000	//10초

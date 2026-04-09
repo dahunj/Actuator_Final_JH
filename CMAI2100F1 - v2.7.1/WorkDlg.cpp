@@ -260,9 +260,11 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 	if (pDX13->iElevator6Sw) ElevatorOpen(6);
 	if (pDX13->iElevator7Sw) ElevatorOpen(7);
 */
+
 	Display_Status();
 
-	if (m_rdoWorkStart.GetCheck()) {
+	if (m_rdoWorkStart.GetCheck()) 
+	{
 		if (!m_bAutoRunning) {		// First AutoRun
 			if (!Work_Start()) { SetTimer(0, 100, NULL); m_rdoWorkStop.SetCheck(TRUE); return; }
 
@@ -369,6 +371,20 @@ void CWorkDlg::OnStcCmsCountSClick(UINT nID)
 */
 	CString strOld, strNew, strValue;
 
+
+	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+	if (pEquipData->bUseMES) 
+	{
+		m_stcLotsIdS[ID].GetWindowText(strValue);
+		if (strValue.GetLength() > 0 && (gMes.nLotStatus[ID] == 0 || gMes.nLotStatus[ID] == 9 || strValue != gLot.sLotID[ID])) 
+		{
+			gLot.sLotID[ID] = strValue;
+			g_objMesAgent.Set_LotStart(0, ID, gLot.sLotID[ID], gData.sRecipeName, gLot.nCmCount[ID]);			
+		}
+		return;
+	}
+
+
 	m_stcCmsCountS[ID].GetWindowText(strOld);
 	if (g_objCommon.Show_NumPad(strOld, strNew) != IDOK) return;
 
@@ -389,7 +405,7 @@ void CWorkDlg::OnStcCmsCountSClick(UINT nID)
 	m_stcTrayCountS[ID].SetWindowText(strValue);
 
 	if (LotID_Check()==FALSE) { m_stcTrayCountS[ID].SetWindowText(""); m_stcTrayCountS[ID].SetWindowText(""); return; }
-	if (gMes.nLotStatus[ID] != 2) g_objMesAgent.Set_LotStart(0, ID, gLot.sLotID[ID], gData.sRecipeName, gLot.nCmCount[ID]);
+	//if (gMes.nLotStatus[ID] != 2) g_objMesAgent.Set_LotStart(0, ID, gLot.sLotID[ID], gData.sRecipeName, gLot.nCmCount[ID]);
 
 	strNew.Format("[Work Mode] Module Count Input(%d-%d-%d-%s-%d-%d)", ID, nCmCnt, nTrayCnt, gLot.sLotID[ID], gLot.nCmCount[ID], gMes.nLotStatus[ID]);
 	g_objLogFile.Save_HandlerLog(strNew);
@@ -730,6 +746,10 @@ BOOL CWorkDlg::Work_Start()
 		return FALSE;
 	}
 
+#ifndef AJIN_BOARD_USE
+	OnUpdateBarcode(0, 0);
+#endif
+
 	if (LotID_Check() == FALSE) return FALSE;
 /*
 	if (pEquipData->bUseMES && gMes.nLotPortNo > 0 && gMes.nLotPortNo < 7 && gMes.nLotStatus[gMes.nLotPortNo-1] == 1) {
@@ -743,6 +763,10 @@ BOOL CWorkDlg::Work_Start()
 	}
 */
 //	if (pEquipData->bUseInspectBlow) {
+		
+
+
+		
 		DY_DATA_04 *pDY04 = g_objAJinAXL.Get_pDY04();
 		pDY04->oBTMIonizerOn = TRUE;
 		pDY04->oBTMIonizerBlow = TRUE;
@@ -1481,6 +1505,15 @@ LRESULT CWorkDlg::OnUpdateBarcode(WPARAM wParam, LPARAM lParam)
 {
 	CString strTemp;
 	CString sData = g_objBarcodeLot.Get_BarcodeLot();
+
+	
+#ifndef AJIN_BOARD_USE
+	static int nLotNo = 0;
+	nLotNo++;
+	sData.Format("TestLot%03d", nLotNo);
+#endif
+
+
 	if (sData.GetLength() < 1) return 0;
 /*
 	if (m_rdoWorkStart.GetCheck()) {
@@ -1511,8 +1544,16 @@ LRESULT CWorkDlg::OnUpdateBarcode(WPARAM wParam, LPARAM lParam)
 	m_stcLotsIdS[gData.nSelectNo-1].SetWindowText(sData);
 
 	//2018.9.11+
-	UINT nID = IDC_STC_CMS_COUNT_S_0+gData.nSelectNo-1;
-	OnStcCmsCountSClick(nID);
+	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+
+	if(!pEquipData->bUseMES)
+	{
+		UINT nID = IDC_STC_CMS_COUNT_S_0+gData.nSelectNo-1;
+		OnStcCmsCountSClick(nID);
+	}
+
+
+	
 
 //	g_objSequenceMain.Beep_Post(500);
 
@@ -2458,6 +2499,30 @@ void CWorkDlg::OnBnClickedButton2()
 */
 
 }
+
+void CWorkDlg::Set_LotCount(int nPortNo, CString sLotID, int nCount)
+{
+	CString sLog, strValue;
+
+	strValue.Format("%d", nCount);
+	m_stcCmsCountS[nPortNo-1].SetWindowText(strValue);
+
+	int nTrayCnt = (nCount / TRAY_MAX_CM) + 2;
+	int nRenCnt  = nCount % TRAY_MAX_CM;
+	if (nRenCnt == 0) nTrayCnt--;
+	strValue.Format("%d", nTrayCnt);
+	m_stcTrayCountS[nPortNo-1].SetWindowText(strValue);
+
+	if (LotID_Check()==FALSE) {
+		sLog.Format("[Work Dialog] MES Lot Error. PortNo[%d] Lotid[%s] Count[%d] TaryCnt[%d]", nPortNo, sLotID, nCount, nTrayCnt);
+		g_objLogFile.Save_HandlerLog(sLog);
+		return;
+	}
+
+	sLog.Format("[Work Dialog] MES Lot Count. PortNo[%d] Lotid[%s] Count[%d] TaryCnt[%d]", nPortNo, sLotID, nCount, nTrayCnt);
+	g_objLogFile.Save_HandlerLog(sLog);
+}
+
 
 void CWorkDlg::OnBnClickedBtnBuzzerOff()
 {
