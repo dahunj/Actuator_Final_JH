@@ -113,6 +113,7 @@ BEGIN_MESSAGE_MAP(CWorkDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_IDLE_REPORT, &CWorkDlg::OnBnClickedBtnIdleReport)
 	ON_BN_CLICKED(IDC_BTN_NGLOT_END, &CWorkDlg::OnBnClickedBtnNGLotEnd)
 
+	ON_BN_CLICKED(IDC_BUTTON3, &CWorkDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 // CWorkDlg 메시지 처리기입니다.
@@ -746,9 +747,6 @@ BOOL CWorkDlg::Work_Start()
 		return FALSE;
 	}
 
-#ifndef AJIN_BOARD_USE
-	OnUpdateBarcode(0, 0);
-#endif
 
 	if (LotID_Check() == FALSE) return FALSE;
 /*
@@ -1508,9 +1506,9 @@ LRESULT CWorkDlg::OnUpdateBarcode(WPARAM wParam, LPARAM lParam)
 
 	
 #ifndef AJIN_BOARD_USE
-	static int nLotNo = 0;
-	nLotNo++;
-	sData.Format("TestLot%03d", nLotNo);
+	
+	sData.Format("TEST-%d", (int)lParam);
+	//nLotNo++;
 #endif
 
 
@@ -1544,15 +1542,8 @@ LRESULT CWorkDlg::OnUpdateBarcode(WPARAM wParam, LPARAM lParam)
 	m_stcLotsIdS[gData.nSelectNo-1].SetWindowText(sData);
 
 	//2018.9.11+
-	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
-
-	if(!pEquipData->bUseMES)
-	{
-		UINT nID = IDC_STC_CMS_COUNT_S_0+gData.nSelectNo-1;
-		OnStcCmsCountSClick(nID);
-	}
-
-
+	UINT nID = IDC_STC_CMS_COUNT_S_0+gData.nSelectNo-1;
+	OnStcCmsCountSClick(nID);
 	
 
 //	g_objSequenceMain.Beep_Post(500);
@@ -2419,86 +2410,14 @@ void CWorkDlg::OnBnClickedBtnNGLotEnd()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CWorkDlg::OnBnClickedButton2()
 {
-	g_dlgWork.PostMessage(UM_LOT_END_MSG, 1, 9);
-//	gLot.nJobNo = 0;
-//	g_dlgWork.PostMessage(UM_UPDATE_UPH, 0, NULL);
-//	g_objSequenceMain.Set_MainRunCase(AUTO_TRANSFER_1, 0);
-//	g_objCommon.Show_Error(3501);
-	/*
-	gLot.nJobNo = 9;
-	gLot.nJobPortNo[8] = 1;
-	gLot.sJobLotID[8] = "aaa";
-	gLot.nJobCmCount[8] = 1;
-	gLot.nJobGoodCount[8] = 1;
-	gLot.nJobNgCount[8] = 1;
-	gLot.dJobRate[8] = 1.1;
-	gLot.sJobStartTime[8] = "aaa";
-	gLot.sJobEndTime[8] = "bbbb";
-	gLot.dJobTack[8] = 1.222;
-	
-	
-	CString sLog;
-	for(int i=0; i<10; i++) {
-		for(int j=0; j<4; j++) {
-			gData.InfoAlignTray[i][j] = gData.InfoLoadTray[i][j] = gData.InfoNgTray[i][j] = gData.InfoGoodTray[i][j] = 0;
-		}
-	}
-	for(int i=0; i<1; i++) {
-		gData.InfoAlignTray[i][0] = gData.InfoLoadTray[i][0] = gData.InfoNgTray[i][0] = gData.InfoGoodTray[i][0] = 1;
-		gData.InfoAlignTray[i][1] = gData.InfoLoadTray[i][1] = gData.InfoNgTray[i][1] = gData.InfoGoodTray[i][1] = 2;
-	}
-	for(int i=1; i<2; i++) {
-		for(int j=0; j<2; j++) {
-			gData.InfoAlignTray[i][j] = gData.InfoLoadTray[i][j] = gData.InfoNgTray[i][j] = gData.InfoGoodTray[i][j] = 2;
-		}
-	}
-	for(int i=2; i<3; i++) {
-		for(int j=0; j<2; j++) {
-			gData.InfoAlignTray[i][j] = gData.InfoLoadTray[i][j] = gData.InfoNgTray[i][j] = gData.InfoGoodTray[i][j] = 3;
-		}
-	}
-	
-//	ElevatorOpen(2);
-
-	for(int i=0; i<4; i++) {
-		for(int j=0; j<3; j++) {
-			gData.dAlignVisionX[i][j] = 0.1;
-			gData.dAlignVisionY[i][j] = 0.1;
-		}
-	}
-
-	int    nPickerNo, nJobNo, nPosX, nPosY, nModuleNo;
-	double dx, dy;
-	nPickerNo = 2;	nJobNo    = 1;	nModuleNo = 1;
-	nPosX     = 1;	nPosY     = 1;
-	g_objSequenceMain.Get_TrayPosition(nPickerNo, nJobNo, nPosX, nPosY, dx, dy);
-	dx = dx + (30.0 * (nModuleNo - nPosX));
-	sLog.Format("A2 Data [Picker:%d Job:%d Option:%d] PosXY(%d,%d) => (%0.3lf,%0.3lf)", nPickerNo, nJobNo, nModuleNo, nPosX, nPosY, dx, dy);
-	g_objLogFile.Save_HandlerLog(sLog);
-
-	nPickerNo = 2;	nJobNo    = 1;	nModuleNo = 1;
-	nPosX     = 4;	nPosY     = 1;
-	g_objSequenceMain.Get_TrayPosition(nPickerNo, nJobNo, nPosX, nPosY, dx, dy);
-	dx = dx + (30.0 * (nModuleNo - nPosX));
-	sLog.Format("A2 Data [Picker:%d Job:%d Option:%d] PosXY(%d,%d) => (%0.3lf,%0.3lf)", nPickerNo, nJobNo, nModuleNo, nPosX, nPosY, dx, dy);
-	g_objLogFile.Save_HandlerLog(sLog);
-
-	nPickerNo = 2;	nJobNo    = 1;	nModuleNo = 4;
-	nPosX     = 4;	nPosY     = 1;
-	g_objSequenceMain.Get_TrayPosition(nPickerNo, nJobNo, nPosX, nPosY, dx, dy);
-	dx = dx + (30.0 * (nModuleNo - nPosX));
-	sLog.Format("A2 Data [Picker:%d Job:%d Option:%d] PosXY(%d,%d) => (%0.3lf,%0.3lf)", nPickerNo, nJobNo, nModuleNo, nPosX, nPosY, dx, dy);
-	g_objLogFile.Save_HandlerLog(sLog);
-
-	nPickerNo = 2;	nJobNo    = 1;	nModuleNo = 8;
-	nPosX     = 4;	nPosY     = 1;
-	g_objSequenceMain.Get_TrayPosition(nPickerNo, nJobNo, nPosX, nPosY, dx, dy);
-	dx = dx + (30.0 * (nModuleNo - nPosX));
-	sLog.Format("A2 Data [Picker:%d Job:%d Option:%d] PosXY(%d,%d) => (%0.3lf,%0.3lf)", nPickerNo, nJobNo, nModuleNo, nPosX, nPosY, dx, dy);
-	g_objLogFile.Save_HandlerLog(sLog);
-*/
-
+	OnUpdateBarcode(0, 0);
 }
+
+void CWorkDlg::OnBnClickedButton3()
+{
+	OnUpdateBarcode(0,1);
+}
+
 
 void CWorkDlg::Set_LotCount(int nPortNo, CString sLotID, int nCount)
 {
@@ -2559,3 +2478,5 @@ void CWorkDlg::OnBnClickedBtnBuzzerOff()
 //	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
 //	pMainDlg->StdLogAllDelete();
 }
+
+

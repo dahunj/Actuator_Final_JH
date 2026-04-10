@@ -173,6 +173,7 @@ public:
 
 	void Set_LotCount(int nPortNo, CString sLotID, int nCount);
 
+	afx_msg void OnBnClickedButton3();
 };
 
 extern CWorkDlg g_dlgWork;
