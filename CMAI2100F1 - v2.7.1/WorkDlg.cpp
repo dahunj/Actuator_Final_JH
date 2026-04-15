@@ -1908,13 +1908,34 @@ UINT CWorkDlg::Thread_ElevatorRun(LPVOID lpVoid)
 //		if (!g_objCommon.Check_DirveAlarm()) break;
 //		if (!g_objCommon.Check_EndLimit()) break;
 
-		if (pDX13->iElevator1Sw) g_dlgWork.ElevatorOpen(1);
-		if (pDX13->iElevator2Sw) g_dlgWork.ElevatorOpen(2);
-		if (pDX13->iElevator3Sw) g_dlgWork.ElevatorOpen(3);
-		if (pDX13->iElevator4Sw) g_dlgWork.ElevatorOpen(4);
-		if (pDX13->iElevator5Sw) g_dlgWork.ElevatorOpen(5);
-		if (pDX13->iElevator6Sw) g_dlgWork.ElevatorOpen(6);
-		if (pDX13->iElevator7Sw) g_dlgWork.ElevatorOpen(7);
+		if (pDX13->iElevator1Sw && !gData.bElevatorWorking[eElevator::Load1]) 
+		{
+			g_dlgWork.ElevatorOpen(1);
+		}
+		if (pDX13->iElevator2Sw && !gData.bElevatorWorking[eElevator::Load1])
+		{
+			g_dlgWork.ElevatorOpen(2);
+		}
+		if (pDX13->iElevator3Sw)
+		{
+			g_dlgWork.ElevatorOpen(3);
+		}
+		if (pDX13->iElevator4Sw) 
+		{
+			g_dlgWork.ElevatorOpen(4);
+		}
+		if (pDX13->iElevator5Sw)
+		{	
+			g_dlgWork.ElevatorOpen(5);
+		}
+		if (pDX13->iElevator6Sw && !gData.bElevatorWorking[eElevator::Unload1])
+		{
+			g_dlgWork.ElevatorOpen(6);
+		}
+		if (pDX13->iElevator7Sw&& !gData.bElevatorWorking[eElevator::Unload2])
+		{
+			g_dlgWork.ElevatorOpen(7);
+		}
 
 		if (!g_dlgWork.ElevatorOpen1()) break;
 		if (!g_dlgWork.ElevatorOpen2()) break;

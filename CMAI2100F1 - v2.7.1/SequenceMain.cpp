@@ -18,7 +18,8 @@ CSequenceMain g_objSequenceMain;
 
 CSequenceMain::CSequenceMain()
 {
-	for (int i = 0; i < AXIS_COUNT; i++) {
+	for (int i = 0; i < AXIS_COUNT; i++) 
+	{
 		m_pStatus[i] = g_objAJinAXL.Get_pStatus(i);
 		m_pParam[i] = g_objAJinAXL.Get_pParam(i);
 	}
@@ -62,6 +63,11 @@ CSequenceMain::CSequenceMain()
 	m_bThreadMainRun = FALSE;
 	m_pThreadMainRun = NULL;
 
+	gData.bElevatorWorking[eElevator::Load1] = FALSE;
+	gData.bElevatorWorking[eElevator::Load2] = FALSE;
+	gData.bElevatorWorking[eElevator::Unload1] = FALSE;
+	gData.bElevatorWorking[eElevator::Unload2] = FALSE;
+	
 	Reset_MainRunCase();
 }
 
@@ -2380,6 +2386,8 @@ BOOL CSequenceMain::Run_Elevator6()
 	dElev6PrePos  = m_pMoveData->dElevatorZ6[1];
 	dElev6PostPos = m_pMoveData->dElevatorZ6[2];
 	if (gData.nElevatorOpen[6] > 0) return TRUE;
+	
+
 	if (m_nElevator6Case < 50 && !m_pDX02->iElevator6SlideClose) return TRUE;
 
 	switch (m_nElevator6Case) {
@@ -2741,8 +2749,16 @@ BOOL CSequenceMain::Run_Transfer1()
 
 	case 8:	//Tray Up
 		if (nFmTran1Pos == 1 || nFmTran1Pos == 2) m_nTransfer1Case = 10;	//Up Stage 12(1,2)
-		if (nFmTran1Pos == 3)					  m_nTransfer1Case = 20;	//Up Lot1   (3)
-		if (nFmTran1Pos == 4)					  m_nTransfer1Case = 30;	//Up Lot2   (4)
+		if (nFmTran1Pos == 3)
+		{
+			gData.bElevatorWorking[eElevator::Load1] = TRUE;
+			m_nTransfer1Case = 20;	//Up Lot1   (3)
+		}
+		if (nFmTran1Pos == 4)
+		{
+			gData.bElevatorWorking[eElevator::Load2] = TRUE;
+			m_nTransfer1Case = 30;	//Up Lot2   (4)
+		}
 		m_tTransfer1Loop.Set_LoopTime(60000);
 		break;
 
@@ -2858,7 +2874,9 @@ BOOL CSequenceMain::Run_Transfer1()
 		break;
 	case 26:
 		if (m_pDX03->iTransferZUp && !m_pDX03->iTransferZDown) {
-			if (m_pDX03->iTransferLTrayExist) {
+			if (m_pDX03->iTransferLTrayExist) 
+			{
+				
 //				m_pDY00->oElevator1Clamp1On = FALSE; m_pDY00->oElevator1Clamp1Off = TRUE;
 //				m_pDY00->oElevator1Clamp2On = FALSE; m_pDY00->oElevator1Clamp2Off = TRUE;
 //				g_objAJinAXL.Write_Output(0);
@@ -2883,6 +2901,8 @@ BOOL CSequenceMain::Run_Transfer1()
 			if (m_nElevator1Case == 20) m_nElevator1Case = 21;
 			m_nTransfer1Case = 40; m_tTransfer1Loop.Set_LoopTime(5000);
 			m_tTransfer1Loop.Takt_Save(8, 11); m_tTransfer1Loop.Takt_Start();
+
+			gData.bElevatorWorking[eElevator::Load1] = FALSE;
 
 			m_sLog.Format("[Transfer1: Up Load-Lot1] Lot(%s) TNo(%d) PNo(%d)", gData.sLotID_Tansfer[0], gData.nTrayNo_Tansfer[0], gData.nPortNo_Tansfer[0]);
 			g_objLogFile.Save_HandlerLog(m_sLog);
@@ -2952,10 +2972,13 @@ BOOL CSequenceMain::Run_Transfer1()
 		break;
 	case 37:
 //		if (!m_pDX00->iElevator2Clamp1On && m_pDX00->iElevator2Clamp1Off && !m_pDX00->iElevator2Clamp2On && m_pDX00->iElevator2Clamp2Off) {
-			if (nToTran1Pos == 5) {
+			if (nToTran1Pos == 5) 
+			{
 				if (!Set_LotStart(gLot.sLotID[nPort1No-1], nPort1No)) return FALSE;
 				gLot.bEmptyTray[nPort1No-1] = TRUE;
-			} else {
+			} 
+			else
+			{
 				gLot.nTrayOutCnt[nPort1No-1]++;
 			}
 
@@ -2968,6 +2991,7 @@ BOOL CSequenceMain::Run_Transfer1()
 			m_nTransfer1Case = 40; m_tTransfer1Loop.Set_LoopTime(5000);
 			m_tTransfer1Loop.Takt_Save(8, 17); m_tTransfer1Loop.Takt_Start();
 
+			gData.bElevatorWorking[eElevator::Load2] = FALSE;
 			m_sLog.Format("[Transfer1: Up Load-Lot2] Lot(%s) TNo(%d) PNo(%d)", gData.sLotID_Tansfer[0], gData.nTrayNo_Tansfer[0], gData.nPortNo_Tansfer[0]);
 			g_objLogFile.Save_HandlerLog(m_sLog);
 //		}
@@ -2975,7 +2999,11 @@ BOOL CSequenceMain::Run_Transfer1()
 
 //	gData.nTransferX1Pos;	//1(LS1),2(LS2),3(L1),4(L2),5(EN),6(EG),7(NB),8(U1),9(U2),10(NG1),11(NG2),12(Good1),13(Good2)
 	case 40:	//Tray Down
-		if (nToTran1Pos == 1 || nToTran1Pos == 2) m_nTransfer1Case = 41;	//Down Stage 12 (1,2)
+		if (nToTran1Pos == 1 || nToTran1Pos == 2)
+		{
+			
+			m_nTransfer1Case = 41;	//Down Stage 12 (1,2)
+		}
 		if (nToTran1Pos == 5)					  m_nTransfer1Case = 51;	//Down Empty-NG (5)
 		if (nToTran1Pos == 6)					  m_nTransfer1Case = 61;	//Down Empty-Good (6)
 		m_tTransfer1Loop.Set_LoopTime(5000);
@@ -3265,30 +3293,37 @@ BOOL CSequenceMain::Run_Transfer2()
 			m_nTransfer2Case++; m_tTransfer2Loop.Set_LoopTime(10000);
 		break;
 	case 2:
-		if (g_objCommon.Check_Position(AX_TRANSFER_Z2, 0)) {
+		if (g_objCommon.Check_Position(AX_TRANSFER_Z2, 0)) 
+		{
 			m_pDY03->oTransferRGrabOpen = TRUE; m_pDY03->oTransferRGrabClose = FALSE;
 			g_objAJinAXL.Write_Output(3);
 			m_nTransfer2Case++; m_tTransfer2Loop.Set_LoopTime(10000);
 		}
 		break;
 	case 3:
-		if (m_pDX03->iTransferRGrab1Open && !m_pDX03->iTransferRGrab1Close) {
-			if (m_pDX03->iTransferRGrab2Open && !m_pDX03->iTransferRGrab2Close) {
+		if (m_pDX03->iTransferRGrab1Open && !m_pDX03->iTransferRGrab1Close) 
+		{
+			if (m_pDX03->iTransferRGrab2Open && !m_pDX03->iTransferRGrab2Close) 
+			{
 				m_nTransfer2Case++; m_tTransfer2Loop.Set_LoopTime(10000);
 			}
 		}
 		break;
 	case 4:
-		if (nFmTran2Pos == 5 || nFmTran2Pos == 6) {
+		if (nFmTran2Pos == 5 || nFmTran2Pos == 6) 
+		{
 			m_nTransfer2Case++; m_tTransfer2Loop.Set_LoopTime(10000);
-		} else {
+		}
+		else
+		{
 			gData.nTransferX2Pos = nFmTran2Pos;
 			m_nTransfer2Case = 6; m_tTransfer2Loop.Set_LoopTime(10000);
 		}
 		break;
 	case 5:
 		if ((nFmTran2Pos == 5 && gData.nTransferX1Pos < 5) ||
-			(nFmTran2Pos == 6 && gData.nTransferX1Pos < 6) ) {
+			(nFmTran2Pos == 6 && gData.nTransferX1Pos < 6) ) 
+		{
 			gData.nTransferX2Pos = nFmTran2Pos;
 			m_nTransfer2Case++; m_tTransfer2Loop.Set_LoopTime(10000);
 		}
@@ -3663,11 +3698,30 @@ BOOL CSequenceMain::Run_Transfer2()
 			nPosX = nPosZ = gData.nTransferX2Pos - 4;
 			double dSpeed = 1.0;
 //			if (nPosX == 3 || nPosX == 4 || nPosX == 5) dSpeed = 0.7;
-			if (nFmTran2Pos == 5 && nToTran2Pos == 8) nPosX = 10;	//E3->E6
-			if (nFmTran2Pos == 7 && nToTran2Pos == 8) nPosX = 11;	//E5->E6
-			if (nFmTran2Pos == 5 && nToTran2Pos == 9) nPosX = 12;	//E3->E7
-			if (nFmTran2Pos == 7 && nToTran2Pos == 9) nPosX = 13;	//E5->E7
+			if (nFmTran2Pos == 5 && nToTran2Pos == 8)
+			{
+				gData.bElevatorWorking[eElevator::Unload1] = TRUE;
+				nPosX = 10;	//E3->E6
+			}
+			if (nFmTran2Pos == 7 && nToTran2Pos == 8)
+			{
+				gData.bElevatorWorking[eElevator::Unload1] = TRUE;
+				nPosX = 11;	//E5->E6
+			}
+			if (nFmTran2Pos == 5 && nToTran2Pos == 9)
+			{
+				gData.bElevatorWorking[eElevator::Unload2] = TRUE;
+				nPosX = 12;	//E3->E7
+			}
+			if (nFmTran2Pos == 7 && nToTran2Pos == 9)
+			{
+				gData.bElevatorWorking[eElevator::Unload2] = TRUE;
+				nPosX = 13;	//E5->E7
+			}
 			g_objCommon.Move_Position(AX_TRANSFER_X2, nPosX, dSpeed);
+			
+			
+
 			m_nTransfer2Case++; m_tTransfer2Loop.Set_LoopTime(30000);
 		}
 	case 62:
@@ -3840,6 +3894,8 @@ BOOL CSequenceMain::Run_Transfer2()
 				if (!m_tTransfer2Loop.Waiting_Time(300)) break;
 				m_tTransfer2Loop.Takt_Save(9, 37); m_tTransfer2Loop.Takt_Start();
 				g_objCommon.Move_Position(AX_TRANSFER_Z2, 0);
+				gData.bElevatorWorking[eElevator::Unload1] = FALSE;
+				
 				m_nTransfer2Case++; m_tTransfer2Loop.Set_LoopTime(10000);
 			}
 		}
@@ -3897,6 +3953,8 @@ BOOL CSequenceMain::Run_Transfer2()
 				if (!m_tTransfer2Loop.Waiting_Time(300)) break;
 				m_tTransfer2Loop.Takt_Save(9, 41); m_tTransfer2Loop.Takt_Start();
 				g_objCommon.Move_Position(AX_TRANSFER_Z2, 0);
+				gData.bElevatorWorking[eElevator::Unload2] = FALSE;
+
 				m_nTransfer2Case++; m_tTransfer2Loop.Set_LoopTime(10000);
 			}
 		}

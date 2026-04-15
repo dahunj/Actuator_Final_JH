@@ -227,6 +227,8 @@ typedef struct {
 	int		nLoadAlignRetry;
 	int		nScanRetry[3];	//0:BTM, 1:T1, 2:T2
 	int		nNG_MC[5][2];	//0:MC, 1:GF, 2:Barcode, 3:Vision-timover, 4:MES_NG
+
+	BOOL	bElevatorWorking[7]; //load1, load2, ng Empty, Good Empty, Ng Buffer, Unload 1, Unload 2
 } GLOVAL_DATA;
 
 typedef struct {
@@ -358,3 +360,20 @@ extern GLOVAL_DATA		gData;
 extern GLOVAL_LOT		gLot;
 extern GLOVAL_ALM		gAlm;
 extern GLOVAL_MES		gMes;
+
+
+
+struct eElevator
+{
+	enum Name
+	{
+		Load1 = 0,
+		Load2 = 1,
+		NgEmpty = 2,
+		GoodEmpty = 3,
+		NgBuffer = 4,
+		Unload1 = 5,
+		Unload2 = 6,
+
+	};
+};
