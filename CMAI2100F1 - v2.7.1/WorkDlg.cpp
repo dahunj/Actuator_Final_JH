@@ -1924,7 +1924,7 @@ UINT CWorkDlg::Thread_ElevatorRun(LPVOID lpVoid)
 		{
 			g_dlgWork.ElevatorOpen(4);
 		}
-		if (pDX13->iElevator5Sw)
+		if (pDX13->iElevator5Sw && !gData.bElevatorWorking[eElevator::NgBuffer])
 		{	
 			g_dlgWork.ElevatorOpen(5);
 		}
