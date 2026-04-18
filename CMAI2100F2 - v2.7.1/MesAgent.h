@@ -63,7 +63,7 @@ public:
 	void Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sType);	//1:Start, 2:End
 
 	void Set_CmRequest(CString sLotId, CString sCmId, int nPortNo, int nTrayNo, int nCmNo);
-	void Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nOut, int nNGType=0);
+	void Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nOut, int nRosInfo, int nNGType= 0);
 
 	void Set_LotStart(int nType, int nPortNo, CString sLotId, CString sRecipe, int nCount);	//0:Request, 1:Started
 	void Set_LotAbort(CString sLotId);

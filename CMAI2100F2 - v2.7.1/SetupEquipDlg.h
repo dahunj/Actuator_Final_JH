@@ -33,6 +33,7 @@ public:
 	CCheckCS	m_chkUseInspectAl1;
 	CCheckCS	m_chkUseInspectAl2;
 	CCheckCS	m_chkUseInspectRos;
+	CCheckCS    m_chkUseActCntAutoSet;
 	CCheckCS	m_chkUseInspectBtmAngle;
 	CCheckCS	m_chkUseInspectTop1Angle;
 	CCheckCS	m_chkUseCMCheck;

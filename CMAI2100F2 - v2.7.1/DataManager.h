@@ -26,6 +26,7 @@ typedef struct tag_EQUIP_DATA {
 	BOOL	bUseBotAng;
 	BOOL	bUseTopAng;
 	BOOL	bUseROS;
+	BOOL    bUseCntAutoSet;
 	BOOL	bUseCMCheck;	// CM Check가 안되는 샘플이 있어 추가.
 	BOOL	bUseNGSort;
 	BOOL	bUseNGSize;

@@ -193,6 +193,7 @@ BOOL CDataManager::Read_EquipData()
 	m_EquipData.bUseAlign1 = INI.Get_Bool("OPTION", "ALIGN_1", FALSE);
 	m_EquipData.bUseAlign2 = INI.Get_Bool("OPTION", "ALIGN_2", FALSE);
 	m_EquipData.bUseROS    = INI.Get_Bool("OPTION", "ROS_USE", FALSE);
+	m_EquipData.bUseCntAutoSet = INI.Get_Bool("OPTION", "ACT_COUNT_AUTOSET", FALSE);
 	m_EquipData.bUseBottom = INI.Get_Bool("OPTION", "INSPECT_BTM", FALSE);
 	m_EquipData.bUseTop1   = INI.Get_Bool("OPTION", "INSPECT_TOP1", FALSE);
 	m_EquipData.bUseTop2   = INI.Get_Bool("OPTION", "INSPECT_TOP2", FALSE);
@@ -313,6 +314,7 @@ BOOL CDataManager::Read_ModelEquipData(CString strPath)
 	m_EquipData.bUseAlign1 = INI.Get_Bool("OPTION", "ALIGN_1", FALSE);
 	m_EquipData.bUseAlign2 = INI.Get_Bool("OPTION", "ALIGN_2", FALSE);
 	m_EquipData.bUseROS    = INI.Get_Bool("OPTION", "ROS_USE", FALSE);
+	m_EquipData.bUseCntAutoSet = INI.Get_Bool("OPTION", "ACT_COUNT_AUTOSET", FALSE);
 	m_EquipData.bUseBottom = INI.Get_Bool("OPTION", "INSPECT_BTM", FALSE);
 	m_EquipData.bUseTop1   = INI.Get_Bool("OPTION", "INSPECT_TOP1", FALSE);
 	m_EquipData.bUseTop2   = INI.Get_Bool("OPTION", "INSPECT_TOP2", FALSE);

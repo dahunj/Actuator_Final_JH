@@ -207,12 +207,18 @@ void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount)
 	gMes.nHostCmCount[nPortNo] = nCmCount;
 
 	if (sRecipe.GetLength() < 1) { g_objCommon.Show_Error(9001); return; }
-	if (gLot.nCmCount[nPortNo] != nCmCount) { g_objCommon.Show_Error(9010); return; }
 
+	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+
+	if(!pEquipData->bUseCntAutoSet)
+	{
+		if (gLot.nCmCount[nPortNo] != nCmCount) { g_objCommon.Show_Error(9010); return; }
+	}
+	
 	if (Exist_Recipe(sRecipe) == FALSE) {
 		g_objCommon.Show_Error(9007);	return;
 	}
-	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+	
 	if (sRecipe != pEquipData->sModelName) {
 		if (pEquipData->bUseMESRcpCheck) {
 			g_objCommon.Show_Error(9008);	return;
@@ -491,7 +497,7 @@ void CMesAgent::Set_CmRequest(CString sLotId, CString sCmId, int nPortNo, int nT
 	m_dwReqStart[nPortNo-1][nTrayNo-1][nCmNo-1] = GetTickCount();
 }
 
-void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nOut, int nNGType)
+void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nOut, int nRosInfo, int nNGType )
 {
 	if (nPortNo < 1 || nPortNo > 6 || nCmNo < 1 || nCmNo > 40) return;
 
@@ -499,7 +505,7 @@ void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nO
 	CString	strCmId = gLot.sBarCode[nPortNo-1][nTrayNo-1][nCmNo-1];
 	int nSpecialNG  = gLot.nSpecialNG[nPortNo-1][nTrayNo-1][nCmNo-1];
 
-	CString strResult, strNgCode;
+	CString strResult, strNgCode, strRosResult;
 	if (nType == 1) {
 //		if (nNGType == 4) { strResult = "MOK"; gMes.nNGCount[0]++; }
 //		else			  { strResult = "NG";  gMes.nNGCount[1]++; }
@@ -511,9 +517,22 @@ void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nO
 		strResult = "OK";
 		strNgCode = "00";
 	}
-
+		
+	if(nRosInfo == 2)
+	{
+		strRosResult = "OK";
+	}
+	else if(nRosInfo == 3 || nRosInfo == 4)
+	{
+		strRosResult = "NG";
+	}
+	else
+	{
+		strRosResult = "Empty";
+	}
+	
 	CString strSend;
-	strSend.Format("CM,END,%s,%s,%s,%s,%d", sLotID, strCmId, strResult, strNgCode, nOut);
+	strSend.Format("CM,END,%s,%s,%s,%s,%s,%d", sLotID, strCmId, strResult, strNgCode, strRosResult, nOut);
 	g_objLogFile.Save_TestLog(strSend);
 	Send_Command(strSend);	
 }

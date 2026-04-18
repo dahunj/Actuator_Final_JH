@@ -370,7 +370,7 @@ void CWorkDlg::OnStcCmsCountSClick(UINT nID)
 	CString strOld, strNew, strValue;
 
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
-	if (pEquipData->bUseMES) 
+	if (pEquipData->bUseMES && pEquipData->bUseCntAutoSet) 
 	{
 		m_stcLotsIdS[ID].GetWindowText(strValue);
 		if (strValue.GetLength() > 0 && (gMes.nLotStatus[ID] == 0 || gMes.nLotStatus[ID] == 9 || strValue != gLot.sLotID[ID])) 
@@ -2388,6 +2388,30 @@ void CWorkDlg::OnBnClickedBtnNGLotEnd()
 	sLog.Format("[Work NGLot-End] - NGLot(%s) Seq(%d-%d) Sts(%d) ¼ö·®(%d-%d-%d)", sNGLotID, nCase1, nCase2, gMes.nMarStatus, nNGCnt, nMarCnt, nTrayCnt);
 	g_objLogFile.Save_HandlerLog(sLog);
 
+}
+
+
+void CWorkDlg::Set_LotCount(int nPortNo, CString sLotID, int nCount)
+{
+	CString sLog, strValue;
+
+	strValue.Format("%d", nCount);
+	m_stcCmsCountS[nPortNo-1].SetWindowText(strValue);
+
+	int nTrayCnt = (nCount / TRAY_MAX_CM) + 2;
+	int nRenCnt  = nCount % TRAY_MAX_CM;
+	if (nRenCnt == 0) nTrayCnt--;
+	strValue.Format("%d", nTrayCnt);
+	m_stcTrayCountS[nPortNo-1].SetWindowText(strValue);
+
+	if (LotID_Check()==FALSE) {
+		sLog.Format("[Work Dialog] MES Lot Error. PortNo[%d] Lotid[%s] Count[%d] TaryCnt[%d]", nPortNo, sLotID, nCount, nTrayCnt);
+		g_objLogFile.Save_HandlerLog(sLog);
+		return;
+	}
+
+	sLog.Format("[Work Dialog] MES Lot Count. PortNo[%d] Lotid[%s] Count[%d] TaryCnt[%d]", nPortNo, sLotID, nCount, nTrayCnt);
+	g_objLogFile.Save_HandlerLog(sLog);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
