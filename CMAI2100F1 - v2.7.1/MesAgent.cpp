@@ -224,7 +224,7 @@ void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount)
 	}
 
 	gMes.nLotStatus[nPortNo] = 2;
-	g_objCommon.Set_LotCount(nPortNo+1, sLotId, nCmCount);
+	if(pEquipData->bUseCntAutoSet) g_objCommon.Set_LotCount(nPortNo+1, sLotId, nCmCount);
 }
 
 void CMesAgent::Get_LotCancel(CString sLotId, CString sCode, CString sText)

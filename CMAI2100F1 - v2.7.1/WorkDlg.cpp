@@ -385,7 +385,6 @@ void CWorkDlg::OnStcCmsCountSClick(UINT nID)
 		return;
 	}
 
-
 	m_stcCmsCountS[ID].GetWindowText(strOld);
 	if (g_objCommon.Show_NumPad(strOld, strNew) != IDOK) return;
 
@@ -406,7 +405,7 @@ void CWorkDlg::OnStcCmsCountSClick(UINT nID)
 	m_stcTrayCountS[ID].SetWindowText(strValue);
 
 	if (LotID_Check()==FALSE) { m_stcTrayCountS[ID].SetWindowText(""); m_stcTrayCountS[ID].SetWindowText(""); return; }
-	//if (gMes.nLotStatus[ID] != 2) g_objMesAgent.Set_LotStart(0, ID, gLot.sLotID[ID], gData.sRecipeName, gLot.nCmCount[ID]);
+	if (gMes.nLotStatus[ID] != 2) g_objMesAgent.Set_LotStart(0, ID, gLot.sLotID[ID], gData.sRecipeName, gLot.nCmCount[ID]);
 
 	strNew.Format("[Work Mode] Module Count Input(%d-%d-%d-%s-%d-%d)", ID, nCmCnt, nTrayCnt, gLot.sLotID[ID], gLot.nCmCount[ID], gMes.nLotStatus[ID]);
 	g_objLogFile.Save_HandlerLog(strNew);
