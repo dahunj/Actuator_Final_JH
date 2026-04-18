@@ -1150,7 +1150,8 @@ void CSequenceMain::Set_ROSDone(int nPNo, int nPortNo, int nTrayNo)
 		if ((i+nCno) >= 40) break;
 
 		if (gData.InfoUnloadPick[nPNo-1][i] > 0) {
-			if (gLot.nJudge_R[nPortNo-1][nTrayNo-1][i+nCno] > 0) {
+			if (gLot.nJudge_R[nPortNo-1][nTrayNo-1][i+nCno] > 0)
+			{
 				if (gLot.nJudge_R[nPortNo-1][nTrayNo-1][i+nCno] == 2) gData.InfoUnloadPick[nPNo-1][i] = 2;	//ROS_OK
 				else												  gData.InfoUnloadPick[nPNo-1][i] = 4;	//ROS_Marginal
 			}
