@@ -374,7 +374,7 @@ void CWorkDlg::OnStcCmsCountSClick(UINT nID)
 
 
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
-	if (pEquipData->bUseMES) 
+	if (pEquipData->bUseMES && pEquipData->bUseCntAutoSet) 
 	{
 		m_stcLotsIdS[ID].GetWindowText(strValue);
 		if (strValue.GetLength() > 0 && (gMes.nLotStatus[ID] == 0 || gMes.nLotStatus[ID] == 9 || strValue != gLot.sLotID[ID])) 

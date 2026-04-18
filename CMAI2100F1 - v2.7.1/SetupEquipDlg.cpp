@@ -52,6 +52,7 @@ void CSetupEquipDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHK_USE_ALIGN1, m_chkUseInspectAl1);
 	DDX_Control(pDX, IDC_CHK_USE_ALIGN2, m_chkUseInspectAl2);
 	DDX_Control(pDX, IDC_CHK_USE_ROS, m_chkUseInspectRos);
+	DDX_Control(pDX, IDC_CHK_USE_CNT_AUTOSET, m_chkUseActCntAutoSet);	
 	DDX_Control(pDX, IDC_CHK_USE_BTM_ANGLE, m_chkUseInspectBtmAngle);
 	DDX_Control(pDX, IDC_CHK_USE_TOP1_ANGLE, m_chkUseInspectTop1Angle);
 	DDX_Control(pDX, IDC_CHK_USE_CM_CHECK, m_chkUseCMCheck);
@@ -374,6 +375,7 @@ void CSetupEquipDlg::Initial_Controls()
 	m_chkUseInspectAl1.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x90, 0x90, 0xF0), CCheckCS::emRed, 0);
 	m_chkUseInspectAl2.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x90, 0x90, 0xF0), CCheckCS::emRed, 0);
 	m_chkUseInspectRos.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x40, 0xF0, 0xFF), CCheckCS::emRed, 0);
+	m_chkUseActCntAutoSet.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x40, 0xF0, 0xFF), CCheckCS::emRed, 0);
 	m_chkUseInspectBtmAngle.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
 	m_chkUseInspectTop1Angle.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
 	m_chkUseCMCheck.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
@@ -444,6 +446,7 @@ void CSetupEquipDlg::Display_EquipData()
 	m_chkUseInspectAl1.SetCheck(pEquipData->bUseAlign1);
 	m_chkUseInspectAl2.SetCheck(pEquipData->bUseAlign2);
 	m_chkUseInspectRos.SetCheck(pEquipData->bUseROS);
+	m_chkUseActCntAutoSet.SetCheck(pEquipData->bUseCntAutoSet);
 	m_chkUseInspectBtmAngle.SetCheck(pEquipData->bUseBotAng);
 	m_chkUseInspectTop1Angle.SetCheck(pEquipData->bUseTopAng);
 	m_chkUseCMCheck.SetCheck(pEquipData->bUseCMCheck);
@@ -556,6 +559,7 @@ void CSetupEquipDlg::Save_EquipData()
 	INI.Set_Bool("OPTION", "ALIGN_1", m_chkUseInspectAl1.GetCheck());
 	INI.Set_Bool("OPTION", "ALIGN_2", m_chkUseInspectAl2.GetCheck());
 	INI.Set_Bool("OPTION", "ROS_USE", m_chkUseInspectRos.GetCheck());
+	INI.Set_Bool("OPTION", "ACT_COUNT_AUTOSET", m_chkUseActCntAutoSet.GetCheck());
 	INI.Set_Bool("OPTION", "INSPECT_BAG", m_chkUseInspectBtmAngle.GetCheck());
 	INI.Set_Bool("OPTION", "INSPECT_TAG", m_chkUseInspectTop1Angle.GetCheck());
 	INI.Set_Bool("OPTION", "CM_CHECK", m_chkUseCMCheck.GetCheck());
@@ -656,6 +660,7 @@ void CSetupEquipDlg::Save_ModelEquipData(CString sPath)
 	INI.Set_Bool("OPTION", "ALIGN_1", m_chkUseInspectAl1.GetCheck());
 	INI.Set_Bool("OPTION", "ALIGN_2", m_chkUseInspectAl2.GetCheck());
 	INI.Set_Bool("OPTION", "ROS_USE", m_chkUseInspectRos.GetCheck());
+	INI.Set_Bool("OPTION", "ACT_COUNT_AUTOSET", m_chkUseActCntAutoSet.GetCheck());
 	INI.Set_Bool("OPTION", "INSPECT_BAG", m_chkUseInspectBtmAngle.GetCheck());
 	INI.Set_Bool("OPTION", "INSPECT_TAG", m_chkUseInspectTop1Angle.GetCheck());
 	INI.Set_Bool("OPTION", "CM_CHECK", m_chkUseCMCheck.GetCheck());

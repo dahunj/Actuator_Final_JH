@@ -528,7 +528,7 @@ void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nO
 	}	
 	else
 	{
-		strRosResult = "Empty"
+		strRosResult = "Empty";
 	}
 
 	CString strSend;
