@@ -1502,14 +1502,11 @@ LRESULT CWorkDlg::OnUpdateBarcode(WPARAM wParam, LPARAM lParam)
 {
 	CString strTemp;
 	CString sData = g_objBarcodeLot.Get_BarcodeLot();
-
-	
+		
 #ifndef AJIN_BOARD_USE
-	
 	sData.Format("TEST-%d", (int)lParam);
 	//nLotNo++;
 #endif
-
 
 	if (sData.GetLength() < 1) return 0;
 /*
