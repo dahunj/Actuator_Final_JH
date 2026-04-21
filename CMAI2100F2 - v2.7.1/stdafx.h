@@ -78,7 +78,7 @@
 //****************************************************************************
 #define NEW_FINAL		//자화 Final #2호기
 //****************************************************************************
-#define AJIN_BOARD_USE
+//#define AJIN_BOARD_USE
 
 #ifdef NEW_FINAL
 	#define MAIN_VERSION	"Vf 2.7.1"
