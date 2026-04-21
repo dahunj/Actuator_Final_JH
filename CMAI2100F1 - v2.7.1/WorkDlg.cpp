@@ -79,6 +79,8 @@ void CWorkDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STC_MES_CONNECT, m_stcMesConnect);
 	DDX_Control(pDX, IDC_STC_MES_ONLINE, m_stcMesOnline);
 	DDX_Control(pDX, IDC_BTN_NGLOT_END, m_btnNGLotEnd);
+	DDX_Control(pDX, IDC_BUTTON2, m_BtnTest2);
+	DDX_Control(pDX, IDC_BUTTON3, m_BtnTest3);
 }
 
 BEGIN_MESSAGE_MAP(CWorkDlg, CDialogEx)
@@ -137,6 +139,14 @@ BOOL CWorkDlg::OnInitDialog()
 #else
 	gData.bResultTest = FALSE;
 #endif
+
+	m_BtnTest2.ShowWindow(SW_HIDE);
+	m_BtnTest3.ShowWindow(SW_HIDE);
+#ifndef AJIN_BOARD_USE
+	m_BtnTest2.ShowWindow(SW_SHOW);
+	m_BtnTest2.ShowWindow(SW_SHOW);
+#endif
+
 
 	m_rdoWorkStop.SetCheck(TRUE);
 	m_rdoWorkStop.Set_Color(RGB(0xFF, 0x00, 0x00), COLOR_DEFAULT);
@@ -1912,16 +1922,16 @@ UINT CWorkDlg::Thread_ElevatorRun(LPVOID lpVoid)
 		{
 			g_dlgWork.ElevatorOpen(2);
 		}
-		if (pDX13->iElevator3Sw)
+		if (pDX13->iElevator3Sw && !gData.bElevatorWorking[eElevator::NgEmpty])
 		{
 			g_dlgWork.ElevatorOpen(3);
 		}
-		if (pDX13->iElevator4Sw) 
+		if (pDX13->iElevator4Sw && !gData.bElevatorWorking[eElevator::GoodEmpty]) 
 		{
 			g_dlgWork.ElevatorOpen(4);
 		}
 		if (pDX13->iElevator5Sw && !gData.bElevatorWorking[eElevator::NgBuffer])
-		{	
+		{    
 			g_dlgWork.ElevatorOpen(5);
 		}
 		if (pDX13->iElevator6Sw && !gData.bElevatorWorking[eElevator::Unload1])

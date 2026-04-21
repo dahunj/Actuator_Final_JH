@@ -67,6 +67,9 @@ CSequenceMain::CSequenceMain()
 	gData.bElevatorWorking[eElevator::Load2] = FALSE;
 	gData.bElevatorWorking[eElevator::Unload1] = FALSE;
 	gData.bElevatorWorking[eElevator::Unload2] = FALSE;
+	gData.bElevatorWorking[eElevator::NgBuffer] = FALSE;
+	gData.bElevatorWorking[eElevator::NgEmpty] = FALSE;
+	gData.bElevatorWorking[eElevator::GoodEmpty] = FALSE;
 	
 	Reset_MainRunCase();
 }
@@ -3115,7 +3118,9 @@ BOOL CSequenceMain::Run_Transfer1()
 		}
 		return TRUE;
 	case 53:
-		if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) {
+		if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) 
+		{
+			gData.bElevatorWorking[eElevator::NgEmpty] = TRUE;
 			g_objCommon.Save_Motion(AX_TRANSFER_X1, gData.nTransferX1Pos);
 			m_tTransfer1Loop.Takt_Save(8, 26); m_tTransfer1Loop.Takt_Start();
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
@@ -3192,7 +3197,9 @@ BOOL CSequenceMain::Run_Transfer1()
 		}
 		return TRUE;
 	case 63:
-		if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) {
+		if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos))
+		{
+			gData.bElevatorWorking[eElevator::GoodEmpty] = TRUE;
 			g_objCommon.Save_Motion(AX_TRANSFER_X1, gData.nTransferX1Pos);
 			m_tTransfer1Loop.Takt_Save(8, 34); m_tTransfer1Loop.Takt_Start();
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
@@ -3247,6 +3254,9 @@ BOOL CSequenceMain::Run_Transfer1()
 	case 70:	//대기위치로
 			if (m_pDX04->iLoadStage1TrayExist && m_pDX04->iLoadStage2TrayExist) gData.nTransferX1Pos = 1;
 			else																gData.nTransferX1Pos = 3;
+
+			gData.bElevatorWorking[eElevator::NgEmpty] = FALSE;
+			gData.bElevatorWorking[eElevator::GoodEmpty] = FALSE;
 			g_objCommon.Move_Position(AX_TRANSFER_X1, gData.nTransferX1Pos);
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
 		break;
