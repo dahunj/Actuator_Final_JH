@@ -2,6 +2,7 @@
 //
 #pragma once
 #include "LoopTimer.h"
+#include "afxwin.h"
 
 #define UM_UPDATE_MODEL			WM_USER+1
 #define UM_UPDATE_TRAY_INFO		WM_USER+2
@@ -172,6 +173,7 @@ public:
 	void Set_AutoRunStatus(BOOL bAutoRun) { m_bAutoRunning = bAutoRun; }
 
 	void Set_LotCount(int nPortNo, CString sLotID, int nCount);
+	CButton m_TestBtn2;
 };
 
 extern CWorkDlg g_dlgWork;

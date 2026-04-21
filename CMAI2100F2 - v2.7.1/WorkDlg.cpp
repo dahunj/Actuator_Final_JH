@@ -79,6 +79,7 @@ void CWorkDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STC_MES_CONNECT, m_stcMesConnect);
 	DDX_Control(pDX, IDC_STC_MES_ONLINE, m_stcMesOnline);
 	DDX_Control(pDX, IDC_BTN_NGLOT_END, m_btnNGLotEnd);
+	DDX_Control(pDX, IDC_BUTTON2, m_TestBtn2);
 }
 
 BEGIN_MESSAGE_MAP(CWorkDlg, CDialogEx)
@@ -135,6 +136,11 @@ BOOL CWorkDlg::OnInitDialog()
 	gData.bResultTest = TRUE;
 #else
 	gData.bResultTest = FALSE;
+#endif
+
+	m_TestBtn2.ShowWindow(SW_HIDE);
+#ifndef AJIN_BOARD_USE
+	m_TestBtn2.ShowWindow(SW_SHOW);
 #endif
 
 	m_rdoWorkStop.SetCheck(TRUE);
@@ -1498,10 +1504,13 @@ LRESULT CWorkDlg::OnUpdateBarcode(WPARAM wParam, LPARAM lParam)
 {
 	CString strTemp;
 	CString sData = g_objBarcodeLot.Get_BarcodeLot();
+		
+#ifndef AJIN_BOARD_USE
+	sData.Format("TEST-%d", (int)lParam);
+	//nLotNo++;
+#endif
+
 	if (sData.GetLength() < 1) return 0;
-
-
-
 /*
 	if (m_rdoWorkStart.GetCheck()) {
 		if (gData.nLanguage == 0) AfxMessageBox(_T("장비 Stop 상태에서 진행이 가능합니다....."));
@@ -1533,6 +1542,7 @@ LRESULT CWorkDlg::OnUpdateBarcode(WPARAM wParam, LPARAM lParam)
 	//2018.9.11+
 	UINT nID = IDC_STC_CMS_COUNT_S_0+gData.nSelectNo-1;
 	OnStcCmsCountSClick(nID);
+	
 
 //	g_objSequenceMain.Beep_Post(500);
 
@@ -1867,13 +1877,34 @@ UINT CWorkDlg::Thread_ElevatorRun(LPVOID lpVoid)
 //		if (!g_objCommon.Check_DirveAlarm()) break;
 //		if (!g_objCommon.Check_EndLimit()) break;
 
-		if (pDX13->iElevator1Sw) g_dlgWork.ElevatorOpen(1);
-		if (pDX13->iElevator2Sw) g_dlgWork.ElevatorOpen(2);
-		if (pDX13->iElevator3Sw) g_dlgWork.ElevatorOpen(3);
-		if (pDX13->iElevator4Sw) g_dlgWork.ElevatorOpen(4);
-		if (pDX13->iElevator5Sw) g_dlgWork.ElevatorOpen(5);
-		if (pDX13->iElevator6Sw) g_dlgWork.ElevatorOpen(6);
-		if (pDX13->iElevator7Sw) g_dlgWork.ElevatorOpen(7);
+		if (pDX13->iElevator1Sw && !gData.bElevatorWorking[eElevator::Load1]) 
+		{
+			g_dlgWork.ElevatorOpen(1);
+		}
+		if (pDX13->iElevator2Sw && !gData.bElevatorWorking[eElevator::Load1])
+		{
+			g_dlgWork.ElevatorOpen(2);
+		}
+		if (pDX13->iElevator3Sw && !gData.bElevatorWorking[eElevator::NgEmpty])
+		{
+			g_dlgWork.ElevatorOpen(3);
+		}
+		if (pDX13->iElevator4Sw && !gData.bElevatorWorking[eElevator::GoodEmpty]) 
+		{
+			g_dlgWork.ElevatorOpen(4);
+		}
+		if (pDX13->iElevator5Sw && !gData.bElevatorWorking[eElevator::NgBuffer])
+		{	
+			g_dlgWork.ElevatorOpen(5);
+		}
+		if (pDX13->iElevator6Sw && !gData.bElevatorWorking[eElevator::Unload1])
+		{
+			g_dlgWork.ElevatorOpen(6);
+		}
+		if (pDX13->iElevator7Sw&& !gData.bElevatorWorking[eElevator::Unload2])
+		{
+			g_dlgWork.ElevatorOpen(7);
+		}
 
 		if (!g_dlgWork.ElevatorOpen1()) break;
 		if (!g_dlgWork.ElevatorOpen2()) break;

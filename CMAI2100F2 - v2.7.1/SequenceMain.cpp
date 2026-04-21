@@ -63,6 +63,15 @@ CSequenceMain::CSequenceMain()
 	m_pThreadMainRun = NULL;
 
 	Reset_MainRunCase();
+
+	gData.bElevatorWorking[eElevator::Load1] = FALSE;
+	gData.bElevatorWorking[eElevator::Load2] = FALSE;
+	gData.bElevatorWorking[eElevator::Unload1] = FALSE;
+	gData.bElevatorWorking[eElevator::Unload2] = FALSE;
+	gData.bElevatorWorking[eElevator::NgBuffer] = FALSE;
+
+	gData.bElevatorWorking[eElevator::NgEmpty] = FALSE;
+	gData.bElevatorWorking[eElevator::GoodEmpty] = FALSE;
 }
 
 CSequenceMain::~CSequenceMain()
@@ -2944,12 +2953,15 @@ BOOL CSequenceMain::Run_Transfer1()
 		break;
 
 	case 6:	//MES Start
-		if (m_pEquipData->bUseMES && (nFmTran1Pos == 3 || nFmTran1Pos == 4) && nToTran1Pos == 5) {
+		if (m_pEquipData->bUseMES && (nFmTran1Pos == 3 || nFmTran1Pos == 4) && nToTran1Pos == 5)
+		{
 			gAlm.sAlmLotID[1].Format("%d", nPort1No);
 //			gMes.nLotPortNo = nPort1No;
 //			g_objMesAgent.Set_LotStart(0, nPort1No-1, gLot.sLotID[nPort1No-1], gData.sRecipeName, gLot.nCmCount[nPort1No-1]);
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
-		} else {
+		}
+		else
+		{
 			if (!m_pEquipData->bUseMES && nPort1No > 0) gLot.sRecipeName[nPort1No-1] = gData.sRecipeName;
 			m_nTransfer1Case = 8; m_tTransfer1Loop.Set_LoopTime(5000);
 		}
@@ -2964,8 +2976,17 @@ BOOL CSequenceMain::Run_Transfer1()
 
 	case 8:	//Tray Up
 		if (nFmTran1Pos == 1 || nFmTran1Pos == 2) m_nTransfer1Case = 10;	//Up Stage 12(1,2)
-		if (nFmTran1Pos == 3)					  m_nTransfer1Case = 20;	//Up Lot1   (3)
-		if (nFmTran1Pos == 4)					  m_nTransfer1Case = 30;	//Up Lot2   (4)
+		if (nFmTran1Pos == 3)
+		{
+			gData.bElevatorWorking[eElevator::Load1] = TRUE;
+			m_nTransfer1Case = 20;	//Up Lot1   (3)
+			
+		}
+		if (nFmTran1Pos == 4)
+		{	
+			gData.bElevatorWorking[eElevator::Load2] = TRUE;
+			m_nTransfer1Case = 30;	//Up Lot2   (4)
+		}
 		m_tTransfer1Loop.Set_LoopTime(60000);
 		break;
 
@@ -3110,6 +3131,9 @@ BOOL CSequenceMain::Run_Transfer1()
 			m_nTransfer1Case = 40; m_tTransfer1Loop.Set_LoopTime(5000);
 			m_tTransfer1Loop.Takt_Save(8, 11); m_tTransfer1Loop.Takt_Start(8, 12);
 
+			gData.bElevatorWorking[eElevator::Load1] = FALSE;
+			gData.bElevatorWorking[eElevator::Load2] = FALSE;
+
 			m_sLog.Format("[Transfer1: Up Load-Lot1] Lot(%s) TNo(%d) PNo(%d)", gData.sLotID_Tansfer[0], gData.nTrayNo_Tansfer[0], gData.nPortNo_Tansfer[0]);
 			g_objLogFile.Save_HandlerLog(m_sLog);
 		}
@@ -3193,6 +3217,9 @@ BOOL CSequenceMain::Run_Transfer1()
 			if (m_nElevator2Case == 20) m_nElevator2Case = 21;
 			m_nTransfer1Case = 40; m_tTransfer1Loop.Set_LoopTime(5000);
 			m_tTransfer1Loop.Takt_Save(8, 17); m_tTransfer1Loop.Takt_Start(8, 18);
+
+			gData.bElevatorWorking[eElevator::Load1] = FALSE;
+			gData.bElevatorWorking[eElevator::Load2] = FALSE;
 
 			m_sLog.Format("[Transfer1: Up Load-Lot2] Lot(%s) TNo(%d) PNo(%d)", gData.sLotID_Tansfer[0], gData.nTrayNo_Tansfer[0], gData.nPortNo_Tansfer[0]);
 			g_objLogFile.Save_HandlerLog(m_sLog);
@@ -3287,12 +3314,15 @@ BOOL CSequenceMain::Run_Transfer1()
 		break;
 
 	case 51:	//Down Empty-NG (5)
-		if (gData.nTransferX2Pos > 5) {
+		if (gData.nTransferX2Pos > 5) 
+		{
 			m_tTransfer1Loop.Takt_Save(8, 23); m_tTransfer1Loop.Takt_Start(8, 24);
 			gData.nTransferX1Pos = nToTran1Pos;
 			g_objCommon.Move_Position(AX_TRANSFER_X1, gData.nTransferX1Pos);
 			m_nTransfer1Case = 53; m_tTransfer1Loop.Set_LoopTime(30000);
-		} else {
+		} 
+		else
+		{
 			m_tTransfer1Loop.Takt_Save(8, 24); m_tTransfer1Loop.Takt_Start(8, 25);
 			gData.nTransferX1Pos = 4;	//L2
 			g_objCommon.Move_Position(AX_TRANSFER_X1, 4);
@@ -3311,7 +3341,9 @@ BOOL CSequenceMain::Run_Transfer1()
 		}
 		return TRUE;
 	case 53:
-		if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) {
+		if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) 
+		{
+			gData.bElevatorWorking[eElevator::NgEmpty] = TRUE;
 			g_objCommon.Save_Motion(AX_TRANSFER_X1, gData.nTransferX1Pos);
 			m_tTransfer1Loop.Takt_Save(8, 26); m_tTransfer1Loop.Takt_Start(8, 27);
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
@@ -3388,7 +3420,9 @@ BOOL CSequenceMain::Run_Transfer1()
 		}
 		return TRUE;
 	case 63:
-		if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) {
+		if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) 
+		{
+			gData.bElevatorWorking[eElevator::GoodEmpty] = TRUE;
 			g_objCommon.Save_Motion(AX_TRANSFER_X1, gData.nTransferX1Pos);
 			m_tTransfer1Loop.Takt_Save(8, 34); m_tTransfer1Loop.Takt_Start(8, 35);
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
@@ -3443,6 +3477,9 @@ BOOL CSequenceMain::Run_Transfer1()
 	case 70:	//대기위치로
 			if (m_pDX04->iLoadStage1TrayExist && m_pDX04->iLoadStage2TrayExist) gData.nTransferX1Pos = 1;
 			else																gData.nTransferX1Pos = 3;
+
+			gData.bElevatorWorking[eElevator::NgEmpty] = FALSE;
+			gData.bElevatorWorking[eElevator::GoodEmpty] = FALSE;
 			g_objCommon.Move_Position(AX_TRANSFER_X1, gData.nTransferX1Pos);
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
 		break;
@@ -3893,6 +3930,11 @@ BOOL CSequenceMain::Run_Transfer2()
 			if (nFmTran2Pos == 7 && nToTran2Pos == 8) nPosX = 11;	//E5->E6
 			if (nFmTran2Pos == 5 && nToTran2Pos == 9) nPosX = 12;	//E3->E7
 			if (nFmTran2Pos == 7 && nToTran2Pos == 9) nPosX = 13;	//E5->E7
+
+			gData.bElevatorWorking[eElevator::Unload1] = TRUE;
+			gData.bElevatorWorking[eElevator::Unload2] = TRUE;
+			gData.bElevatorWorking[eElevator::NgBuffer] = TRUE;
+
 			g_objCommon.Move_Position(AX_TRANSFER_X2, nPosX, dSpeed);
 			m_nTransfer2Case++; m_tTransfer2Loop.Set_LoopTime(30000);
 		}
@@ -3948,6 +3990,10 @@ BOOL CSequenceMain::Run_Transfer2()
 				g_objCommon.Save_Motion(AX_TRANSFER_Z2, 0);
 				m_sLog.Format("[Transfer2: Down Buffer-NG] Lot(%s) TNo(%d) PNo(%d)", gData.sLotID_Tansfer[1], gData.nTrayNo_Tansfer[1], gData.nPortNo_Tansfer[1]);
 				g_objLogFile.Save_HandlerLog(m_sLog);
+
+				gData.bElevatorWorking[eElevator::NgBuffer] = FALSE;
+				gData.bElevatorWorking[eElevator::Unload1] = FALSE;
+				gData.bElevatorWorking[eElevator::Unload2] = FALSE;
 
 				gData.sLotID_NGBuffer = gData.sLotID_Tansfer[1];
 				gData.nPortNo_NGBuffer = gData.nPortNo_Tansfer[1];
@@ -4029,6 +4075,10 @@ BOOL CSequenceMain::Run_Transfer2()
 
 				gData.sLotID_Tansfer[1] = "";
 				gData.nTrayNo_Tansfer[1] = gData.nPortNo_Tansfer[1] = 0;
+
+				gData.bElevatorWorking[eElevator::NgBuffer] = FALSE;
+				gData.bElevatorWorking[eElevator::Unload1] = FALSE;
+				gData.bElevatorWorking[eElevator::Unload2] = FALSE;
 
 				if (gData.nTransferX2Pos == 8 && m_nElevator6Case == 20) m_nElevator6Case = 21;
 				if (gData.nTransferX2Pos == 9 && m_nElevator7Case == 20) m_nElevator7Case = 21;
