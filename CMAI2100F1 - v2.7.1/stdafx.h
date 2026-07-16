@@ -76,7 +76,7 @@
 #endif
 
 //****************************************************************************
-#define AJIN_BOARD_USE
+//#define AJIN_BOARD_USE
 
 #define MAIN_VERSION	"Vf 2.7.1"	//자화 Final #1호기
 #define MES_WAITTIME	10000//5000	//10초
@@ -389,5 +389,20 @@ struct eEquipState
 		IDLE_STARVED = 4,
 		IDLE_BLOCKED = 5, 
 
+	};
+};
+
+
+struct eAccessMode
+{
+	enum Name
+	{
+		Undefined = 0,
+		OP = 1,
+		Maint = 2,
+		Eng_Vendor = 3,
+		Eng_MI = 4,
+		Engineer = 5,
+		Admini = 6,
 	};
 };

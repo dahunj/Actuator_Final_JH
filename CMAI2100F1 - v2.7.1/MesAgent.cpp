@@ -446,6 +446,13 @@ void CMesAgent::Set_IdleReport(CString sOperId, CString sSTime, CString sETime, 
 	Send_Command(strSend);
 }
 
+void CMesAgent::Set_ModeChanged(int nMode)
+{
+	CString strSend;
+	strSend.Format("ACCESS,CHANGED,%d", nMode);
+	Send_Command(strSend);
+}
+
 void CMesAgent::Set_RecipeList(int nFlag)						// 0:All, 1:Current Recipe
 {
 	CString strSend;
