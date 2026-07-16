@@ -392,6 +392,14 @@ void CMesAgent::Set_EquipState(int nFlag)
 	Send_Command(strSend);
 }
 
+void CMesAgent::Set_UnitState(int nState)
+{
+	// MES : Init, idle, Setup, Ready, Executing(=Run), Paused(=Down)
+	CString strSend;
+	strSend.Format("UNIT,STATE,%d", nState);	// 1:Init, 2:Idle, 3:Setup, 4:Ready, 5:Run(=Executing), 6;Pause(=Down)
+	Send_Command(strSend);
+}
+
 void CMesAgent::Set_ErrorUpdate(int nFlag, CString sErrNo)
 {
 	CString strSend;

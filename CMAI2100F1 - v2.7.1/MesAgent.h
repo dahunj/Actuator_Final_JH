@@ -62,6 +62,7 @@ public:
 	void Set_RecipeList(int nFlag);						// 0:All, 1:Current Recipe
 	void Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sType);	//1:Start, 2:End
 	void Set_ModeChanged(int nMode);
+	void Set_UnitState(int nState);
 
 	void Set_CmRequest(CString sLotId, CString sCmId, int nPortNo, int nTrayNo, int nCmNo);
 	void Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nOut, int nRosInfo, int nNGType= 0);
