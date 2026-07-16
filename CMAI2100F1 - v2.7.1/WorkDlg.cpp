@@ -294,7 +294,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 				g_objSequenceMain.Begin_MainRunThread();
 
 				pMainDlg->Set_EquipRunStart();
-				g_objMesAgent.Set_EquipState(5);	//Run
+				g_objMesAgent.Set_EquipState(eEquipState::RUN);	
 
 			} else {
 				g_objCommon.Show_Error(40);		// 초기화 완료 에러
@@ -525,7 +525,7 @@ void CWorkDlg::OnBnClickedRdoWorkStop()
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
 	pMainDlg->Set_MainState(STATE_INITEND);
 	dwStopSTime = GetTickCount();
-	g_objMesAgent.Set_EquipState(6);	//Pause
+	g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
 
 	g_objLogFile.Save_HandlerLog("[Work Mode] STOP button push");
 }
@@ -1640,7 +1640,7 @@ LRESULT CWorkDlg::OnJobComplete(WPARAM wParam, LPARAM lParam)
 
 	if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "Job 완료.");
 	else					  g_objCommon.Show_MsgBox(1, "Job complete.");
-	g_objMesAgent.Set_EquipState(4);	//Ready
+	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
 
 	return 0;
 }

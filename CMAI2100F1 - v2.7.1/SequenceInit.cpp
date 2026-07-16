@@ -208,8 +208,7 @@ BOOL CSequenceInit::Initial_MainRun()
 		gData.bElevatorWorking[eElevator::NgBuffer] = FALSE;
 		gData.bElevatorWorking[eElevator::Unload1] = FALSE;
 		gData.bElevatorWorking[eElevator::Unload2] = FALSE;
-		g_objLogFile.Save_HandlerLog("[Initial Sequence - Main] start");
-		g_objMesAgent.Set_EquipState(1);	//Init
+		g_objLogFile.Save_HandlerLog("[Initial Sequence - Main] start");		
 		m_niMainCase++; m_tiMainLoop.Set_LoopTime(3000);
 		break;
 
@@ -370,7 +369,7 @@ BOOL CSequenceInit::Initial_MainRun()
 		// 변수 초기화
 		g_objSequenceMain.Reset_MainRunCase();
 		g_objSequenceMain.Set_ClearRunData(0);
-		g_objMesAgent.Set_EquipState(4);	//Ready
+		g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
 
 		for(int i=0; i<10; i++) gData.nElevatorOpen[i] = 0;
 		for(int i=0; i< 5; i++) gData.nNG_MC[i][1] = 0;

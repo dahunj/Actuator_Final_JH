@@ -377,3 +377,17 @@ struct eElevator
 
 	};
 };
+
+
+struct eEquipState
+{
+	enum Name
+	{
+		RUN = 1,
+		IDLE = 2,
+		DOWN = 3,
+		IDLE_STARVED = 4,
+		IDLE_BLOCKED = 5, 
+
+	};
+};
