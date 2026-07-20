@@ -115,7 +115,7 @@ public:
 	void Set_S6F11_NGLotRequest();
 	void Set_S6F11_NGLotEnd(CString sLotId, int nMOk, int nNg);
 
-	void Set_S6F11_UnitMaterialReport();
+	void Set_S6F11_UnitMaterialReport(CString nMDCount, CString sPortNo, CString sInputCnt, CString sOK, CString sNG);
 
 	void Test_Send();
 	void Test_WriteLog();

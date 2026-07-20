@@ -295,6 +295,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 
 				pMainDlg->Set_EquipRunStart();
 				g_objMesAgent.Set_EquipState(eEquipState::RUN);	
+				g_objMesAgent.Set_UnitState(eEquipState::RUN);
 
 			} else {
 				g_objCommon.Show_Error(40);		// 초기화 완료 에러
@@ -526,6 +527,7 @@ void CWorkDlg::OnBnClickedRdoWorkStop()
 	pMainDlg->Set_MainState(STATE_INITEND);
 	dwStopSTime = GetTickCount();
 	g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
+	g_objMesAgent.Set_UnitState(eEquipState::DOWN);
 
 	g_objLogFile.Save_HandlerLog("[Work Mode] STOP button push");
 }
@@ -1641,6 +1643,7 @@ LRESULT CWorkDlg::OnJobComplete(WPARAM wParam, LPARAM lParam)
 	if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "Job 완료.");
 	else					  g_objCommon.Show_MsgBox(1, "Job complete.");
 	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
+	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 
 	return 0;
 }

@@ -49,6 +49,8 @@ private:
 	void Get_AccessChanged(CString sAccessMode);
 	void Get_UnitState(CString sState);
 
+	void Get_UnitMaterialCount(CString sMDCount, CString sPortNo, CString sInputCnt, CString sOK, CString sNG);
+
 //	void Get_LotInfo(CString sLotId);
 //	void Get_IdleRequest();
 // 	void Get_IdleReport(CString strSet, CString sOperId, CString sCode);	// strSet : "SET" or "RESET"

@@ -1343,12 +1343,9 @@ void CHost::Set_S6F11_NGLotEnd(CString sNGLotId, int nMOk, int nNg)
 	Send_Command(strSend, FALSE, "S6F11", "20109");
 }
 
-void CHost::Set_S6F11_UnitMaterialReport()
+void CHost::Set_S6F11_UnitMaterialReport(CString nMDCount, CString sPortNo, CString sInputCnt, CString sOK, CString sNG)
 {
 	CString strCount, strMOk, strNg;
-	strMOk.Format("%d", nMOk);
-	strNg.Format("%d", nNg);
-	strCount.Format("%d", nMOk + nNg);
 
 	SYSTEMTIME time;
 	GetLocalTime(&time);
@@ -1370,11 +1367,11 @@ void CHost::Set_S6F11_UnitMaterialReport()
 	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"UNITID\" VALUE=\"0\" />" + CRLF;
 	strSend += "      <DV NAME=\"MATERIALCOUNTLISTQTY\" VALUE=\"1\" />" + CRLF;
-	strSend += "      <DV NAME=\"MATERIALTYPE#1\" VALUE=\"" + gMes.sHostNGModel + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"SLOTNO#1\" VALUE=\"" + gMes.sHostNGRecipe + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"INPUTMATERIALCOUNT#1\" VALUE=\"" + strCount + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"GOODMATERIALCOUNT#1\" VALUE=\"" + strCount + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"NGMATERIALCOUNT#1\" VALUE=\"" + strMOk + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"MATERIALTYPE#1\" VALUE=\"" + nMDCount + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"SLOTNO#1\" VALUE=\"" + sPortNo + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"INPUTMATERIALCOUNT#1\" VALUE=\"" + sInputCnt + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"GOODMATERIALCOUNT#1\" VALUE=\"" + sOK + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"NGMATERIALCOUNT#1\" VALUE=\"" + sNG + "\" />" + CRLF;
 	strSend += "    </DVLIST>" + CRLF;
 	strSend += "  </ITEM>" + CRLF;
 	strSend += "</EIF>";

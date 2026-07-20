@@ -147,7 +147,7 @@ LRESULT CHandler::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 		else if (strCmd == "UNIT")
 		{
 			if (strOp == "STATE") Get_UnitState(strArg[0]);
-
+			if (strOp == "COUNT") Get_UnitMaterialCount(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4]);
 		} 
 		else if (strCmd == "ERROR")
 		{
@@ -237,6 +237,14 @@ void CHandler::Get_UnitState(CString sState)
 	g_objHost.Set_S6F11_UnitState(nState);
 }
 
+void CHandler::Get_UnitMaterialCount(CString sMDCount, CString sPortNo, CString sInputCnt, CString sOK, CString sNG )
+{
+	g_objHost.Set_S6F11_UnitMaterialReport(sMDCount, sPortNo, sInputCnt, sOK, sNG);
+	//int nState = atoi(sState);
+	//g_objHost.Set_S6F11_UnitState(nState);
+}
+
+
 void CHandler::Get_ErrorUpdate(CString sFlag, CString sErrNo)
 {
 	int nFlag = atoi(sFlag);
@@ -251,10 +259,12 @@ void CHandler::Get_ErrorUpdate(CString sFlag, CString sErrNo)
 
 	if (nFlag == 1) {
 		g_objHost.Set_S6F11_EquipState(3, nErrNo);	//Down
+		g_objHost.Set_S6F11_UnitState(3);
 		g_objHost.Set_S5F1_Alarm(1, nErrNo);
 	} else {
 		g_objHost.Set_S5F1_Alarm(0, nErrNo);
 		g_objHost.Set_S6F11_EquipState(1, 0);		//Run
+		g_objHost.Set_S6F11_UnitState(1);
 	}
 }
 
