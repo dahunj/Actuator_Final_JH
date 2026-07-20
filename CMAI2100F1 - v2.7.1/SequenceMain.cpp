@@ -1605,6 +1605,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo)
 	g_objLogFile.Save_OperatingRatio(sLog);
 
 	g_objMesAgent.Set_LotEnd(nNo, gLot.sLotID[nNo], gMes.sHostRecipe[nNo], gMes.nHostCmCount[nNo], gLot.nGoodCount[nNo], gLot.nNgCount[nNo]+gLot.nSkipCount[nNo]);
+	g_objMesAgent.Set_UnitMaterialCount(gMes.nHostCmCount[nNo], nPortNo, gMes.nHostCmCount[nNo], gLot.nGoodCount[nNo], gLot.nNgCount[nNo]+gLot.nSkipCount[nNo]);
 	g_objInspector.Set_LotEnd(INSPECTOR_ALL, gLot.sLotID[nNo], nPortNo);
 	g_objDispatcher.Set_LotEnd(nPortNo);
 

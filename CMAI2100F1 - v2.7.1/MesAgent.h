@@ -67,6 +67,8 @@ public:
 	void Set_CmRequest(CString sLotId, CString sCmId, int nPortNo, int nTrayNo, int nCmNo);
 	void Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nOut, int nRosInfo, int nNGType= 0);
 
+	void Set_UnitMaterialCount(int nMDCount, int nPortNo, int nInputCnt, int nOk, int nNG);
+
 	void Set_LotStart(int nType, int nPortNo, CString sLotId, CString sRecipe, int nCount);	//0:Request, 1:Started
 	void Set_LotAbort(CString sLotId);
 	void Set_LotEnd(int nPortNo, CString sLotId, CString sRecipe, int nHCount, int nOk, int nNg);

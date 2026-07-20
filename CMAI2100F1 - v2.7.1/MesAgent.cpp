@@ -433,6 +433,13 @@ void CMesAgent::Set_LotEnd(int nPortNo, CString sLotId, CString sRecipe, int nHC
 	Send_Command(strSend);
 }
 
+void CMesAgent::Set_UnitMaterialCount(int nMDCount, int nPortNo, int nInputCnt, int nOk, int nNG)
+{	
+	CString strSend;
+	strSend.Format("UNIT,COUNT,%d,%d,%d,%d,%d", nMDCount, nPortNo, nInputCnt, nOk, nNG);
+	Send_Command(strSend);
+}
+
 void CMesAgent::Set_LotAbort(CString sLotId)
 {
 	CString strSend;
