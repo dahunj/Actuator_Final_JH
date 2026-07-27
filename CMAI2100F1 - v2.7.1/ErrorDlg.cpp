@@ -32,13 +32,14 @@ void CErrorDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	//for (int i = 0; i < 1; i++) DDX_Control(pDX, IDC_GROUP_0 + i, m_Group[i]);
-	for (int i = 0; i < 8; i++) DDX_Control(pDX, IDC_LABEL_0 + i, m_Label[i]);
+	for (int i = 0; i < 13; i++) DDX_Control(pDX, IDC_LABEL_0 + i, m_Label[i]);
 	for (int i = 0; i < 4; i++) DDX_Control(pDX, IDC_STC_ERR_BACK_0 + i, m_stcErrBack[i]);
 	DDX_Control(pDX, IDC_STC_ERR_TITLE, m_stcErrTitle);
 	DDX_Control(pDX, IDC_IMAGE_0, m_Image);
 
 	for (int i = 0; i < 14; i++) DDX_Control(pDX, IDC_STC_ERR_POS_0 + i, m_stcErrPos[i]);
 	DDX_Control(pDX, IDC_STC_ERR_NO, m_stcErrNo);
+	DDX_Control(pDX, IDC_STC_ALM_CAT, m_stcAlmCatNo);
 	DDX_Control(pDX, IDC_STC_MSG_BACK, m_stcMsgBack);
 	DDX_Control(pDX, IDC_STC_ERR_MSG, m_stcErrMsg);
 	DDX_Control(pDX, IDC_BTN_ERR_BUZZ_OFF, m_btnErrBuzzOff);
@@ -47,6 +48,14 @@ void CErrorDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BTN_ERR_RETRY, m_btnErrRetry);
 	DDX_Control(pDX, IDC_BTN_ERR_OK, m_btnErrOK);
 	DDX_Control(pDX, IDC_BTN_ERR_SYSTEM_EXIT, m_btnErrSystemExit);
+
+	DDX_Control(pDX, IDC_CBO_DOWNREASONCAT, m_cboDownReasonCat);
+	DDX_Control(pDX, IDC_CBO_DOWNREASON, m_cboDownReason);
+	DDX_Control(pDX, IDC_CBO_DOWNACTION, m_cboDownAction);
+
+	DDX_Control(pDX, IDC_STC_ALARMTIME, m_stcAlmTime);
+
+	DDX_Control(pDX, IDC_EDT_ACTION_DETAIL, m_edtActionDetail);
 }
 
 BEGIN_MESSAGE_MAP(CErrorDlg, CDialogEx)
@@ -74,6 +83,109 @@ BOOL CErrorDlg::OnInitDialog()
 	m_nErrNo = 0;
 	m_nBackColorLoop = 0;
 	m_strErrSubMsg = "";
+
+	m_cboDownReasonCat.AddString("Unplanned Down");
+	m_cboDownReasonCat.AddString("Planned Down");
+
+
+	CString strErrPick, strMiddle, strMiddleMsg;
+
+	if (gData.nLanguage == 0) strErrPick = gsCurrentDir + "\\System\\ErrorList_KOR.ini";
+	else					  strErrPick = gsCurrentDir + "\\System\\ErrorList_ENG.ini";
+	CIniFileCS INI(strErrPick);
+	if (!INI.Check_File()) {
+		AfxMessageBox("ErrorList.ini File Not Found!!!");
+		return FALSE;
+	}
+
+	for(int i = 0; i < 5; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_01", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+	
+	for(int i = 0; i < 7; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_02", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 6; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_03", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 9; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_04", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 5; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_05", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 4; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_06", strMiddle, "");
+		m_cboDownReason.SetWindowText(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 7; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_07", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 5; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_08", strMiddle, "");
+		m_cboDownReason.SetWindowText(strMiddleMsg);
+	}
+
+	for(int i = 0; i < 1; i++)
+	{
+		strMiddle.Format("%02d", i+1);
+		strMiddleMsg = INI.Get_String("CAT_TYPE_99", strMiddle, "");
+		m_cboDownReason.AddString(strMiddleMsg);
+	}
+
+
+	m_cboDownAction.AddString("Machine Trouble");	
+
+
+	/*CIniFileCS INI2(gsCurrentDir + "\\System\\StopLoss.ini");
+	if (!INI2.Check_File()) { AfxMessageBox("StopLoss.ini File Not Found!!!"); return FALSE; }
+
+	CString strRead, strKey, strCode, strTxt, strTemp;
+	int nTemp;
+	char chSep = ',';
+
+
+	for (int i = 0; i < 12 ; i++) 
+	{
+	strKey.Format("%02d", i);
+
+	strRead=INI2.Get_String("NOWORK_LOSS", strKey, "");
+	if (strRead == "") break;
+
+	AfxExtractSubString(strCode, strRead, 0, chSep);
+	AfxExtractSubString(strTxt, strRead, 2, chSep);
+
+	m_cboDownAction.AddString(strTxt);	
+	}
+	*/
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// ¿¹¿Ü: OCX ¼Ó¼º ÆäÀÌÁö´Â FALSE¸¦ ¹ÝÈ¯ÇØ¾ß ÇÕ´Ï´Ù.
@@ -105,6 +217,10 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		if (m_nErrNo == 3007) m_nErrNo = 9000;
 		strErrNo.Format("%04d", m_nErrNo);
 		m_stcErrNo.SetWindowText(strErrNo);
+
+		m_stcAlmCatNo.SetWindowText("33");
+
+		m_edtActionDetail.SetWindowText("");
 		
 		if (gData.nLanguage == 0) strErrPick = gsCurrentDir + "\\System\\ErrorList_KOR.ini";
 		else					  strErrPick = gsCurrentDir + "\\System\\ErrorList_ENG.ini";
@@ -230,6 +346,13 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		for (int i = 2; i > 0; i--) gData.sAlarmTime[i] = gData.sAlarmTime[i - 1];
 		for (int i = 2; i > 0; i--) gData.sAlarmList[i] = gData.sAlarmList[i - 1];
 		gData.sAlarmTime[0].Format("%02d:%02d:%02d", time.wHour, time.wMinute, time.wSecond);
+
+
+		CString strTime;
+		strTime.Format("%04d-%02d-%02d %s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);
+		m_stcAlmTime.SetWindowText(strTime);
+
+
 		gData.sAlarmList[0].Format("[%s] %s", strErrNo, m_strErrMsg);
 
 		g_objMesAgent.Set_ErrorUpdate(1, strErrNo);
@@ -262,6 +385,25 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		else if (m_nErrNo > 9000 && m_nErrNo < 9999) nErrorPos = 10;	// 13.°Ë»ç
 		else nErrorPos = 0;
 		m_stcErrPos[nErrorPos].Set_Color(RGB(0xFF, 0xFF, 0xFF), RGB(0xFF, 0x00, 0x00));
+
+		int nIndex = m_cboDownReasonCat.FindStringExact(-1, "Unplanned Down");
+		m_cboDownReasonCat.SetCurSel(nIndex);
+
+
+		CString strCat, strMajor, strMiddle;
+		strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");
+		AfxExtractSubString(strMajor, strCat, 0, '_');
+		AfxExtractSubString(strMiddle, strCat, 1, '_');
+
+		CString strCatMsg, strMajorNo;
+		strMajorNo.Format("CAT_TYPE_%s", strMajor);
+		strCatMsg = INI.Get_String(strMajorNo, strMiddle, "");
+
+		nIndex = m_cboDownReason.FindStringExact(-1, strCatMsg);
+		m_cboDownReason.SetCurSel(nIndex);
+
+		m_cboDownAction.SetCurSel(0);
+
 		
  		g_objInspector.Set_StatusUpdate(INSPECTOR_ALL, 4);
 		g_objDispatcher.Set_StatusUpdate(2);	// 0:Stop, 1:Run, 2:Error
@@ -523,6 +665,65 @@ void CErrorDlg::OnBnClickedBtnErrOk()
 		g_objCommon.Set_LotDataClear(gMes.nLotPortNo-1);
 	}
 */
+
+	CString strSelected;
+
+	int nIndex = m_cboDownReasonCat.GetCurSel();
+
+	if (nIndex != CB_ERR)
+	{
+		m_cboDownReasonCat.GetLBText(nIndex, strSelected);
+	}
+
+	if (!strSelected.IsEmpty())
+	{
+		// Pass
+	}
+	else
+	{
+		AfxMessageBox("Please Input Down Reason Cat");
+		return;
+	}
+
+
+	nIndex = m_cboDownReason.GetCurSel();
+	if (nIndex != CB_ERR)
+	{
+		m_cboDownReason.GetLBText(nIndex, strSelected);
+	}
+	if (!strSelected.IsEmpty())
+	{
+		// Pass
+	}
+	else
+	{
+		AfxMessageBox("Please Input Down Reason");
+		return;
+	}
+
+	nIndex = m_cboDownAction.GetCurSel();
+	if (nIndex != CB_ERR)
+	{
+		m_cboDownAction.GetLBText(nIndex, strSelected);
+	}
+	if (!strSelected.IsEmpty())
+	{
+		// Pass
+	}
+	else
+	{
+		AfxMessageBox("Please Input Down Action");
+		return;
+	}
+		
+	strSelected.Empty();
+	m_edtActionDetail.GetWindowText(strSelected);
+	if(strSelected.GetLength() < 5)
+	{
+		AfxMessageBox("Please Input Action Detail more than 5 string");
+		return;
+	}
+
 	g_objLogFile.Save_HandlerLog("[Error Mode] OK button push");
 	ShowWindow(SW_HIDE);
 }
@@ -590,7 +791,7 @@ void CErrorDlg::ErrorTimeEdit()
 void CErrorDlg::Initial_Controls() 
 {
 	//for (int i = 0; i < 1; i++) m_Group[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0xFF), COLOR_DEFAULT);
-	for (int i = 0; i < 8; i++) m_Label[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x60, 0x60, 0x60));
+	for (int i = 0; i < 13; i++) m_Label[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x60, 0x60, 0x60));
 	for (int i = 0; i < 4; i++) m_stcErrBack[i].Set_Color(COLOR_DEFAULT, RGB(0x00, 0x00, 0xFF));
 
 	m_stcErrTitle.Init_Ctrl("¹ÙÅÁ", 24, TRUE, RGB(0xFF, 0xFF, 0xFF),RGB(0xFF, 0x00, 0x00));
@@ -602,7 +803,8 @@ void CErrorDlg::Initial_Controls()
 		
 	for (int i = 0; i < 14; i++) m_stcErrPos[i].Init_Ctrl("¹ÙÅÁ", 12, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
 
-	m_stcErrNo.Init_Ctrl("¹ÙÅÁ", 24, TRUE, RGB(0x00, 0x00, 0xFF), RGB(0xFF, 0xF0, 0xE0));
+	m_stcErrNo.Init_Ctrl("¹ÙÅÁ", 20, TRUE, RGB(0x00, 0x00, 0xFF), RGB(0xFF, 0xF0, 0xE0));
+	m_stcAlmCatNo.Init_Ctrl("¹ÙÅÁ", 20, TRUE, RGB(0x00, 0x00, 0xFF), RGB(0xFF, 0xF0, 0xE0));
 	m_stcMsgBack.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
 	m_stcErrMsg.Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
 
@@ -612,6 +814,13 @@ void CErrorDlg::Initial_Controls()
 	m_btnErrToShipTray.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
 	m_btnErrOK.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, IDI_OK, CButtonCS::emLeft);
 	m_btnErrSystemExit.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
+
+	m_cboDownReasonCat.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
+	
+	m_cboDownReason.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
+	m_cboDownAction.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
+	
+	m_stcAlmTime.Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

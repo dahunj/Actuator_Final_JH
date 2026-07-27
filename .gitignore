@@ -21,6 +21,8 @@
 *.log
 *.exe
 *.pdb
+*.txt
+*.csv
 *.sbr
 *.sdf
 *.opensdf

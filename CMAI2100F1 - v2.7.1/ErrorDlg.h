@@ -15,12 +15,15 @@ public:
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_ERROR_DLG };
 	CGroupCS	m_Group[4];
-	CLabelCS	m_Label[8];
+	CLabelCS	m_Label[13];
 	CStaticCS	m_stcErrBack[4];
 	CStaticCS	m_stcErrTitle;
 	CPictureCS	m_Image;
 	CStaticCS	m_stcErrPos[14];
 	CStaticCS	m_stcErrNo;
+	CStaticCS	m_stcAlmCatNo;
+
+
 	CStaticCS	m_stcMsgBack;
 	CStaticCS	m_stcErrMsg;
 	CButtonCS	m_btnErrBuzzOff;
@@ -29,6 +32,14 @@ public:
 	CButtonCS	m_btnErrToShipTray;
 	CButtonCS	m_btnErrOK;
 	CButtonCS	m_btnErrSystemExit;
+
+	CComboCS	m_cboDownReasonCat;
+	CComboCS	m_cboDownReason;
+	CComboCS	m_cboDownAction;
+
+	CStaticCS	m_stcAlmTime;
+
+	CEditCS		m_edtActionDetail;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
