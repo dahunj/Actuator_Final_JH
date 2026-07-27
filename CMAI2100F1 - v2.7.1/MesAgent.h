@@ -77,6 +77,8 @@ public:
 
 	void Set_NGLotRequest();
 	void Set_NGLotEnd(CString sLotId, int nOk, int nNg);
+
+	void Set_DownActionReport(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, int nErrNo, int nErrCat, CString sErrMsg);
 };
 
 extern CMesAgent g_objMesAgent;

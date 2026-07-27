@@ -640,6 +640,14 @@ void CMesAgent::Set_NGLotEnd(CString sLotId, int nOk, int nNg)
 	g_objLogFile.Save_NGLotLog(sLog);
 }
 
+
+void CMesAgent::Set_DownActionReport(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, int nErrNo, int nErrCat, CString sErrMsg)
+{
+	CString strSend;
+	strSend.Format("DOWN,REPORT,%s,%s,%s,%s,%d,%d,%s", sActionCode, sActionDetail, sStartTime, sEndTime, nErrNo, nErrCat, sErrMsg);
+	Send_Command(strSend);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 void CMesAgent::Send_Command(CString sSend)

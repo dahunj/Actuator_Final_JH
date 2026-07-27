@@ -194,9 +194,13 @@ LRESULT CHandler::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 			if (strOp == "REQUEST")	Get_NGLotRequest();
 			if (strOp == "END")		Get_NGLotEnd(strArg[0], strArg[1], strArg[2]);
 		}
-		else if( strCmd == "ACCESS")
+		else if ( strCmd == "ACCESS")
 		{
 			if (strOp == "CHANGED") Get_AccessChanged(strArg[0]);
+		}
+		else if ( strCmd == "DOWN")
+		{
+			if(strOp == "REPORT") Get_DownAction(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4], strArg[5], strArg[6]);
 		}
 //		} else if (strCmd == "MGZ") {
 //			if (strOp == "ID")		Get_MGZIdReport(strArg[0], strArg[1], strArg[2]);
@@ -242,6 +246,11 @@ void CHandler::Get_UnitMaterialCount(CString sMDCount, CString sPortNo, CString 
 	g_objHost.Set_S6F11_UnitMaterialReport(sMDCount, sPortNo, sInputCnt, sOK, sNG);
 	//int nState = atoi(sState);
 	//g_objHost.Set_S6F11_UnitState(nState);
+}
+
+void CHandler::Get_DownAction(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg)
+{
+	g_objHost.Set_S6F11_DownActionReport(sActionCode, sActionDetail, sStartTime, sEndTime, sErrNo, sErrCat, sErrMsg);
 }
 
 

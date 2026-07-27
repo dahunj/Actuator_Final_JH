@@ -65,6 +65,10 @@ private:
 	CString		m_strLotID;
 	CString		m_strsSpcInfo;
 	CString		m_strTitle;
+
+	CString		m_strAlmStart;
+	CString		m_strAlmEnd;
+
 	int			m_nBackColorLoop;
 	BOOL		m_bErrShow;
 

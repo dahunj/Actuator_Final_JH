@@ -1381,7 +1381,7 @@ void CHost::Set_S6F11_UnitMaterialReport(CString nMDCount, CString sPortNo, CStr
 
 
 
-void CHost::Set_S6F11_DownActionReport(CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg)
+void CHost::Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg)
 {
 	CString strCount, strMOk, strNg;
 
@@ -1404,8 +1404,8 @@ void CHost::Set_S6F11_DownActionReport(CString sStartTime, CString sEndTime, CSt
 	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"50105\" />" + CRLF;
 	strSend += "    <DVLIST COUNT=\"10\">" + CRLF;
 	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"ACTIONCODE\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"ACTIONDESCRIPTION\" VALUE=\"0\" />" + CRLF;
+	strSend += "      <DV NAME=\"ACTIONCODE\" VALUE=\"" + sActionCode + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ACTIONDESCRIPTION\" VALUE=\"" + sActionDetail + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"DOWNSTARTTIME\" VALUE=\""+ sStartTime +"\" />" + CRLF;
 	strSend += "      <DV NAME=\"DOWNENDTIME\" VALUE=\"" + sEndTime + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;

@@ -352,6 +352,8 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		strTime.Format("%04d-%02d-%02d %s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);
 		m_stcAlmTime.SetWindowText(strTime);
 
+		m_strAlmStart.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+
 
 		gData.sAlarmList[0].Format("[%s] %s", strErrNo, m_strErrMsg);
 
@@ -666,16 +668,16 @@ void CErrorDlg::OnBnClickedBtnErrOk()
 	}
 */
 
-	CString strSelected;
+	CString strReasonCat, strReason, strActionCode, strActionDetail;
 
 	int nIndex = m_cboDownReasonCat.GetCurSel();
 
 	if (nIndex != CB_ERR)
 	{
-		m_cboDownReasonCat.GetLBText(nIndex, strSelected);
+		m_cboDownReasonCat.GetLBText(nIndex, strReasonCat);
 	}
 
-	if (!strSelected.IsEmpty())
+	if (!strReasonCat.IsEmpty())
 	{
 		// Pass
 	}
@@ -689,9 +691,9 @@ void CErrorDlg::OnBnClickedBtnErrOk()
 	nIndex = m_cboDownReason.GetCurSel();
 	if (nIndex != CB_ERR)
 	{
-		m_cboDownReason.GetLBText(nIndex, strSelected);
+		m_cboDownReason.GetLBText(nIndex, strReason);
 	}
-	if (!strSelected.IsEmpty())
+	if (!strReason.IsEmpty())
 	{
 		// Pass
 	}
@@ -704,9 +706,9 @@ void CErrorDlg::OnBnClickedBtnErrOk()
 	nIndex = m_cboDownAction.GetCurSel();
 	if (nIndex != CB_ERR)
 	{
-		m_cboDownAction.GetLBText(nIndex, strSelected);
+		m_cboDownAction.GetLBText(nIndex, strActionCode);
 	}
-	if (!strSelected.IsEmpty())
+	if (!strActionCode.IsEmpty())
 	{
 		// Pass
 	}
@@ -716,13 +718,20 @@ void CErrorDlg::OnBnClickedBtnErrOk()
 		return;
 	}
 		
-	strSelected.Empty();
-	m_edtActionDetail.GetWindowText(strSelected);
-	if(strSelected.GetLength() < 5)
+	strActionDetail.Empty();
+	m_edtActionDetail.GetWindowText(strActionDetail);
+	if(strActionDetail.GetLength() < 5)
 	{
 		AfxMessageBox("Please Input Action Detail more than 5 string");
 		return;
 	}
+
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+	m_strAlmStart.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+	
+
+	g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, m_nErrNo, 33, m_strErrMsg);
 
 	g_objLogFile.Save_HandlerLog("[Error Mode] OK button push");
 	ShowWindow(SW_HIDE);
