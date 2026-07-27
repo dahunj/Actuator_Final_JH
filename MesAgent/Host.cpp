@@ -1379,6 +1379,48 @@ void CHost::Set_S6F11_UnitMaterialReport(CString nMDCount, CString sPortNo, CStr
 	Send_Command(strSend, FALSE, "S6F11", "10202");
 }
 
+
+
+void CHost::Set_S6F11_DownActionReport(CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg)
+{
+	CString strCount, strMOk, strNg;
+
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	CString strTime;
+	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+
+	sErrCat = "33";
+
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S6F11\" NAME=\"Event Report\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <CEID NAME=\"CEID\" VALUE=\"50105\" />" + CRLF;
+	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"50105\" />" + CRLF;
+	strSend += "    <DVLIST COUNT=\"10\">" + CRLF;
+	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ACTIONCODE\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ACTIONDESCRIPTION\" VALUE=\"0\" />" + CRLF;
+	strSend += "      <DV NAME=\"DOWNSTARTTIME\" VALUE=\""+ sStartTime +"\" />" + CRLF;
+	strSend += "      <DV NAME=\"DOWNENDTIME\" VALUE=\"" + sEndTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ALARMLISTQTY\" VALUE=\"1\" />" + CRLF;
+	strSend += "      <DV NAME=\"ALARMID#1\" VALUE=\"" + sErrNo + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ALARMCATEGORY#1\" VALUE=\"" + sErrCat + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ALARMTEXT#1\" VALUE=\"" + sErrMsg + "\" />" + CRLF;
+	strSend += "    </DVLIST>" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, FALSE, "S6F11", "50105");
+}
+
+
 /*
 void CHost::Set_S2F50_CarrierConfirm()
 {
