@@ -31,14 +31,12 @@ CErrorDlg::~CErrorDlg()
 void CErrorDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	for (int i = 0; i < 4; i++) DDX_Control(pDX, IDC_GROUP_0 + i, m_Group[i]);
+	//for (int i = 0; i < 1; i++) DDX_Control(pDX, IDC_GROUP_0 + i, m_Group[i]);
 	for (int i = 0; i < 8; i++) DDX_Control(pDX, IDC_LABEL_0 + i, m_Label[i]);
 	for (int i = 0; i < 4; i++) DDX_Control(pDX, IDC_STC_ERR_BACK_0 + i, m_stcErrBack[i]);
 	DDX_Control(pDX, IDC_STC_ERR_TITLE, m_stcErrTitle);
 	DDX_Control(pDX, IDC_IMAGE_0, m_Image);
-	for (int i = 0; i < 4; i++) DDX_Control(pDX, IDC_LED_MAIN_AIR_0 + i, m_ledMainAir[i]);
-	for (int i = 0; i < 6; i++) DDX_Control(pDX, IDC_LED_EMG_SW_0 + i, m_ledEmgSw[i]);
-	for (int i = 0; i < 21; i++) DDX_Control(pDX, IDC_LED_DOOR_UNLOCK_0 + i, m_ledDoorUnlock[i]);
+
 	for (int i = 0; i < 14; i++) DDX_Control(pDX, IDC_STC_ERR_POS_0 + i, m_stcErrPos[i]);
 	DDX_Control(pDX, IDC_STC_ERR_NO, m_stcErrNo);
 	DDX_Control(pDX, IDC_STC_MSG_BACK, m_stcMsgBack);
@@ -303,18 +301,7 @@ void CErrorDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (m_nBackColorLoop == 10) m_nBackColorLoop = 0;
 	m_nBackColorLoop++;
 
-	m_ledMainAir[0].Set_On(pDX13->iMainAir1);
-	m_ledMainAir[1].Set_On(pDX13->iMainAir2);
-	m_ledMainAir[2].Set_On(pDX13->iMainAir3);
-
-	m_ledEmgSw[0].Set_On(pDX13->iEmgSw1);
-	m_ledEmgSw[1].Set_On(pDX13->iEmgSw2);
-	m_ledEmgSw[2].Set_On(pDX13->iEmgSw3);
-	m_ledEmgSw[3].Set_On(pDX13->iEmgSw4);
-	m_ledEmgSw[4].Set_On(pDX13->iEmgSw5);
-	m_ledEmgSw[5].Set_On(pDX13->iEmgSw6);
-
-	for (int i = 0; i < 21; i++) m_ledDoorUnlock[i].Set_On((pDX14->nValue >> (i + 0)) & 1);
+	
 
 	SetTimer(0, 100, NULL);
 	CDialogEx::OnTimer(nIDEvent);
@@ -602,8 +589,8 @@ void CErrorDlg::ErrorTimeEdit()
 
 void CErrorDlg::Initial_Controls() 
 {
-	for (int i = 0; i < 4; i++) m_Group[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0xFF), COLOR_DEFAULT);
-	for (int i = 0; i < 8; i++) m_Label[i].Init_Ctrl("¹ÙÅÁ", 20, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x60, 0x60, 0x60));
+	//for (int i = 0; i < 1; i++) m_Group[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0xFF), COLOR_DEFAULT);
+	for (int i = 0; i < 8; i++) m_Label[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x60, 0x60, 0x60));
 	for (int i = 0; i < 4; i++) m_stcErrBack[i].Set_Color(COLOR_DEFAULT, RGB(0x00, 0x00, 0xFF));
 
 	m_stcErrTitle.Init_Ctrl("¹ÙÅÁ", 24, TRUE, RGB(0xFF, 0xFF, 0xFF),RGB(0xFF, 0x00, 0x00));
@@ -612,16 +599,12 @@ void CErrorDlg::Initial_Controls()
 	m_Image.SetBitmap(m_bmpImage);
 // 	m_Image.SetWindowPos(NULL, 0, 0, 1060, 600, SWP_NOZORDER | SWP_NOMOVE);	// ¿øº» 960x540 (1680x945)
 	m_Image.SetWindowPos(NULL, 0, 0, 1100, 620, SWP_NOZORDER | SWP_NOMOVE);	// 640x360 : ¿øº» 960x540 (1680x945)
-
-	for (int i = 0; i < 4; i++) m_ledMainAir[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em24);
-	for (int i = 0; i < 6; i++) m_ledEmgSw[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emRed, CLedCS::em24);
-	for (int i = 0; i < 21; i++) m_ledDoorUnlock[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em24);
-
+		
 	for (int i = 0; i < 14; i++) m_stcErrPos[i].Init_Ctrl("¹ÙÅÁ", 12, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
 
-	m_stcErrNo.Init_Ctrl("¹ÙÅÁ", 30, TRUE, RGB(0x00, 0x00, 0xFF), RGB(0xFF, 0xF0, 0xE0));
+	m_stcErrNo.Init_Ctrl("¹ÙÅÁ", 24, TRUE, RGB(0x00, 0x00, 0xFF), RGB(0xFF, 0xF0, 0xE0));
 	m_stcMsgBack.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
-	m_stcErrMsg.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
+	m_stcErrMsg.Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
 
 	m_btnErrBuzzOff.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
 	m_btnErrSkip.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
