@@ -115,7 +115,7 @@ public:
 
 	void Set_LotCount(int nPortNo, CString sLotID, int nCount);
 
-
+	void Set_DownActionCboList(CString sData);
 
 	///////////////////////////////////////////////////////////////////////////
 

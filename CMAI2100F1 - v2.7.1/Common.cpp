@@ -1134,6 +1134,11 @@ void CCommon::Set_LotCount(int nPortNo, CString sLotID, int nCount)
 	g_dlgWork.Set_LotCount(nPortNo, sLotID, nCount);
 }
 
+void CCommon::Set_DownActionCboList(CString sData)
+{
+	g_dlgError.Set_DownActionCboList(sData);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CCommon::Set_LoadPickerOpen(int nPickNo, int nType, int nNo, int *nCMInfo)

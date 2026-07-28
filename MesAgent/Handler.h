@@ -2,6 +2,10 @@
 //
 #pragma once
 
+#include <vector>
+#include <map>
+
+using namespace std;
 // CHandler
 
 #define HANDLER_PORT	10000	// Local Port for Handler
@@ -48,8 +52,9 @@ private:
 
 	void Get_AccessChanged(CString sAccessMode);
 	void Get_UnitState(CString sState);
-
 	void Get_UnitMaterialCount(CString sMDCount, CString sPortNo, CString sInputCnt, CString sOK, CString sNG);
+	void Get_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime);
+
 	void Get_DownAction(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg);
 //	void Get_LotInfo(CString sLotId);
 //	void Get_IdleRequest();
@@ -88,6 +93,8 @@ public:
 	void Set_NGLotStart();
 	void Set_NGLotCancel();
 
+	void Set_IdleReasonCode(map<CString, CString>& data);
+	void Set_DownActionCode(map<CString, CString>& data);
 //	void Set_MGZConfirm();
 //	void Set_MGZCancel();
 //	void Set_CarrierConfirm();

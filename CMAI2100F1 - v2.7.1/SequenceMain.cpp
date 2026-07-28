@@ -1563,6 +1563,16 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo)
 	CString sLog;
 	double dRate = (gLot.nCmCount[nNo] == 0 ? 0.0 : (gLot.nGoodCount[nNo] * 100.0) / gLot.nCmCount[nNo]);
 
+
+	CString sProcessID, sTact, sCycle;
+	
+	sProcessID.Format("%d", nPortNo);
+	
+	sTact.Format("%0.1lf", gLot.dLLTackTime);
+	sCycle.Format("%0.1lf", (dwTime / 1000.0));
+	
+	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], sProcessID, gData.sRecipeName, gLot.sRecipeName[nNo], sTact , sCycle);
+
 	//"Time,PortNo,LotID,Count,NG_Count,Good_Count,Rate,Skip_Count,Bar_NoRead,RosJudge,RosGood,RosNG,RosRepair,RosTimeOver,Start_Time,End_Time,Tack\r\n");
 	sLog.Format("%d,%s,%d,%d,%d,%0.1lf,%d,%d,%d,%d,%d,%d,%d,%s,%s,%0.5lf,%d",
 				nPortNo, gLot.sLotID[nNo], gLot.nCmCount[nNo], gLot.nNgCount[nNo], gLot.nGoodCount[nNo], dRate, gLot.nRosJugCount[nNo][10], //gLot.nSkipCount[nNo],

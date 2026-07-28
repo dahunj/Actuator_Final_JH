@@ -146,6 +146,7 @@ LRESULT CHandler::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 		} 
 		else if (strCmd == "UNIT")
 		{
+			if (strOp == "REPORT") Get_UnitProcessingTimeReport(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4], strArg[5]);
 			if (strOp == "STATE") Get_UnitState(strArg[0]);
 			if (strOp == "COUNT") Get_UnitMaterialCount(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4]);
 		} 
@@ -246,6 +247,11 @@ void CHandler::Get_UnitMaterialCount(CString sMDCount, CString sPortNo, CString 
 	g_objHost.Set_S6F11_UnitMaterialReport(sMDCount, sPortNo, sInputCnt, sOK, sNG);
 	//int nState = atoi(sState);
 	//g_objHost.Set_S6F11_UnitState(nState);
+}
+
+void CHandler::Get_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime)
+{
+	g_objHost.Set_S6F11_UnitProcessingTimeReport(sLotID, sProcessID, sModelID, sRecipe, sTactTime, sCycleTime);
 }
 
 void CHandler::Get_DownAction(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg)
@@ -609,6 +615,50 @@ void CHandler::Set_NGLotCancel()
 {
 	CString strSend;
 	strSend.Format("NGLOT,CANCEL,%s,%s,%s", gMes.sCancelLotId, gMes.sCancelCode, gMes.sCancelText);
+	Send_Command(strSend);
+}
+
+void CHandler::Set_IdleReasonCode(map<CString, CString>& data)
+{
+	CString sCode, sText, sData, sTemp;
+
+	map<CString, CString>::iterator iter;
+
+	sData.Empty();
+
+	for (iter = data.begin(); iter != data.end(); ++iter)
+	{
+		sCode = iter->first;       
+		sText = iter->second;  
+
+		sTemp.Format("%s,%s", sCode, sText);
+		sData += sTemp;
+	}
+	
+	CString strSend;
+	strSend.Format("CODE,IDLEREASON,%s", sData);
+	Send_Command(strSend);
+}
+
+void CHandler::Set_DownActionCode(map<CString, CString>& data)
+{
+	CString sCode, sText, sData, sTemp;
+
+	map<CString, CString>::iterator iter;
+
+	sData.Empty();
+
+	for (iter = data.begin(); iter != data.end(); ++iter)
+	{
+		sCode = iter->first;       
+		sText = iter->second;  
+
+		sTemp.Format("%s,%s", sCode, sText);
+		sData += sTemp;
+	}
+
+	CString strSend;
+	strSend.Format("CODE,DOWNACTION,%s", sData);
 	Send_Command(strSend);
 }
 

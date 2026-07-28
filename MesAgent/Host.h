@@ -6,6 +6,11 @@
 
 using namespace JWXml;
 
+#include <vector>
+#include <map>
+
+using namespace std;
+
 // CHost
 
 class CHost : public CWnd
@@ -44,6 +49,9 @@ private:
 	int		m_nS1F4AckNo;	
 	CString m_sHostMsg;
 
+	map<CString, CString> m_mssReasonData;
+	map<CString, CString> m_mssDownActionData;
+
 private:
 	BOOL Extract_Xml(CString sXmlData);
 
@@ -61,6 +69,9 @@ private:
 
 	void Get_S2F49_NGLotStart();
 	void Get_S2F49_NGLotFail();
+
+	void Get_S2F49_SETCODE_Idle_Reason();
+	void Get_S2F49_SETCODE_Down_Action();
 
 /*
 	void Get_S2F49_LotInfo();
@@ -98,6 +109,9 @@ public:
 	void Set_S2F50_NGLotStart();
 	void Set_S2F50_NGLotCancel();
 
+	void Set_S2F50_SetCode_IdleReason();
+	void Set_S2F50_SetCode_DownAction(); 
+
 	void Set_S6F11_ControlState(int nState);			// 1:Online, 2:Offline
 	void Set_S6F11_EquipState(int nState, int nErrNo);	// 2:Idle, 5:Run, 6:Down
 	void Set_S6F11_IdleReportSet(BOOL bSet);
@@ -117,6 +131,9 @@ public:
 
 	void Set_S6F11_UnitMaterialReport(CString nMDCount, CString sPortNo, CString sInputCnt, CString sOK, CString sNG);
 	void Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg);
+
+	void Set_S6F11_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime);
+
 
 	void Test_Send();
 	void Test_WriteLog();

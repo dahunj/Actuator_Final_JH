@@ -9,6 +9,8 @@
 //#include "OperatorDlg.h"
 #include "MesAgent.h"
 
+
+
 #define	MES_AGENT_IP	"127.0.0.1"
 #define MES_AGENT_PORT	10000		// MesAgent Handler Port
 
@@ -163,6 +165,11 @@ LRESULT CMesAgent::OnClientReceive(WPARAM wParam, LPARAM lParam)
 			if (strOp == "START")  Get_NGLotStart(strArg[0], strArg[1]);
 			if (strOp == "CANCEL") Get_NGLotCancel(strArg[0], strArg[1],  strArg[2]);
 
+		}
+		else if (strCmd == "CODE")
+		{
+			if (strOp == "IDLEREASON") Get_IdleReasonCode(strArg[0]);
+			if (strOp == "DOWNACTION") Get_DownActionCode(strArg[0]);
 		}
 	}
 
@@ -382,6 +389,18 @@ void CMesAgent::Get_NGLotCancel(CString sLotId, CString sCode, CString sText)
 	g_objLogFile.Save_MesAgentLog(sLog);
 }
 
+void CMesAgent::Get_IdleReasonCode(CString sData)
+{
+
+
+
+}
+
+
+void CMesAgent::Get_DownActionCode(CString sData)
+{
+	g_objCommon.Set_DownActionCboList(sData);
+}
 ///////////////////////////////////////////////////////////////////////////////
 // Set Command
 
@@ -647,6 +666,16 @@ void CMesAgent::Set_DownActionReport(CString sActionCode, CString sActionDetail,
 	strSend.Format("DOWN,REPORT,%s,%s,%s,%s,%d,%d,%s", sActionCode, sActionDetail, sStartTime, sEndTime, nErrNo, nErrCat, sErrMsg);
 	Send_Command(strSend);
 }
+
+
+void CMesAgent::Set_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime)
+{
+	CString strSend;
+	strSend.Format("UNIT,REPORT,%s,%s,%s,%s,%s,%s", sLotID, sProcessID, sModelID, sRecipe, sTactTime, sCycleTime);
+	Send_Command(strSend);
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -45,6 +45,9 @@ private:
 	void Get_NGLotStart(CString sLotId, CString sRecipe);
 	void Get_NGLotCancel(CString sLotId, CString sCode, CString sText);
 
+	void Get_IdleReasonCode(CString sData);
+	void Get_DownActionCode(CString sData);
+
 	void Send_Command(CString sSend);
 
 public:
@@ -79,6 +82,9 @@ public:
 	void Set_NGLotEnd(CString sLotId, int nOk, int nNg);
 
 	void Set_DownActionReport(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, int nErrNo, int nErrCat, CString sErrMsg);
+	void Set_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime);
+
+
 };
 
 extern CMesAgent g_objMesAgent;

@@ -36,6 +36,7 @@ public:
 	CComboCS	m_cboDownReasonCat;
 	CComboCS	m_cboDownReason;
 	CComboCS	m_cboDownAction;
+	CComboCS	m_cboDownActionDetail;
 
 	CStaticCS	m_stcAlmTime;
 
@@ -79,8 +80,12 @@ private:
 	void Set_SPCError(int nErrNo, CString sErrMsg);
 
 public:
+
+	void Set_DownActionCboList(CString sData);
+
 	void Set_ErrorNumber(int nErrNo) { m_nErrNo = nErrNo; }
 	void Set_ErrorSubMessage(CString sErrMsg) { m_strErrSubMsg = sErrMsg; }
+	afx_msg void OnCbnSelchangeCboDownactiondetail();
 };
 
 extern CErrorDlg g_dlgError;

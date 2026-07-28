@@ -52,6 +52,8 @@ void CErrorDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CBO_DOWNREASONCAT, m_cboDownReasonCat);
 	DDX_Control(pDX, IDC_CBO_DOWNREASON, m_cboDownReason);
 	DDX_Control(pDX, IDC_CBO_DOWNACTION, m_cboDownAction);
+	DDX_Control(pDX, IDC_CBO_DOWNACTIONDETAIL, m_cboDownActionDetail);
+
 
 	DDX_Control(pDX, IDC_STC_ALARMTIME, m_stcAlmTime);
 
@@ -67,6 +69,7 @@ BEGIN_MESSAGE_MAP(CErrorDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_ERR_TO_SHIP_TRAY, &CErrorDlg::OnBnClickedBtnErrToShipTray)
 	ON_BN_CLICKED(IDC_BTN_ERR_OK, &CErrorDlg::OnBnClickedBtnErrOk)
 	ON_BN_CLICKED(IDC_BTN_ERR_SYSTEM_EXIT, &CErrorDlg::OnBnClickedBtnErrSystemExit)
+	ON_CBN_SELCHANGE(IDC_CBO_DOWNACTIONDETAIL, &CErrorDlg::OnCbnSelchangeCboDownactiondetail)
 END_MESSAGE_MAP()
 
 // CErrorDlg 메시지 처리기입니다.
@@ -162,7 +165,7 @@ BOOL CErrorDlg::OnInitDialog()
 	}
 
 
-	m_cboDownAction.AddString("Machine Trouble");	
+	
 
 
 	/*CIniFileCS INI2(gsCurrentDir + "\\System\\StopLoss.ini");
@@ -189,6 +192,31 @@ BOOL CErrorDlg::OnInitDialog()
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+void CErrorDlg::Set_DownActionCboList(CString sData)
+{
+	m_cboDownAction.Clear();
+
+	CString sCode, sText;
+
+	int i = 0, j = 1;
+	BOOL bCode = FALSE, bText = FALSE;
+	while(TRUE)
+	{
+		bCode = AfxExtractSubString(sCode, sData, i, ',');
+		bText = AfxExtractSubString(sText, sData, j, ',');
+		
+		m_cboDownAction.AddString(sCode);
+		m_cboDownActionDetail.AddString(sText);
+
+		i += 2; j += 2;
+
+		if(!bCode)
+		{
+			break;
+		}
+	}		
 }
 
 BOOL CErrorDlg::PreTranslateMessage(MSG* pMsg) 
@@ -828,6 +856,7 @@ void CErrorDlg::Initial_Controls()
 	
 	m_cboDownReason.Init_Ctrl("바탕", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
 	m_cboDownAction.Init_Ctrl("바탕", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
+	m_cboDownActionDetail.Init_Ctrl("바탕", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
 	
 	m_stcAlmTime.Init_Ctrl("바탕", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
 }
@@ -1005,4 +1034,12 @@ void CErrorDlg::Set_SPCError(int nErrNo, CString sErrMsg)
 	if (nErrNo > 8800 && nErrNo < 9000) gAlm.sUnit = "ShipAlign";
 	if (nErrNo > 8999 && nErrNo < 9100) gAlm.sUnit = "MES";
 	if (nErrNo > 9100 && nErrNo < 9999) gAlm.sUnit = "Vision";
+}
+
+void CErrorDlg::OnCbnSelchangeCboDownactiondetail()
+{
+	CString sText;
+	m_cboDownActionDetail.GetWindowText(sText);
+
+	m_edtActionDetail.SetWindowText(sText);
 }

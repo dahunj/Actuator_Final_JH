@@ -172,6 +172,9 @@ LRESULT CHost::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 				else if (m_strRcmd == "PRODUCT_ID_FAIL") Get_S2F49_Module_Fail();
 				else if (m_strRcmd == "NG_LOT_START")	 Get_S2F49_NGLotStart();
 				else if (m_strRcmd == "NG_LOT_ID_FAIL")	 Get_S2F49_NGLotFail();
+
+				else if(m_strRcmd == "SETCODE_IDLE_REASON") Get_S2F49_SETCODE_Idle_Reason();
+				else if(m_strRcmd == "SETCODE_DOWN_ACTION") Get_S2F49_SETCODE_Down_Action();
 /*
 				if		(m_strRcmd == "MGZ_CONFIRM") Get_S2F49_MGZConfirm();
 				else if (m_strRcmd == "MGZ_CANCEL") Get_S2F49_MGZCancel();
@@ -289,7 +292,9 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 				if (strName == "RECIPEID")	gMes.sHostNGRecipe = strData;
 			}
 
-		} else if (m_strRcmd == "NG_LOT_ID_FAIL") { //CANCEL") {
+		} 
+		else if (m_strRcmd == "NG_LOT_ID_FAIL")  //CANCEL") {
+		{ 
 			CXmlNodes nodesF = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
 			int nCount = nodesF.GetCount();
 
@@ -305,7 +310,39 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 			nodeE = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("RESULT");
 			gMes.sCancelCode = nodeE.GetChild("CODE")->GetAttribute("VALUE");
 			gMes.sCancelText = nodeE.GetChild("TEXT")->GetAttribute("VALUE");
+		}
+		else if ( m_strRcmd == "SETCODE_IDLE_REASON" )
+		{
+			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("IDLEREASONCODELIST")->GetChildren();
+			int nCount = nodes.GetCount();
 
+			CString sCode;
+			CString sText;
+
+			for (int i = 0; i < nCount; i++) 
+			{
+				sCode = nodes[i]->GetChild("IDLEREASONINFO")->GetChild("CPNAME")->GetAttribute("VALUE");
+				sText = nodes[i]->GetChild("IDLEREASONINFO")->GetChild("CPVALUE")->GetAttribute("VALUE");
+
+				m_mssReasonData.insert(make_pair( sCode, sText ));
+			}
+		}
+		else if ( m_strRcmd == "SETCODE_DOWN_ACTION" )
+		{
+			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("DOWNACTIONCODELIST")->GetChildren();
+			int nCount = nodes.GetCount();
+
+			CString sCode;
+			CString sText;
+
+			for (int i = 0; i < nCount; i++) 
+			{
+				sCode = nodes[i]->GetChild("DOWNACTIONINFO")->GetChild("CPNAME")->GetAttribute("VALUE");
+				sText = nodes[i]->GetChild("DOWNACTIONINFO")->GetChild("CPVALUE")->GetAttribute("VALUE");
+
+				m_mssReasonData.insert(make_pair( sCode, sText ));
+			}
+		}
 /*
 		} else if (m_strRcmd == "TRAY_CANCEL") {
 			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
@@ -389,7 +426,7 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 // 				if (strName == "M_MAKER") gMes.sLotInfo = strData;
 // 			}
 */
-		}
+		
 	}
 	m_xml.Close();
 	return TRUE;
@@ -493,6 +530,19 @@ void CHost::Get_S2F49_NGLotFail()
 {
 	Set_S2F50_NGLotCancel();
 	g_objHandler.Set_NGLotCancel();
+}
+
+void CHost::Get_S2F49_SETCODE_Idle_Reason()
+{
+	Set_S2F50_SetCode_IdleReason();
+	g_objHandler.Set_IdleReasonCode(m_mssReasonData);
+}
+
+
+void CHost::Get_S2F49_SETCODE_Down_Action()
+{
+	Set_S2F50_SetCode_DownAction();
+	g_objHandler.Set_IdleReasonCode(m_mssDownActionData);
 }
 
 /*
@@ -770,6 +820,44 @@ void CHost::Set_S2F50_NGLotCancel()
 	strSend += "</EIF>";
 
 	Send_Command(strSend, TRUE, "S2F50", "NG_LOT_ID_FAIL");
+}
+
+void CHost::Set_S2F50_SetCode_IdleReason()
+{
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S2F50\" NAME=\"Enhanced Remote Command Acknowledge\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <RCMDCP>" + CRLF;
+	strSend += "      <RCMD NAME=\"RCMD\" VALUE=\"SETCODE_IDLE_REASON\" />" + CRLF;
+	strSend += "    </RCMDCP>" + CRLF;
+	strSend += "    <HCACK NAME=\"HCACK\" VALUE=\"0\" />" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, TRUE, "S2F50", "SETCODE_IDLE_REASON");
+}
+
+void CHost::Set_S2F50_SetCode_DownAction()
+{
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S2F50\" NAME=\"Enhanced Remote Command Acknowledge\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <RCMDCP>" + CRLF;
+	strSend += "      <RCMD NAME=\"RCMD\" VALUE=\"SETCODE_DOWN_ACTION\" />" + CRLF;
+	strSend += "    </RCMDCP>" + CRLF;
+	strSend += "    <HCACK NAME=\"HCACK\" VALUE=\"0\" />" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, TRUE, "S2F50", "SETCODE_DOWN_ACTION");
 }
 
 void CHost::Set_S6F11_ControlState(int nState)
@@ -1383,8 +1471,6 @@ void CHost::Set_S6F11_UnitMaterialReport(CString nMDCount, CString sPortNo, CStr
 
 void CHost::Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, CString sErrNo, CString sErrCat, CString sErrMsg)
 {
-	CString strCount, strMOk, strNg;
-
 	SYSTEMTIME time;
 	GetLocalTime(&time);
 
@@ -1420,6 +1506,41 @@ void CHost::Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetai
 	Send_Command(strSend, FALSE, "S6F11", "50105");
 }
 
+
+void CHost::Set_S6F11_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime)
+{
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	CString strTime;
+	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+	
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S6F11\" NAME=\"Event Report\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <CEID NAME=\"CEID\" VALUE=\"50105\" />" + CRLF;
+	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"50105\" />" + CRLF;
+	strSend += "    <DVLIST COUNT=\"10\">" + CRLF;
+	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"LOTID\" VALUE=\"" + sLotID + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"PROCESSID\" VALUE=\"" + sProcessID + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"MODELID\" VALUE=\""+ sModelID +"\" />" + CRLF;
+	strSend += "      <DV NAME=\"RECIPEID\" VALUE=\"" + sRecipe + "\" />" + CRLF;	
+	strSend += "      <DV NAME=\"UNITLISTQTY\" VALUE=\"1\" />" + CRLF;
+	strSend += "      <DV NAME=\"UNITID#1\" VALUE=\"0\" />" + CRLF;
+	strSend += "      <DV NAME=\"UNITTACTTIME#1\" VALUE=\"" + sTactTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"UNITCYCLETIME#1\" VALUE=\"" + sCycleTime + "\" />" + CRLF;
+	strSend += "    </DVLIST>" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, FALSE, "S6F11", "50105");
+}
 
 /*
 void CHost::Set_S2F50_CarrierConfirm()
