@@ -207,8 +207,9 @@ void CErrorDlg::Set_DownActionCboList(CString sData)
 		bCode = AfxExtractSubString(sCode, sData, i, ',');
 		bText = AfxExtractSubString(sText, sData, j, ',');
 		
-		m_cboDownAction.AddString(sCode);
-		m_cboDownActionDetail.AddString(sText);
+		m_cboDownReasonCat.AddString(sText);
+		//m_cboDownAction.AddString(sCode);
+		//m_cboDownActionDetail.AddString(sText);
 
 		i += 2; j += 2;
 
@@ -232,7 +233,8 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	CDialogEx::OnShowWindow(bShow, nStatus);
 
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
-	if (bShow) {
+	if (bShow) 
+	{
 		if (gData.bAlarmShow) return;
 		gData.bAlarmShow = TRUE;
 
@@ -419,7 +421,6 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		int nIndex = m_cboDownReasonCat.FindStringExact(-1, "Unplanned Down");
 		m_cboDownReasonCat.SetCurSel(nIndex);
 
-
 		CString strCat, strMajor, strMiddle;
 		strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");
 		AfxExtractSubString(strMajor, strCat, 0, '_');
@@ -433,13 +434,13 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		m_cboDownReason.SetCurSel(nIndex);
 
 		m_cboDownAction.SetCurSel(0);
-
 		
  		g_objInspector.Set_StatusUpdate(INSPECTOR_ALL, 4);
 		g_objDispatcher.Set_StatusUpdate(2);	// 0:Stop, 1:Run, 2:Error
-		SetTimer(0, 100, NULL);
-		
-	} else {
+		SetTimer(0, 100, NULL);		
+	} 
+	else
+	{
 		KillTimer(0);
 
 		m_strErrSubMsg = "";

@@ -313,7 +313,7 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 		}
 		else if ( m_strRcmd == "SETCODE_IDLE_REASON" )
 		{
-			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("IDLEREASONCODELIST")->GetChildren();
+			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
 			int nCount = nodes.GetCount();
 
 			CString sCode;
@@ -321,15 +321,14 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 
 			for (int i = 0; i < nCount; i++) 
 			{
-				sCode = nodes[i]->GetChild("IDLEREASONINFO")->GetChild("CPNAME")->GetAttribute("VALUE");
-				sText = nodes[i]->GetChild("IDLEREASONINFO")->GetChild("CPVALUE")->GetAttribute("VALUE");
-
-				m_mssReasonData.insert(make_pair( sCode, sText ));
+				sCode = nodes[i]->GetChild("CPNAME")->GetAttribute("VALUE");
+				sText = nodes[i]->GetChild("CPVALUE")->GetAttribute("VALUE");
+				m_mssReasonData.insert(make_pair(sCode, sText));
 			}
 		}
 		else if ( m_strRcmd == "SETCODE_DOWN_ACTION" )
 		{
-			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("DOWNACTIONCODELIST")->GetChildren();
+			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
 			int nCount = nodes.GetCount();
 
 			CString sCode;
@@ -337,10 +336,9 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 
 			for (int i = 0; i < nCount; i++) 
 			{
-				sCode = nodes[i]->GetChild("DOWNACTIONINFO")->GetChild("CPNAME")->GetAttribute("VALUE");
-				sText = nodes[i]->GetChild("DOWNACTIONINFO")->GetChild("CPVALUE")->GetAttribute("VALUE");
-
-				m_mssReasonData.insert(make_pair( sCode, sText ));
+				sCode = nodes[i]->GetChild("CPNAME")->GetAttribute("VALUE");
+				sText = nodes[i]->GetChild("CPVALUE")->GetAttribute("VALUE");
+				m_mssDownActionData.insert(make_pair(sCode, sText));
 			}
 		}
 /*
