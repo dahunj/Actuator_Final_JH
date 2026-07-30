@@ -2,7 +2,9 @@
 //
 #pragma once
 
-// CErrorDlg 대화 상자입니다.
+#include <map>
+using namespace std;
+
 
 class CErrorDlg : public CDialogEx
 {
@@ -73,6 +75,7 @@ private:
 	int			m_nBackColorLoop;
 	BOOL		m_bErrShow;
 
+	map<CString, CString> m_mssDownAction;
 private:
 	void Initial_Controls();
 	void ErrorTimeEdit();

@@ -208,9 +208,9 @@ void CErrorDlg::Set_DownActionCboList(CString sData)
 		bText = AfxExtractSubString(sText, sData, j, ',');
 		
 		m_cboDownReasonCat.AddString(sText);
-		//m_cboDownAction.AddString(sCode);
-		//m_cboDownActionDetail.AddString(sText);
-
+		
+		m_mssDownAction.insert(make_pair(sCode, sText));
+		
 		i += 2; j += 2;
 
 		if(!bCode)
@@ -418,14 +418,28 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		else nErrorPos = 0;
 		m_stcErrPos[nErrorPos].Set_Color(RGB(0xFF, 0xFF, 0xFF), RGB(0xFF, 0x00, 0x00));
 
-		int nIndex = m_cboDownReasonCat.FindStringExact(-1, "Unplanned Down");
-		m_cboDownReasonCat.SetCurSel(nIndex);
-
-		CString strCat, strMajor, strMiddle;
+		int nIndex = 0;
+		
+		CString strCat, strMajor, strMiddle, strTemp;
 		strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");
 		AfxExtractSubString(strMajor, strCat, 0, '_');
 		AfxExtractSubString(strMiddle, strCat, 1, '_');
+		
+		for (std::map<CString, CString>::const_iterator it = m_mssDownAction.begin();
+			it != m_mssDownAction.end();
+			++it)
+		{
+			const CString& strKey   = it->first;
+			const CString& strValue = it->second;
 
+			strTemp = strKey.Right(2);			
+			if (strTemp == strMajor)
+			{
+				nIndex = m_cboDownReasonCat.FindStringExact(-1, strValue);
+				m_cboDownReasonCat.SetCurSel(nIndex);
+			}
+		}
+		
 		CString strCatMsg, strMajorNo;
 		strMajorNo.Format("CAT_TYPE_%s", strMajor);
 		strCatMsg = INI.Get_String(strMajorNo, strMiddle, "");
