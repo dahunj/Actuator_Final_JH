@@ -701,6 +701,51 @@ void CEquip::Set_S7F25()
 	Send_Command(strSend, FALSE, "S7F25");
 }
 
+
+
+void CEquip::Set_S2F49_SETCODE_DOWN_ACTION()
+{
+	gData.sEquipId = "AVI-TEST";
+
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S2F49\" NAME=\"Enhanced Remote Command\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <RCMDCP>" + CRLF;
+	strSend += "      <RCMD NAME=\"RCMD\" VALUE=\"SETCODE_DOWN_ACTION\" />" + CRLF;
+	strSend += "      <CPLIST COUNT=\"4\">" + CRLF;
+	strSend += "        <CP>" + CRLF;
+	strSend += "          <CPNAME NAME=\"CPNAME\" VALUE=\"TIME\" />" + CRLF;
+	strSend += "          <CPVAL NAME=\"CPVAL\" VALUE=\"20251215000000\" />" + CRLF;
+	strSend += "        </CP>" + CRLF;
+	strSend += "        <CP>" + CRLF;
+	strSend += "          <CPNAME NAME=\"CPNAME\" VALUE=\"CODE\" />" + CRLF;
+	strSend += "          <CPVAL NAME=\"CPVAL\" VALUE=\"D00001,D00002,D00003,D00004\" />" + CRLF;
+	strSend += "        </CP>" + CRLF;
+	strSend += "        <CP>" + CRLF;
+	strSend += "          <CPNAME NAME=\"CPNAME\" VALUE=\"TEXT\" />" + CRLF;
+	strSend += "          <CPVAL NAME=\"CPVAL\" VALUE=\"DOWN5,DOWN6,DOWN7,DOWN8\" />" + CRLF;
+	strSend += "        </CP>" + CRLF;
+	strSend += "        <CP>" + CRLF;
+	strSend += "          <CPNAME NAME=\"CPNAME\" VALUE=\"OPERATORID\" />" + CRLF;
+	strSend += "          <CPVAL NAME=\"CPVAL\" VALUE=\"K22306088\" />" + CRLF;
+	strSend += "        </CP>" + CRLF;
+	strSend += "      </CPLIST>" + CRLF;
+	strSend += "      <RESULT>" + CRLF;
+	strSend += "        <CODE NAME=\"CODE\" VALUE=\"\" />" + CRLF;
+	strSend += "        <TEXT NAME=\"CODE\" VALUE=\"\" />" + CRLF;
+	strSend += "      </RESULT>" + CRLF;
+	strSend += "    </RCMDCP>" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, FALSE, "S2F49");
+}
+
+
 //
 //[00:29:39 968] [<-] 0000030337331<?xml version="1.0" encoding="utf-16"?>
 //	<EIF VERSION="2.0" ID="S7F25" NAME="Formatted Process Program Request">

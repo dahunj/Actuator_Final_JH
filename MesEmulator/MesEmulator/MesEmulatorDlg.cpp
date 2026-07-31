@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CMesEmulatorDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_CONNECT2, &CMesEmulatorDlg::OnBnClickedBtnConnect2)
 	ON_WM_DESTROY()
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BTN_TEST1, &CMesEmulatorDlg::OnBnClickedBtnTest1)
 END_MESSAGE_MAP()
 
 
@@ -189,4 +190,10 @@ void CMesEmulatorDlg::OnTimer(UINT_PTR nIDEvent)
 	g_objEquip.Set_S2F3_LINK_REQUEST();
 
 	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CMesEmulatorDlg::OnBnClickedBtnTest1()
+{
+	g_objEquip.Set_S2F49_SETCODE_DOWN_ACTION();
 }

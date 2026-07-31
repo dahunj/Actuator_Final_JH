@@ -82,6 +82,9 @@ public:
 	void Set_S2F49_LOT_MODULE_DATA_DETAIL();
 
 
+	void Set_S2F49_SETCODE_DOWN_ACTION();
+
+
 
 	void Set_S2F3_LINK_REQUEST();
 

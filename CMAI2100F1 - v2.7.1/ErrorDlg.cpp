@@ -87,9 +87,6 @@ BOOL CErrorDlg::OnInitDialog()
 	m_nBackColorLoop = 0;
 	m_strErrSubMsg = "";
 
-	m_cboDownReasonCat.AddString("Unplanned Down");
-	m_cboDownReasonCat.AddString("Planned Down");
-
 
 	CString strErrPick, strMiddle, strMiddleMsg;
 
@@ -200,23 +197,18 @@ void CErrorDlg::Set_DownActionCboList(CString sData)
 
 	CString sCode, sText;
 
-	int i = 0, j = 1;
+	int i = 1, j = 2;
 	BOOL bCode = FALSE, bText = FALSE;
 	while(TRUE)
 	{
-		bCode = AfxExtractSubString(sCode, sData, i, ',');
-		bText = AfxExtractSubString(sText, sData, j, ',');
+		bCode = AfxExtractSubString(sCode, sData, i, '-');
+		bText = AfxExtractSubString(sText, sData, j, '-');
 		
-		m_cboDownReasonCat.AddString(sText);
+		if(!bCode) break;
 		
+		m_cboDownReasonCat.AddString(sText);		
 		m_mssDownAction.insert(make_pair(sCode, sText));
-		
-		i += 2; j += 2;
-
-		if(!bCode)
-		{
-			break;
-		}
+		i += 2; j += 2;		
 	}		
 }
 

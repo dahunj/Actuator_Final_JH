@@ -316,30 +316,68 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
 			int nCount = nodes.GetCount();
 
-			CString sCode;
-			CString sText;
+			CString strName, strData;
+			CString sCode, sText, sCodeTemp, sTextTemp;
 
 			for (int i = 0; i < nCount; i++) 
 			{
-				sCode = nodes[i]->GetChild("CPNAME")->GetAttribute("VALUE");
-				sText = nodes[i]->GetChild("CPVALUE")->GetAttribute("VALUE");
-				m_mssReasonData.insert(make_pair(sCode, sText));
+				strName = nodes[i]->GetChild("CPNAME")->GetAttribute("VALUE");
+				strData = nodes[i]->GetChild("CPVAL")->GetAttribute("VALUE");
+
+				if(strName == "CODE")
+				{
+					sCode = strData;
+				}
+				if(strName == "TEXT")
+				{
+					sText = strData;
+				}				
 			}
+
+			for (int i = 0; ; ++i)
+			{
+				if (!AfxExtractSubString(sCodeTemp, sCode, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
+				if (!AfxExtractSubString(sTextTemp, sText, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
+
+				sCodeTemp.Trim();
+				sTextTemp.Trim();
+
+				m_mssReasonData.insert(make_pair(sCodeTemp, sTextTemp));
+			}			
 		}
 		else if ( m_strRcmd == "SETCODE_DOWN_ACTION" )
 		{
 			CXmlNodes nodes = m_xml.GetRoot()->GetChild("ITEM")->GetChild("RCMDCP")->GetChild("CPLIST")->GetChildren();
 			int nCount = nodes.GetCount();
 
-			CString sCode;
-			CString sText;
+			CString strName, strData;
+			CString sCode, sText, sCodeTemp, sTextTemp;
 
 			for (int i = 0; i < nCount; i++) 
 			{
-				sCode = nodes[i]->GetChild("CPNAME")->GetAttribute("VALUE");
-				sText = nodes[i]->GetChild("CPVALUE")->GetAttribute("VALUE");
-				m_mssDownActionData.insert(make_pair(sCode, sText));
+				strName = nodes[i]->GetChild("CPNAME")->GetAttribute("VALUE");
+				strData = nodes[i]->GetChild("CPVAL")->GetAttribute("VALUE");
+
+				if(strName == "CODE")
+				{
+					sCode = strData;
+				}
+				if(strName == "TEXT")
+				{
+					sText = strData;
+				}				
 			}
+
+			for (int i = 0; ; ++i)
+			{
+				if (!AfxExtractSubString(sCodeTemp, sCode, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
+				if (!AfxExtractSubString(sTextTemp, sText, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
+
+				sCodeTemp.Trim();
+				sTextTemp.Trim();
+
+				m_mssDownActionData.insert(make_pair(sCodeTemp, sTextTemp));
+			}			
 		}
 /*
 		} else if (m_strRcmd == "TRAY_CANCEL") {
@@ -540,7 +578,7 @@ void CHost::Get_S2F49_SETCODE_Idle_Reason()
 void CHost::Get_S2F49_SETCODE_Down_Action()
 {
 	Set_S2F50_SetCode_DownAction();
-	g_objHandler.Set_IdleReasonCode(m_mssDownActionData);
+	g_objHandler.Set_DownActionCode(m_mssDownActionData);
 }
 
 /*
