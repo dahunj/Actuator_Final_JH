@@ -184,7 +184,7 @@ LRESULT CHandler::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 		else if (strCmd == "IDLE") 
 		{
 // 			if (strOp == "REQUEST") Get_IdleRequest();
-			if (strOp == "REPORT") 	Get_IdleReport(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4]);
+			if (strOp == "REPORT") 	Get_IdleReport(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4], strArg[5]);
 
 		} else if (strCmd == "TERMINAL") {
 			if (strOp == "MSG") 	Get_TerminalOK();
@@ -313,16 +313,17 @@ void CHandler::Get_LotAbort(CString sLotId)
 	g_objHost.Set_S6F11_LotAbort(sLotId);
 }
 
-void CHandler::Get_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sType)
+void CHandler::Get_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sText, CString sType)
 {
 	gData.sOperId = sOperId;
 // 	gIdle.nCount = nCount;	// CNS 요청으로 첫번째 1개만 전송
 	gIdle.sStartTime = sSTime;
 	gIdle.sEndTime = sETime;
 	gIdle.sCode = sCode;
-// 	gIdle.sText = sText;
+ 	gIdle.sText = sText;
 	if (sType == "1") g_objHost.Set_S6F11_IdleReportSet(TRUE);	//Idle Start
-	else			  g_objHost.Set_S6F11_IdleReportSet(FALSE);	//Idle End
+	else if (sType == "2")  g_objHost.Set_S6F11_IdleReportSet(FALSE);	//Idle End
+	else g_objHost.Set_S6F11_IdleReasonReport();
 }
 
 void CHandler::Get_RecipeList(CString sRecipeData)

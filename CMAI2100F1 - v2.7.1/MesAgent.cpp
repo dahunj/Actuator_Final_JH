@@ -474,10 +474,10 @@ void CMesAgent::Set_OperUpdate(CString sOperId)
 	Send_Command(strSend);
 }
 
-void CMesAgent::Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sType)
+void CMesAgent::Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sText, CString sType)
 {
 	CString strSend;
-	strSend.Format("IDLE,REPORT,%s,%s,%s,%s,%s", sOperId, sSTime, sETime, sCode, sType);
+	strSend.Format("IDLE,REPORT,%s,%s,%s,%s,%s,%s", sOperId, sSTime, sETime, sCode, sText, sType);
 	Send_Command(strSend);
 }
 
