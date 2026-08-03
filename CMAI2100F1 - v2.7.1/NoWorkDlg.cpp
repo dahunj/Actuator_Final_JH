@@ -93,7 +93,7 @@ void CNoWorkDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			for (int i = 0; i < 2; i++) m_lblTime[i].ShowWindow(FALSE);
 			for (int i = 0; i < 2; i++) m_stcTime[i].ShowWindow(FALSE);
 		}
-		g_objMesAgent.Set_IdleReport(gData.sOperID, "", "", "", "", "1");
+		if(!m_bAuto) g_objMesAgent.Set_IdleReport(gData.sOperID, "", "", "", "", "1");
 
 	} else {
 		KillTimer(0);
