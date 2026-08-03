@@ -253,7 +253,10 @@ void CNoWorkDlg::Set_NoWorkReport()
 	strLog.Format("Idle Report %s : %s,%s,%s,%s", m_strOperId, m_strStartTime, strEndTime, m_strCode, m_strTxt);
 	g_objLogFile.Save_HandlerLog(strLog);
 
-	if(m_bAuto){}
+	if(m_bAuto)
+	{
+		g_objMesAgent.Set_IdleReport(m_strOperId, m_strStartTime, strEndTime, m_strCode, m_strTxt, "3");
+	}
 	else g_objMesAgent.Set_IdleReport(m_strOperId, m_strStartTime, strEndTime, m_strCode, "", "2");
 
 	m_bStart = FALSE;
