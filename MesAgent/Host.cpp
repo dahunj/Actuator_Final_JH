@@ -1338,6 +1338,43 @@ void CHost::Set_S6F11_IdleReportSet(BOOL bSet)
 }
 
 
+void CHost::Set_S6F11_IdleReasonReport()
+{
+	CString strCEID;
+
+	int nCEID = 50104;
+	strCEID.Format("%d", nCEID);
+
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+
+	CString strTime;
+	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+
+	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
+
+	strSend += "<EIF VERSION=\"2.0\" ID=\"S6F11\" NAME=\"Event Report\">" + CRLF;
+	strSend += "  <ELEMENT>" + CRLF;
+	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
+	strSend += "  </ELEMENT>" + CRLF;
+	strSend += "  <ITEM>" + CRLF;
+	strSend += "    <CEID NAME=\"CEID\" VALUE=\"" + strCEID + "\" />" + CRLF;
+	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"" + strCEID + "\" />" + CRLF;
+	strSend += "    <DVLIST COUNT=\"6\">" + CRLF;
+	strSend += "      <DV NAME=\"IDLESTARTTIME\" VALUE=\"" + gIdle.sStartTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"IDLEENDTIME\" VALUE=\"" + gIdle.sEndTime + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"IDLECODE\" VALUE=\"" + gIdle.sCode + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"IDLETEXT\" VALUE=\"" + gIdle.sText + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"IDLENOTE\" VALUE=\"\" />" + CRLF;
+	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
+	strSend += "    </DVLIST>" + CRLF;
+	strSend += "  </ITEM>" + CRLF;
+	strSend += "</EIF>";
+
+	Send_Command(strSend, FALSE, "S6F11", strCEID);
+}
+
+
 void CHost::Set_S6F11_AccessModeChanged(CString sMode)
 {
 	SYSTEMTIME time;
