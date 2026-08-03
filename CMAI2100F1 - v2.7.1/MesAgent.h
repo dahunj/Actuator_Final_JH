@@ -63,7 +63,7 @@ public:
 	void Set_EquipState(int nFlag);						
 	void Set_ErrorUpdate(int nFlag, CString sErrNo);	// 0:해제, 1:발생
 	void Set_RecipeList(int nFlag);						// 0:All, 1:Current Recipe
-	void Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sType);	//1:Start, 2:End
+	void Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sText, CString sType);	//1:Start, 2:End, 3: Auto 
 	void Set_ModeChanged(int nMode);
 	void Set_UnitState(int nState);
 

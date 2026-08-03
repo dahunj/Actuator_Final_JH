@@ -647,7 +647,12 @@ void CWorkDlg::OnBnClickedBtnIdleReport()
 	if (!pEquipData->bUseMES) return;
 
 	if (g_dlgNoWork.IsWindowVisible()) g_dlgNoWork.ShowWindow(SW_HIDE);
-	else g_dlgNoWork.ShowWindow(SW_SHOW);	
+	else
+	{
+		g_dlgNoWork.Set_Auto(FALSE);
+		g_dlgNoWork.ShowWindow(SW_SHOW);
+	}
+			
 }
 //------------------MES------------------------------------------------------------//
 
