@@ -161,6 +161,19 @@ BOOL CErrorDlg::OnInitDialog()
 		m_cboDownReason.AddString(strMiddleMsg);
 	}
 
+	CString sAction, sDetail, sKey;
+
+	for(int i = 1; ;i++)
+	{
+		sKey.Format("%d", i);
+		sAction = INI.Get_String("DOWNACTION", sKey, "");
+		sDetail = INI.Get_String("ACTIONDETAIL", sKey, "");
+
+		m_cboDownAction.AddString(sAction);
+		m_cboDownActionDetail.AddString(sDetail);
+
+		if(sAction == "") break;
+	}	
 
 	
 
@@ -414,8 +427,8 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		
 		CString strCat, strMajor, strMiddle, strTemp;
 		strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");
-		AfxExtractSubString(strMajor, strCat, 0, '_');
-		AfxExtractSubString(strMiddle, strCat, 1, '_');
+		AfxExtractSubString(strMajor, strCat, 0, '-');
+		AfxExtractSubString(strMiddle, strCat, 1, '-');
 		
 		for (std::map<CString, CString>::const_iterator it = m_mssDownAction.begin();
 			it != m_mssDownAction.end();
@@ -438,7 +451,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 		nIndex = m_cboDownReason.FindStringExact(-1, strCatMsg);
 		m_cboDownReason.SetCurSel(nIndex);
-
+		
 		m_cboDownAction.SetCurSel(0);
 		
  		g_objInspector.Set_StatusUpdate(INSPECTOR_ALL, 4);
@@ -763,7 +776,7 @@ void CErrorDlg::OnBnClickedBtnErrOk()
 
 	SYSTEMTIME time;
 	GetLocalTime(&time);
-	m_strAlmStart.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
 	
 
 	g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, m_nErrNo, 33, m_strErrMsg);
