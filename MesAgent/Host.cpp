@@ -980,12 +980,15 @@ void CHost::Set_S6F11_EquipState(int nState, int nErrNo)
 	CString	strState, strErrNo, strOldState;
 	strState.Format("%d", nState);
 	strErrNo.Format("%d", nErrNo);
-	if (nState != 6 || nErrNo < 1) { strErrNo = gData.sAlarmTxt = ""; }
+	if (nErrNo < 1) { strErrNo = gData.sAlarmTxt = ""; }
 
 	gData.nPreEquipState = gData.nPreEquipState == 0 ? 1 : gData.nCurEquipState;
 	gData.nCurEquipState = nState;
 
 	strOldState.Format("%d", gData.nPreEquipState);
+
+
+
 	// 	strOldState = ((nState == 2 || nState == 6) ? "5" : "6");
 
 	SYSTEMTIME time;
@@ -1003,15 +1006,36 @@ void CHost::Set_S6F11_EquipState(int nState, int nErrNo)
 	strSend += "  <ITEM>" + CRLF;
 	strSend += "    <CEID NAME=\"CEID\" VALUE=\"10108\" />" + CRLF;
 	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"10108\" />" + CRLF;
-	strSend += "    <DVLIST COUNT=\"8\">" + CRLF;
+
+	if(strState == "3")
+	{
+		strSend += "    <DVLIST COUNT=\"8\">" + CRLF;
+	}
+	else
+	{
+		strSend += "    <DVLIST COUNT=\"5\">" + CRLF;
+	}
+
+	
 	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"PREVNEWEQPSTATE\" VALUE=\"" + strOldState + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"CURRNEWEQPSTATE\" VALUE=\"" + strState + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"ALARMLISTQTY\" VALUE=\"1\" />" + CRLF;
-	strSend += "      <DV NAME=\"ALARMID#1\" VALUE=\"" + strErrNo + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"ALARMCATEGORY#1\" VALUE=\"33\" />" + CRLF;
-	strSend += "      <DV NAME=\"ALARMTEXT#1\" VALUE=\"" + gData.sAlarmTxt + "\" />" + CRLF;
+	
+
+	if(strState == "3")
+	{
+		strSend += "      <DV NAME=\"ALARMLISTQTY\" VALUE=\"1\" />" + CRLF;
+		strSend += "      <DV NAME=\"ALARMID#1\" VALUE=\"" + strErrNo + "\" />" + CRLF;
+		strSend += "      <DV NAME=\"ALARMCATEGORY#1\" VALUE=\"0000402\" />" + CRLF;
+		strSend += "      <DV NAME=\"ALARMTEXT#1\" VALUE=\"" + gData.sAlarmTxt + "\" />" + CRLF;
+	}
+	else
+	{
+		strSend += "      <DV NAME=\"ALARMLISTQTY\" VALUE=\"0\" />" + CRLF;
+	}
+
+
 	strSend += "    </DVLIST>" + CRLF;
 	strSend += "  </ITEM>" + CRLF;
 	strSend += "</EIF>";
@@ -1528,8 +1552,9 @@ void CHost::Set_S6F11_UnitMaterialReport(CString nMDCount, CString sPortNo, CStr
 	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"UNITID\" VALUE=\"0\" />" + CRLF;
 	strSend += "      <DV NAME=\"MATERIALCOUNTLISTQTY\" VALUE=\"1\" />" + CRLF;
-	strSend += "      <DV NAME=\"MATERIALTYPE#1\" VALUE=\"" + nMDCount + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"SLOTNO#1\" VALUE=\"" + sPortNo + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"MATERIALTYPE#1\" VALUE=\"MAIN\" />" + CRLF;
+	strSend += "      <DV NAME=\"SLOTNO#1\" VALUE=\"1\" />" + CRLF;
+	//strSend += "      <DV NAME=\"SLOTNO#1\" VALUE=\"" + sPortNo + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"INPUTMATERIALCOUNT#1\" VALUE=\"" + sInputCnt + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"GOODMATERIALCOUNT#1\" VALUE=\"" + sOK + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"NGMATERIALCOUNT#1\" VALUE=\"" + sNG + "\" />" + CRLF;
@@ -1550,7 +1575,7 @@ void CHost::Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetai
 	CString strTime;
 	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
 
-	sErrCat = "33";
+	sErrCat = "0000402"; // 7자리 3자리(유닛번호)+2자리(긴급도)+(
 
 	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
 
@@ -1595,8 +1620,8 @@ void CHost::Set_S6F11_UnitProcessingTimeReport(CString sLotID, CString sProcessI
 	strSend += "    <EQPID VALUE=\"" + gData.sEquipId + "\" />" + CRLF;
 	strSend += "  </ELEMENT>" + CRLF;
 	strSend += "  <ITEM>" + CRLF;
-	strSend += "    <CEID NAME=\"CEID\" VALUE=\"50105\" />" + CRLF;
-	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"50105\" />" + CRLF;
+	strSend += "    <CEID NAME=\"CEID\" VALUE=\"50106\" />" + CRLF;
+	strSend += "    <RPTID NAME=\"RPTID\" VALUE=\"50106\" />" + CRLF;
 	strSend += "    <DVLIST COUNT=\"10\">" + CRLF;
 	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
@@ -1612,7 +1637,7 @@ void CHost::Set_S6F11_UnitProcessingTimeReport(CString sLotID, CString sProcessI
 	strSend += "  </ITEM>" + CRLF;
 	strSend += "</EIF>";
 
-	Send_Command(strSend, FALSE, "S6F11", "50105");
+	Send_Command(strSend, FALSE, "S6F11", "50106");
 }
 
 /*

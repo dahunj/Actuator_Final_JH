@@ -44,6 +44,9 @@ BEGIN_MESSAGE_MAP(CMesAgentDlg, CDialogEx)
 	ON_LBN_DBLCLK(IDC_LST_HANDLER_MSG, &CMesAgentDlg::OnDblclkLstHandlerMsg)
 	ON_LBN_DBLCLK(IDC_LST_HOST_MSG, &CMesAgentDlg::OnDblclkLstHostMsg)
 	ON_BN_CLICKED(IDC_BTN_TEST, &CMesAgentDlg::OnBnClickedBtnTest)
+	ON_BN_CLICKED(IDC_BTN_TEST2, &CMesAgentDlg::OnBnClickedBtnTest2)
+	ON_BN_CLICKED(IDC_BTN_TEST3, &CMesAgentDlg::OnBnClickedBtnTest3)
+	ON_BN_CLICKED(IDC_BTN_TEST4, &CMesAgentDlg::OnBnClickedBtnTest4)
 END_MESSAGE_MAP()
 
 // CMesAgentDlg 메시지 처리기
@@ -325,4 +328,22 @@ void CMesAgentDlg::Set_HostMsg(CString sMsg)
 void CMesAgentDlg::OnBnClickedBtnTest()
 {
 // 	g_objHost.Set_S6F11_LotInfo("AAAAAAA");
+}
+
+
+void CMesAgentDlg::OnBnClickedBtnTest2()
+{
+	g_objHost.Set_S6F11_UnitMaterialReport("80", "1","80","77","3");
+}
+
+
+void CMesAgentDlg::OnBnClickedBtnTest3()
+{
+	g_objHost.Set_S6F11_DownActionReport("Machine Validation", "Validation action 1", "20260804101733", "20260804101755", "1002", "04", "Tray Transfer 1 Head에 Tray가 있는지 확인하여 주십시오");
+}
+
+
+void CMesAgentDlg::OnBnClickedBtnTest4()
+{
+	 g_objHost.Set_S6F11_UnitProcessingTimeReport("Test-Lot","12345", "Memphis", "DPAMS-0912","1027.1", "1289.4"); 
 }
