@@ -113,7 +113,7 @@ public:
 	void Set_S2F50_SetCode_DownAction(); 
 
 	void Set_S6F11_ControlState(int nState);			// 1:Online, 2:Offline
-	void Set_S6F11_EquipState(int nState, int nErrNo);	// 2:Idle, 5:Run, 6:Down
+	void Set_S6F11_EquipState(int nState, int nErrNo, int nErrCat = 03);	// 2:Idle, 5:Run, 6:Down
 	void Set_S6F11_IdleReportSet(BOOL bSet);
 	void Set_S6F11_IdleReasonReport();
 

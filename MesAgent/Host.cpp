@@ -975,20 +975,19 @@ void CHost::Set_S6F11_ControlState(int nState)
 // }
 
 
-void CHost::Set_S6F11_EquipState(int nState, int nErrNo)
+void CHost::Set_S6F11_EquipState(int nState, int nErrNo, int nErrCat)
 {
-	CString	strState, strErrNo, strOldState;
+	CString	strState, strErrNo, strOldState, strErrCat;
 	strState.Format("%d", nState);
 	strErrNo.Format("%d", nErrNo);
+	strErrCat.Format("00004%d", nErrCat);
 	if (nErrNo < 1) { strErrNo = gData.sAlarmTxt = ""; }
 
 	gData.nPreEquipState = gData.nPreEquipState == 0 ? 1 : gData.nCurEquipState;
 	gData.nCurEquipState = nState;
 
 	strOldState.Format("%d", gData.nPreEquipState);
-
-
-
+	
 	// 	strOldState = ((nState == 2 || nState == 6) ? "5" : "6");
 
 	SYSTEMTIME time;
@@ -1015,19 +1014,17 @@ void CHost::Set_S6F11_EquipState(int nState, int nErrNo)
 	{
 		strSend += "    <DVLIST COUNT=\"5\">" + CRLF;
 	}
-
-	
+		
 	strSend += "      <DV NAME=\"TIME\" VALUE=\"" + strTime + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"PREVNEWEQPSTATE\" VALUE=\"" + strOldState + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"CURRNEWEQPSTATE\" VALUE=\"" + strState + "\" />" + CRLF;
 	
-
 	if(strState == "3")
 	{
 		strSend += "      <DV NAME=\"ALARMLISTQTY\" VALUE=\"1\" />" + CRLF;
 		strSend += "      <DV NAME=\"ALARMID#1\" VALUE=\"" + strErrNo + "\" />" + CRLF;
-		strSend += "      <DV NAME=\"ALARMCATEGORY#1\" VALUE=\"0000402\" />" + CRLF;
+		strSend += "      <DV NAME=\"ALARMCATEGORY#1\" VALUE=\"" + strErrCat +  "\" />" + CRLF;
 		strSend += "      <DV NAME=\"ALARMTEXT#1\" VALUE=\"" + gData.sAlarmTxt + "\" />" + CRLF;
 	}
 	else
@@ -1572,10 +1569,10 @@ void CHost::Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetai
 	SYSTEMTIME time;
 	GetLocalTime(&time);
 
-	CString strTime;
+	CString strTime, sAlmCat;
 	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
 
-	sErrCat = "0000402"; // 7자리 3자리(유닛번호)+2자리(긴급도)+(
+	sAlmCat.Format("00004%s", sErrCat); // 7자리 3자리(유닛번호)+2자리(긴급도)+2자리(대분류)
 
 	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
 
@@ -1595,7 +1592,7 @@ void CHost::Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetai
 	strSend += "      <DV NAME=\"OPERATORID\" VALUE=\"" + gData.sOperId + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"ALARMLISTQTY\" VALUE=\"1\" />" + CRLF;
 	strSend += "      <DV NAME=\"ALARMID#1\" VALUE=\"" + sErrNo + "\" />" + CRLF;
-	strSend += "      <DV NAME=\"ALARMCATEGORY#1\" VALUE=\"" + sErrCat + "\" />" + CRLF;
+	strSend += "      <DV NAME=\"ALARMCATEGORY#1\" VALUE=\"" + sAlmCat + "\" />" + CRLF;
 	strSend += "      <DV NAME=\"ALARMTEXT#1\" VALUE=\"" + sErrMsg + "\" />" + CRLF;
 	strSend += "    </DVLIST>" + CRLF;
 	strSend += "  </ITEM>" + CRLF;

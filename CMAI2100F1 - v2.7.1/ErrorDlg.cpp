@@ -87,6 +87,8 @@ BOOL CErrorDlg::OnInitDialog()
 	m_nBackColorLoop = 0;
 	m_strErrSubMsg = "";
 
+	m_strMajor.Empty();
+	m_strMiddle.Empty();
 
 	CString strErrPick, strMiddle, strMiddleMsg;
 
@@ -425,10 +427,10 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 		int nIndex = 0;
 		
-		CString strCat, strMajor, strMiddle, strTemp;
+		CString strCat, strTemp;
 		strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");
-		AfxExtractSubString(strMajor, strCat, 0, '-');
-		AfxExtractSubString(strMiddle, strCat, 1, '-');
+		AfxExtractSubString(m_strMajor, strCat, 0, '-');
+		AfxExtractSubString(m_strMiddle, strCat, 1, '-');
 		
 		for (std::map<CString, CString>::const_iterator it = m_mssDownAction.begin();
 			it != m_mssDownAction.end();
@@ -438,7 +440,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			const CString& strValue = it->second;
 
 			strTemp = strKey.Right(2);			
-			if (strTemp == strMajor)
+			if (strTemp == m_strMajor)
 			{
 				nIndex = m_cboDownReasonCat.FindStringExact(-1, strValue);
 				m_cboDownReasonCat.SetCurSel(nIndex);
@@ -446,8 +448,8 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		}
 		
 		CString strCatMsg, strMajorNo;
-		strMajorNo.Format("CAT_TYPE_%s", strMajor);
-		strCatMsg = INI.Get_String(strMajorNo, strMiddle, "");
+		strMajorNo.Format("CAT_TYPE_%s", m_strMajor);
+		strCatMsg = INI.Get_String(strMajorNo, m_strMiddle, "");
 
 		nIndex = m_cboDownReason.FindStringExact(-1, strCatMsg);
 		m_cboDownReason.SetCurSel(nIndex);
@@ -777,6 +779,8 @@ void CErrorDlg::OnBnClickedBtnErrOk()
 	SYSTEMTIME time;
 	GetLocalTime(&time);
 	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+	
+
 	
 
 	g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, m_nErrNo, 33, m_strErrMsg);

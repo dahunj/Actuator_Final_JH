@@ -152,7 +152,7 @@ LRESULT CHandler::OnServerReceive(WPARAM wClientIdx, LPARAM lServerPort)
 		} 
 		else if (strCmd == "ERROR")
 		{
-			if (strOp == "UPDATE") Get_ErrorUpdate(strArg[0], strArg[1]);
+			if (strOp == "UPDATE") Get_ErrorUpdate(strArg[0], strArg[1], strArg[2]);
 
 		}
 		else if (strCmd == "CONTROL")
@@ -260,10 +260,11 @@ void CHandler::Get_DownAction(CString sActionCode, CString sActionDetail, CStrin
 }
 
 
-void CHandler::Get_ErrorUpdate(CString sFlag, CString sErrNo)
+void CHandler::Get_ErrorUpdate(CString sFlag, CString sErrNo, CString sErrCat)
 {
 	int nFlag = atoi(sFlag);
 	int nErrNo = atoi(sErrNo);
+	int nErrCat = atoi(sErrCat);
 	CString strErrFile, strErrMsg;
 
 	strErrFile.Format("%s\\%s", gsCurrentDir, gData.sErrFile);
@@ -273,7 +274,7 @@ void CHandler::Get_ErrorUpdate(CString sFlag, CString sErrNo)
 	gData.sAlarmTxt = INI.Get_String("ERROR", sErrNo, "");
 
 	if (nFlag == 1) {
-		g_objHost.Set_S6F11_EquipState(3, nErrNo);	//Down
+		g_objHost.Set_S6F11_EquipState(3, nErrNo, nErrCat);	//Down
 		g_objHost.Set_S6F11_UnitState(3);
 		g_objHost.Set_S5F1_Alarm(1, nErrNo);
 	} else {

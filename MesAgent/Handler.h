@@ -34,7 +34,7 @@ private:
 private:
 	void Get_OperUpdate(CString sOperId);
 	void Get_EquipState(CString sState);	// 1:Idle, 2:Run, 3:Down
-	void Get_ErrorUpdate(CString sFlag, CString sErrNo);
+	void Get_ErrorUpdate(CString sFlag, CString sErrNo, CString sErrCat);
 	void Get_ControlState(CString sFlag, CString sOperId);	// 1:Online, 2:Offline
 	void Get_LotReady(CString sLotId, CString sPortNo);
 	void Get_LotStart(CString sType, CString sLotId, CString sRecipe, CString sCount);
