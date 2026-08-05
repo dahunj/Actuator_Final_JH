@@ -87,8 +87,7 @@ BOOL CErrorDlg::OnInitDialog()
 	m_nBackColorLoop = 0;
 	m_strErrSubMsg = "";
 
-	m_strMajor.Empty();
-	m_strMiddle.Empty();
+
 
 	CString strErrPick, strMiddle, strMiddleMsg;
 
@@ -378,6 +377,42 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		strShow.Replace("#", "\n\n");
 		m_stcErrMsg.SetWindowText(strShow);
 
+
+		////////////////////// Down Action 
+		int nIndex = 0;
+		gAlm.sAlmCatMajor.Empty();
+		gAlm.sAlmCatMiddle.Empty();
+
+		CString strCat, strTemp;
+		strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");
+		AfxExtractSubString(gAlm.sAlmCatMajor, strCat, 0, '-');
+		AfxExtractSubString(gAlm.sAlmCatMiddle, strCat, 1, '-');
+
+		for (std::map<CString, CString>::const_iterator it = m_mssDownAction.begin();
+			it != m_mssDownAction.end();
+			++it)
+		{
+			const CString& strKey   = it->first;
+			const CString& strValue = it->second;
+
+			strTemp = strKey.Right(2);			
+			if (strTemp == gAlm.sAlmCatMajor)
+			{
+				nIndex = m_cboDownReasonCat.FindStringExact(-1, strValue);
+				m_cboDownReasonCat.SetCurSel(nIndex);
+			}
+		}
+
+		CString strCatMsg, strMajorNo;
+		strMajorNo.Format("CAT_TYPE_%s", gAlm.sAlmCatMajor);
+		strCatMsg = INI.Get_String(strMajorNo, gAlm.sAlmCatMiddle, "");
+
+		nIndex = m_cboDownReason.FindStringExact(-1, strCatMsg);
+		m_cboDownReason.SetCurSel(nIndex);
+
+		m_cboDownAction.SetCurSel(0);
+		
+
 		SYSTEMTIME time;
 		GetLocalTime(&time);
 		for (int i = 2; i > 0; i--) gData.sAlarmTime[i] = gData.sAlarmTime[i - 1];
@@ -394,7 +429,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 		gData.sAlarmList[0].Format("[%s] %s", strErrNo, m_strErrMsg);
 
-		g_objMesAgent.Set_ErrorUpdate(1, strErrNo);
+		g_objMesAgent.Set_ErrorUpdate(1, strErrNo, gAlm.sAlmCatMajor);
 		Set_SPCError(m_nErrNo, m_strErrMsg);
 		Set_AlarmLog(m_nErrNo, m_strErrMsg);
 		strLog.Format("%s,%s,%s", m_strLotID, strErrNo, m_strErrMsg);
@@ -425,36 +460,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		else nErrorPos = 0;
 		m_stcErrPos[nErrorPos].Set_Color(RGB(0xFF, 0xFF, 0xFF), RGB(0xFF, 0x00, 0x00));
 
-		int nIndex = 0;
 		
-		CString strCat, strTemp;
-		strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");
-		AfxExtractSubString(m_strMajor, strCat, 0, '-');
-		AfxExtractSubString(m_strMiddle, strCat, 1, '-');
-		
-		for (std::map<CString, CString>::const_iterator it = m_mssDownAction.begin();
-			it != m_mssDownAction.end();
-			++it)
-		{
-			const CString& strKey   = it->first;
-			const CString& strValue = it->second;
-
-			strTemp = strKey.Right(2);			
-			if (strTemp == m_strMajor)
-			{
-				nIndex = m_cboDownReasonCat.FindStringExact(-1, strValue);
-				m_cboDownReasonCat.SetCurSel(nIndex);
-			}
-		}
-		
-		CString strCatMsg, strMajorNo;
-		strMajorNo.Format("CAT_TYPE_%s", m_strMajor);
-		strCatMsg = INI.Get_String(strMajorNo, m_strMiddle, "");
-
-		nIndex = m_cboDownReason.FindStringExact(-1, strCatMsg);
-		m_cboDownReason.SetCurSel(nIndex);
-		
-		m_cboDownAction.SetCurSel(0);
 		
  		g_objInspector.Set_StatusUpdate(INSPECTOR_ALL, 4);
 		g_objDispatcher.Set_StatusUpdate(2);	// 0:Stop, 1:Run, 2:Error
@@ -778,12 +784,9 @@ void CErrorDlg::OnBnClickedBtnErrOk()
 
 	SYSTEMTIME time;
 	GetLocalTime(&time);
-	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
-	
+	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
 
-	
-
-	g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, m_nErrNo, 33, m_strErrMsg);
+	g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, m_nErrNo, atoi(gAlm.sAlmCatMajor), m_strErrMsg);
 
 	g_objLogFile.Save_HandlerLog("[Error Mode] OK button push");
 	ShowWindow(SW_HIDE);

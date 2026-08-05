@@ -306,6 +306,8 @@ typedef struct {
 	int		nAlmNo;
 	int		nPortNo;
 	CString sAlmMsg;
+	CString sAlmCatMajor;
+	CString sAlmCatMiddle;
 	CString sStartTime;
 	CString sEndTime;
 	CString sLotID;

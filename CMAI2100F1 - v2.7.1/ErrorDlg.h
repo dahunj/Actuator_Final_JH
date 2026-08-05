@@ -71,10 +71,7 @@ private:
 
 	CString		m_strAlmStart;
 	CString		m_strAlmEnd;
-
-	CString		m_strMajor;
-	CString		m_strMiddle;
-
+	
 	int			m_nBackColorLoop;
 	BOOL		m_bErrShow;
 

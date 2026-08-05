@@ -420,10 +420,10 @@ void CMesAgent::Set_UnitState(int nState)
 	Send_Command(strSend);
 }
 
-void CMesAgent::Set_ErrorUpdate(int nFlag, CString sErrNo)
+void CMesAgent::Set_ErrorUpdate(int nFlag, CString sErrNo, CString sErrCat)
 {
 	CString strSend;
-	strSend.Format("ERROR,UPDATE,%d,%s", nFlag, sErrNo);
+	strSend.Format("ERROR,UPDATE,%d,%s,%s", nFlag, sErrNo, sErrCat);
 	Send_Command(strSend);
 }
 

@@ -1443,7 +1443,7 @@ void CWorkDlg::Reset_AlarmLog()
 	g_objLogFile.Save_SpcErrorLog(strLog, gAlm.sLotID);
 
 	strErrNo.Format("%04d", gAlm.nAlmNo);
-	g_objMesAgent.Set_ErrorUpdate(0, strErrNo);
+	g_objMesAgent.Set_ErrorUpdate(0, strErrNo, gAlm.sAlmCatMajor);
 
 	if (gAlm.nPortNo > 0) {
 		gLot.dwErrorTime[gAlm.nPortNo-1] += gAlm.dwProcTime; gLot.nErrorCount[gAlm.nPortNo-1]++;
