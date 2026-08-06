@@ -43,7 +43,7 @@ private:
 	void Get_LotAbort(CString sLotId);
 	void Get_CmRequest(CString sLotId, CString sCmId);
 	void Get_CmEnd(CString sLotId, CString sCmId, CString sResult, CString sNgCode, CString sROSResult, CString sPocket);
-	void Get_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sText, CString nType);
+	void Get_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sText, CString sType);
 	void Get_RecipeList(CString sRecipeData);
 	void Get_TerminalOK();
 
