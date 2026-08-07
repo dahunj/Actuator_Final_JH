@@ -499,7 +499,7 @@ void CHandler::Get_LotInfo(CString sLotId)
 void CHandler::Set_LotStart()
 {
 	CString strSend;
-	strSend.Format("LOT,START,%s,%s,%d", gMes.sHostLotId, gMes.sHostRecipe, gMes.nHostCmCount);
+	strSend.Format("LOT,START,%s,%s,%d,%s,%s", gMes.sHostLotId, gMes.sHostRecipe, gMes.nHostCmCount, gMes.sHostProcID, gMes.sHostModel);
 	Send_Command(strSend);
 }
 

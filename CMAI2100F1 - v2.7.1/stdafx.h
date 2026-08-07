@@ -237,6 +237,8 @@ typedef struct {
 	CString	sLotID[6];
 	int		nCmCount[6];
 	CString	sRecipeName[6];
+	CString sModelID[6];
+	CString sProcID[6];
 	int		nTrayCount[6];
 	int		nLastCount[6];	//ÀÜ·®
 	int		nLotStatus[6];	//0:Wait, 1:Run, 3:Lot_End
@@ -339,7 +341,8 @@ typedef struct {
 	int			nHostRcvCmCount;			// Host ¼ö½Å Lot´ç CM ÃÑ°¹¼ö
 	CString		sHostRecipe[6];				// Host ¼ö½Å Recipe
 	int			nHostCmCount[6];			// Host ¼ö½Å Lot´ç CM ÃÑ°¹¼ö
-
+	CString     sHostProcID[6];
+	CString     sHostModel[6];
 	// Cancel Data
 	CString		sHostCancelLotId;
 	CString		sHostCancelModule;			// Host Cancel ¼ö½Å code

@@ -144,7 +144,7 @@ LRESULT CMesAgent::OnClientReceive(WPARAM wParam, LPARAM lParam)
 
 		} else if (strCmd == "LOT") 
 		{
-			if (strOp == "START")  Get_LotStart(strArg[0], strArg[1], strArg[2]);
+			if (strOp == "START")  Get_LotStart(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4]);
 			if (strOp == "CANCEL") Get_LotCancel(strArg[0], strArg[1],  strArg[2]);
 
 		}
@@ -199,7 +199,7 @@ void CMesAgent::Get_ControlState(CString sFlag)
 	m_bHostOnline = (nOnline == 1 ? TRUE : FALSE);
 }
 
-void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount)
+void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount, CString sProcessID, CString sModel)
 {
 	int nPortNo = 99;
 	int nCmCount = atoi(sCmCount);
@@ -208,7 +208,7 @@ void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount)
 	gMes.sHostCancelLotId = sLotId;
 	gMes.sHostCancelCode = sRecipe;
 	gMes.sHostCancelText = sCmCount;
-
+	
 	for(int i=0; i<6; i++) {
 		if (gLot.sLotID[i] == sLotId) { nPortNo = i; break; }
 	}
@@ -216,6 +216,8 @@ void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount)
 
 	gMes.sHostRecipe[nPortNo]  = sRecipe;
 	gMes.nHostCmCount[nPortNo] = nCmCount;
+	gMes.sHostProcID[nPortNo] = sProcessID;
+	gMes.sHostModel[nPortNo] = sModel;
 
 	if (sRecipe.GetLength() < 1) { g_objCommon.Show_Error(9001); return; }
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();

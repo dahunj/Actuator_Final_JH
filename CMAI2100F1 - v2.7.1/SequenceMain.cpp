@@ -1565,13 +1565,11 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo)
 
 
 	CString sProcessID, sTact, sCycle;
-	
-	sProcessID.Format("%d", nPortNo);
-	
+		
 	sTact.Format("%0.1lf", gLot.dLLTackTime);
 	sCycle.Format("%0.1lf", (dwTime / 1000.0));
 	
-	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], sProcessID, gData.sRecipeName, gLot.sRecipeName[nNo], sTact , sCycle);
+	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], gLot.sProcID[nNo], gLot.sModelID[nNo], gLot.sRecipeName[nNo], sTact , sCycle);
 
 	//"Time,PortNo,LotID,Count,NG_Count,Good_Count,Rate,Skip_Count,Bar_NoRead,RosJudge,RosGood,RosNG,RosRepair,RosTimeOver,Start_Time,End_Time,Tack\r\n");
 	sLog.Format("%d,%s,%d,%d,%d,%0.1lf,%d,%d,%d,%d,%d,%d,%d,%s,%s,%0.5lf,%d",
@@ -2761,7 +2759,13 @@ BOOL CSequenceMain::Run_Transfer1()
 	case 7:
 		if (!m_pEquipData->bUseMES || gMes.nLotStatus[nPort1No-1] == 2) {
 			if (!m_pEquipData->bUseMES) gLot.sRecipeName[nPort1No-1] = gData.sRecipeName;
-			else						gLot.sRecipeName[nPort1No-1] = gMes.sHostRecipe[nPort1No-1];
+			else
+			{
+				gLot.sRecipeName[nPort1No-1] = gMes.sHostRecipe[nPort1No-1];
+				gLot.sProcID[nPort1No-1] = gMes.sHostProcID[nPort1No-1];
+				gLot.sModelID[nPort1No-1] = gMes.sHostModel[nPort1No-1];
+			}
+				
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(5000);
 		}
 		break;
