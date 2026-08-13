@@ -706,10 +706,12 @@ void CCMAI2100Dlg::Set_DownAction()
 		m_dwDownActionTime = GetTickCount(); 
 		return;
 	}
-	//int nState = gData.m_nMS;
-	//if (nState != STATE_NONE && nState != STATE_INITEND) { m_dwDownActionTime = GetTickCount(); return; }
-
-	if (g_dlgDownReport.IsWindowVisible()) { m_dwDownActionTime = GetTickCount(); return; }
+	int nState = gData.m_nMS;
+	if (nState == STATE_NONE || nState == STATE_RUN || nState == STATE_LOTEND)  
+	{ 
+		m_dwDownActionTime = GetTickCount(); 
+		return; 
+	}
 
 	if(gDown.bDownHappen && !gDown.bDownClear && !g_dlgDownReport.m_bStart)
 	{
@@ -718,6 +720,9 @@ void CCMAI2100Dlg::Set_DownAction()
 		return;
 	}
 
+	if (g_dlgDownReport.IsWindowVisible()) { m_dwDownActionTime = GetTickCount(); return; }
+
+	
 
 	int nTerm = (int)(GetTickCount() - m_dwDownActionTime);
 	if (nTerm < pEquipData->nDownActionTime * 1000) return;	// 초 -> 밀리초
