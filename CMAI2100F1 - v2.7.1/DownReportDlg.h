@@ -59,8 +59,6 @@ public:
 	afx_msg void OnCbnSelchangeCboDownactiondetail();
 	afx_msg void OnBnClickedBtnReport();
 
-
-
 };
 
 extern CDownReportDlg g_dlgDownReport;

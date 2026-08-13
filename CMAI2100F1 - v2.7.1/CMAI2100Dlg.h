@@ -20,6 +20,7 @@
 #define STATE_LOTEND		3
 #define STATE_ALARM			4
 #define STATE_EMER			5
+#define	STATE_READY			6
 
 #define EXIT_SYSTEM_NONE	0
 #define EXIT_SYSTEM_AJIN	1

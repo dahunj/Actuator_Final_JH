@@ -260,7 +260,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (pDX13->iStopSw && !m_rdoWorkStop.GetCheck()) {
 		g_objLogFile.Save_HandlerLog("[Work Mode] STOP S/W push");
 		m_rdoWorkStop.SetCheck(TRUE);
-		pMainDlg->Set_MainState(STATE_INITEND);
+		pMainDlg->Set_MainState(STATE_READY);
 	}
 /*
 	if (pDX13->iElevator1Sw) ElevatorOpen(1);
@@ -307,7 +307,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 		} else {				// Auto Running
 			if (!g_objSequenceMain.Is_MainThreadRun()) {
 				g_objLogFile.Save_HandlerLog("[Work Mode] Auto STOP");
-				pMainDlg->Set_MainState(STATE_INITEND);
+				pMainDlg->Set_MainState(STATE_READY);
 			}
 		}
 
@@ -527,7 +527,7 @@ void CWorkDlg::OnBnClickedRdoWorkStart()
 void CWorkDlg::OnBnClickedRdoWorkStop()
 {
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
-	pMainDlg->Set_MainState(STATE_INITEND);
+	pMainDlg->Set_MainState(STATE_READY);
 	dwStopSTime = GetTickCount();
 	g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
 	g_objMesAgent.Set_UnitState(eEquipState::DOWN);

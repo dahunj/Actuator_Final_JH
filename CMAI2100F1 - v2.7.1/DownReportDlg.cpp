@@ -310,6 +310,8 @@ void CDownReportDlg::OnBnClickedBtnReport()
 
 	g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 
+	gDown.bDownHappen = FALSE;
+	gDown.bDownClear = TRUE;
 	g_objLogFile.Save_HandlerLog("[Down Report] OK button push");
 	ShowWindow(SW_HIDE);
 }

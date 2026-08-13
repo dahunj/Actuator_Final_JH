@@ -2717,11 +2717,11 @@ BOOL CSequenceMain::Run_Transfer1()
 		}
 		break;
 	case 2:
-		if (m_pDX03->iTransferZUp && !m_pDX03->iTransferZDown) {
+		/*if (m_pDX03->iTransferZUp && !m_pDX03->iTransferZDown) {
 			gData.nTransferX1Pos = nFmTran1Pos;
 			g_objCommon.Move_Position(AX_TRANSFER_X1, gData.nTransferX1Pos);
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
-		}
+		}*/
 		break;
 	case 3:
 		if (g_objCommon.Check_Position(AX_TRANSFER_X1, gData.nTransferX1Pos)) {

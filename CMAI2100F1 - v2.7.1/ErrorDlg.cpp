@@ -295,7 +295,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 		m_strErrSubMsg = "";
 		for (int i = 0; i < 14; i++) m_stcErrPos[i].Set_Color(RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
-		pMainDlg->Set_MainState(STATE_INITEND);
+		pMainDlg->Set_MainState(STATE_READY);
 //		g_objMES.Set_Alarm(2, m_nErrNo, m_strErrMsg);
 		gData.bAlarmShow = FALSE;
 		g_objLogFile.Save_HandlerLog("[Error Mode] Close Error");

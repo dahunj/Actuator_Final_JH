@@ -197,7 +197,7 @@ void COperatorDlg::OnBnClickedBtnOperStop()
 	Enable_OpModeButton(TRUE);
 
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
-	pMainDlg->Set_MainState(STATE_INITEND);
+	pMainDlg->Set_MainState(STATE_READY);
 
 	CString sLog;
 	sLog.Format("[Operator] STOP button push....  OperID[%s]", gData.sOperID);

@@ -32,7 +32,7 @@ obj/
 [Rr]elease*/
 [Pp]ublish
 Ankh.NoLoad
-
+LOG/
 #Tooling
 _ReSharper*/
 *.resharper

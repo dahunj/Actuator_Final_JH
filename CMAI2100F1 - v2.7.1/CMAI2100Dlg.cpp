@@ -577,6 +577,7 @@ void CCMAI2100Dlg::Set_MainState(int nState)
 		break;
 	case STATE_INITEND:
 	case STATE_LOTEND:
+	case STATE_READY:
 		pDY13->oStartLamp1 = pDY13->oStartLamp2 = pDY13->oStartLamp3 = FALSE;
 		pDY13->oStopLamp1 = pDY13->oStopLamp2 = pDY13->oStopLamp3 = TRUE;
 		pDY13->oResetLamp1 = pDY13->oResetLamp2 = pDY13->oResetLamp3 = FALSE;
@@ -707,22 +708,21 @@ void CCMAI2100Dlg::Set_DownAction()
 		return;
 	}
 	int nState = gData.m_nMS;
-	if (nState == STATE_NONE || nState == STATE_RUN || nState == STATE_LOTEND)  
+	if (nState == STATE_NONE || nState == STATE_RUN || nState == STATE_LOTEND || nState == STATE_INITEND || (nState == STATE_READY && !gDown.bDownHappen))  
 	{ 
 		m_dwDownActionTime = GetTickCount(); 
 		return; 
 	}
 
 	if(gDown.bDownHappen && !gDown.bDownClear && !g_dlgDownReport.m_bStart)
-	{
+	{		
 		gDown.bDownHappen = FALSE;
 		m_dwDownActionTime = GetTickCount(); 
 		return;
 	}
 
 	if (g_dlgDownReport.IsWindowVisible()) { m_dwDownActionTime = GetTickCount(); return; }
-
-	
+		
 
 	int nTerm = (int)(GetTickCount() - m_dwDownActionTime);
 	if (nTerm < pEquipData->nDownActionTime * 1000) return;	// 초 -> 밀리초
