@@ -27,6 +27,7 @@ void CDataManager::Reset_EquipData()
 	m_EquipData.bUseDoorLock = FALSE;
 	m_EquipData.bUseTaktLog = FALSE;
 	m_EquipData.nNoWorkTime = 0;
+	m_EquipData.nDownActionTime = 5;
 
 	m_EquipData.bUseAlign1 = FALSE;
 	m_EquipData.bUseAlign2 = FALSE;

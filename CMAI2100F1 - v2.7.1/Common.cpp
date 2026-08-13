@@ -21,6 +21,7 @@
 #include "Wininet.h"
 
 #include "WorkDlg.h"
+#include "DownReportDlg.h"
 
 // CCommon
 CCommon g_objCommon;
@@ -1132,6 +1133,11 @@ void CCommon::Display_MESRecipe(CString sRecipe)
 void CCommon::Set_LotCount(int nPortNo, CString sLotID, int nCount)
 {
 	g_dlgWork.Set_LotCount(nPortNo, sLotID, nCount);
+}
+
+void CCommon::Set_DownActionCboList(CString sData)
+{
+	g_dlgDownReport.Set_DownActionCboList(sData);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

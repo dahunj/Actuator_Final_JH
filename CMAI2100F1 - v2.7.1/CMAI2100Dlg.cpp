@@ -25,6 +25,7 @@
 #include "SequenceInit.h"
 #include "SequenceMain.h"
 #include "NoWorkDlg.h"
+#include "DownReportDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -116,6 +117,7 @@ BOOL CCMAI2100Dlg::OnInitDialog()
 	g_dlgError.Create(CErrorDlg::IDD, this);
 	g_dlgAlarm.Create(CAlarmDlg::IDD, this);
 	g_dlgNoWork.Create(CNoWorkDlg::IDD, this);
+	g_dlgDownReport.Create(CDownReportDlg::IDD, this);
 
 	g_objLogFile.Save_HandlerLog("[Main Dialog] Program Start");
 
@@ -187,6 +189,7 @@ void CCMAI2100Dlg::OnDestroy()
 	g_dlgInitial.DestroyWindow();
 	g_dlgOperator.DestroyWindow();
 	g_dlgNoWork.DestroyWindow();
+	g_dlgDownReport.DestroyWindow();
 
 	g_objBarcodeLot.DestroyWindow();
 	g_objInspector.DestroyWindow();
@@ -280,6 +283,7 @@ void CCMAI2100Dlg::OnTimer(UINT_PTR nIDEvent)
 		g_objCommon.Check_MainDoor();
 		if (!gData.bUseDryRun) {
 			Set_NoWork();
+			Set_DownAction();
 		}
 		break;
 	case TIMER_TOWER_FLKR:
@@ -691,6 +695,48 @@ void CCMAI2100Dlg::Set_NoWork()
 
 	g_dlgNoWork.ShowWindow(TRUE);
 }
+
+
+void CCMAI2100Dlg::Set_DownAction()
+{
+	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+
+	if (pEquipData->nDownActionTime < 1 )
+	{		
+		m_dwDownActionTime = GetTickCount(); 
+		return;
+	}
+	//int nState = gData.m_nMS;
+	//if (nState != STATE_NONE && nState != STATE_INITEND) { m_dwDownActionTime = GetTickCount(); return; }
+
+	if (g_dlgDownReport.IsWindowVisible()) { m_dwDownActionTime = GetTickCount(); return; }
+
+	if(gDown.bDownHappen && !gDown.bDownClear && !g_dlgDownReport.m_bStart)
+	{
+		gDown.bDownHappen = FALSE;
+		m_dwDownActionTime = GetTickCount(); 
+		return;
+	}
+
+
+	int nTerm = (int)(GetTickCount() - m_dwDownActionTime);
+	if (nTerm < pEquipData->nDownActionTime * 1000) return;	// 초 -> 밀리초
+
+	g_dlgDownReport.m_bStart = TRUE;
+	gDown.bDownClear = TRUE;
+
+	CTime CurTime = CTime::GetCurrentTime(); 
+	CurTime -= pEquipData->nNoWorkTime;
+	g_dlgDownReport.m_dwStartTime = GetTickCount();
+	g_dlgDownReport.m_strStartTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+
+	CString strLog;
+	strLog.Format("Down Report 시작\t%s", g_dlgDownReport.m_strStartTime);
+	g_objLogFile.Save_HandlerLog(strLog);
+
+	g_dlgDownReport.ShowWindow(TRUE);
+}
+
 
 void CCMAI2100Dlg::Display_EquipName()
 {

@@ -279,7 +279,10 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 		if (!m_bAutoRunning) {		// First AutoRun
 			if (!Work_Start()) { SetTimer(0, 100, NULL); m_rdoWorkStop.SetCheck(TRUE); return; }
 
-			if (g_objSequenceInit.Get_InitComplete()) {
+			if (g_objSequenceInit.Get_InitComplete()) 
+			{
+				gDown.bDownClear = TRUE;
+
 				m_bAutoRunning = TRUE;
 				g_objCommon.Locking_MainDoor(TRUE, TRUE);
 				pMainDlg->Enable_ModeButton(FALSE);
@@ -294,7 +297,8 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 				g_objSequenceMain.Begin_MainRunThread();
 
 				pMainDlg->Set_EquipRunStart();
-				g_objMesAgent.Set_EquipState(5);	//Run
+				g_objMesAgent.Set_EquipState(eEquipState::RUN);	
+				g_objMesAgent.Set_UnitState(eEquipState::RUN);
 
 			} else {
 				g_objCommon.Show_Error(40);		// 초기화 완료 에러
@@ -525,7 +529,8 @@ void CWorkDlg::OnBnClickedRdoWorkStop()
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
 	pMainDlg->Set_MainState(STATE_INITEND);
 	dwStopSTime = GetTickCount();
-	g_objMesAgent.Set_EquipState(6);	//Pause
+	g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
+	g_objMesAgent.Set_UnitState(eEquipState::DOWN);
 
 	g_objLogFile.Save_HandlerLog("[Work Mode] STOP button push");
 }
@@ -645,7 +650,12 @@ void CWorkDlg::OnBnClickedBtnIdleReport()
 	if (!pEquipData->bUseMES) return;
 
 	if (g_dlgNoWork.IsWindowVisible()) g_dlgNoWork.ShowWindow(SW_HIDE);
-	else g_dlgNoWork.ShowWindow(SW_SHOW);	
+	else
+	{
+		g_dlgNoWork.Set_Auto(FALSE);
+		g_dlgNoWork.ShowWindow(SW_SHOW);
+	}
+			
 }
 //------------------MES------------------------------------------------------------//
 
@@ -1436,7 +1446,7 @@ void CWorkDlg::Reset_AlarmLog()
 	g_objLogFile.Save_SpcErrorLog(strLog, gAlm.sLotID);
 
 	strErrNo.Format("%04d", gAlm.nAlmNo);
-	g_objMesAgent.Set_ErrorUpdate(0, strErrNo);
+	g_objMesAgent.Set_ErrorUpdate(0, strErrNo, gAlm.sAlmCatMajor);
 
 	if (gAlm.nPortNo > 0) {
 		gLot.dwErrorTime[gAlm.nPortNo-1] += gAlm.dwProcTime; gLot.nErrorCount[gAlm.nPortNo-1]++;
@@ -1640,7 +1650,8 @@ LRESULT CWorkDlg::OnJobComplete(WPARAM wParam, LPARAM lParam)
 
 	if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "Job 완료.");
 	else					  g_objCommon.Show_MsgBox(1, "Job complete.");
-	g_objMesAgent.Set_EquipState(4);	//Ready
+	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
+	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 
 	return 0;
 }

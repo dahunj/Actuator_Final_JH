@@ -76,7 +76,7 @@
 #endif
 
 //****************************************************************************
-#define AJIN_BOARD_USE
+//#define AJIN_BOARD_USE
 
 #define MAIN_VERSION	"Vf 2.7.1"	//자화 Final #1호기
 #define MES_WAITTIME	10000//5000	//10초
@@ -237,6 +237,8 @@ typedef struct {
 	CString	sLotID[6];
 	int		nCmCount[6];
 	CString	sRecipeName[6];
+	CString sModelID[6];
+	CString sProcID[6];
 	int		nTrayCount[6];
 	int		nLastCount[6];	//잔량
 	int		nLotStatus[6];	//0:Wait, 1:Run, 3:Lot_End
@@ -306,6 +308,8 @@ typedef struct {
 	int		nAlmNo;
 	int		nPortNo;
 	CString sAlmMsg;
+	CString sAlmCatMajor;
+	CString sAlmCatMiddle;
 	CString sStartTime;
 	CString sEndTime;
 	CString sLotID;
@@ -337,7 +341,8 @@ typedef struct {
 	int			nHostRcvCmCount;			// Host 수신 Lot당 CM 총갯수
 	CString		sHostRecipe[6];				// Host 수신 Recipe
 	int			nHostCmCount[6];			// Host 수신 Lot당 CM 총갯수
-
+	CString     sHostProcID[6];
+	CString     sHostModel[6];
 	// Cancel Data
 	CString		sHostCancelLotId;
 	CString		sHostCancelModule;			// Host Cancel 수신 code
@@ -356,11 +361,23 @@ typedef struct {
 	CString		sHostCancelNGText;			// Host Cancel 수신 내용
 } GLOVAL_MES;
 
+typedef struct  
+{
+	BOOL			bDownHappen;
+	BOOL			bDownClear;
+
+	int				nErrorNo;
+	CString			strErrNo;
+	CString			strErrMsg;
+
+} GLOVAL_DOWN;
+
+
 extern GLOVAL_DATA		gData;
 extern GLOVAL_LOT		gLot;
 extern GLOVAL_ALM		gAlm;
 extern GLOVAL_MES		gMes;
-
+extern GLOVAL_DOWN		gDown;
 
 
 struct eElevator
@@ -375,5 +392,34 @@ struct eElevator
 		Unload1 = 5,
 		Unload2 = 6,
 
+	};
+};
+
+
+struct eEquipState
+{
+	enum Name
+	{
+		RUN = 1,
+		IDLE = 2,
+		DOWN = 3,
+		IDLE_STARVED = 4,
+		IDLE_BLOCKED = 5, 
+
+	};
+};
+
+
+struct eAccessMode
+{
+	enum Name
+	{
+		Undefined = 0,
+		OP = 1,
+		Maint = 2,
+		Eng_Vendor = 3,
+		Eng_MI = 4,
+		Engineer = 5,
+		Admini = 6,
 	};
 };
