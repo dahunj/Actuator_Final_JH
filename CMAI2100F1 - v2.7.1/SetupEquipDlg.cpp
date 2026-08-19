@@ -32,7 +32,7 @@ void CSetupEquipDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	for (int i = 0; i < 8; i++) DDX_Control(pDX, IDC_GROUP_0 + i, m_Group[i]);
-	for (int i = 0; i < 37; i++) DDX_Control(pDX, IDC_LABEL_0 + i,  m_Label[i]);
+	for (int i = 0; i < 38; i++) DDX_Control(pDX, IDC_LABEL_0 + i,  m_Label[i]);
 	DDX_Control(pDX, IDC_STC_EQUIP_NAME, m_stcEquipName);
 	DDX_Control(pDX, IDC_STC_EQUIP_MODEL, m_stcEquipModel);
 	DDX_Control(pDX, IDC_CBO_MODEL_CHANGE, m_cboModelChange);
@@ -45,7 +45,7 @@ void CSetupEquipDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LBL_PICKUP,  m_lblPickup);
 	DDX_Control(pDX, IDC_CHK_DRY_RUN, m_chkDryRun);
 	DDX_Control(pDX, IDC_STC_NOWORK_TIME, m_stcNoWorkTime);
-
+	DDX_Control(pDX, IDC_STC_DOWNACTION_TIME, m_stcDownReportTime);
 	DDX_Control(pDX, IDC_CHK_USE_BTM, m_chkUseInspectBtm);
 	DDX_Control(pDX, IDC_CHK_USE_TOP1, m_chkUseInspectTop1);
 	DDX_Control(pDX, IDC_CHK_USE_TOP2, m_chkUseInspectTop2);
@@ -116,6 +116,7 @@ BEGIN_MESSAGE_MAP(CSetupEquipDlg, CDialogEx)
 
 	ON_BN_CLICKED(IDC_BTN_MDJ_DELETE, &CSetupEquipDlg::OnBnClickedBtnMdjDelete)
 	ON_BN_CLICKED(IDC_BTN_MDJ_REFRESH, &CSetupEquipDlg::OnBnClickedBtnMdjRefresh)
+	ON_STN_CLICKED(IDC_STC_DOWNACTION_TIME, &CSetupEquipDlg::OnStnClickedStcDownactionTime)
 END_MESSAGE_MAP()
 
 // CSetupEquipDlg ¸Þ½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
@@ -354,6 +355,7 @@ void CSetupEquipDlg::Initial_Controls()
 	m_Label[27].Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x80, 0x00, 0x80)); // Delay
 	for (int i = 30; i < 36; i++) m_Label[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x80, 0x00, 0x80)); // Delay
 	m_Label[36].Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x40, 0x20, 0x20));	// MDJ List
+	m_Label[37].Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x80, 0x00, 0x80));
 
 	m_stcEquipName.Init_Ctrl("¹ÙÅÁ", 15, TRUE, RGB(0x00, 0x00, 0x80), RGB(0xE0, 0xFF, 0xE0));
 	m_stcEquipModel.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x80), RGB(0xE0, 0xFF, 0xE0));
@@ -391,6 +393,7 @@ void CSetupEquipDlg::Initial_Controls()
 	for (int i = 0; i < 5; i++) m_stcPitchData[i].Init_Ctrl("¹ÙÅÁ", 11, TRUE, COLOR_DEFAULT, RGB(0xFF, 0xFF, 0xE0));
 	for (int i = 0; i <10; i++) m_stcDelayTime[i].Init_Ctrl("¹ÙÅÁ", 11, TRUE, COLOR_DEFAULT, RGB(0xFF, 0xFF, 0xE0));
 	m_stcNoWorkTime.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x80), RGB(0xFF, 0xFF, 0xE0));
+	m_stcDownReportTime.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x80), RGB(0xFF, 0xFF, 0xE0));
 
 	m_grpTower.Init_Ctrl("¹ÙÅÁ", 12, TRUE, COLOR_DEFAULT, COLOR_DEFAULT);
 	for (int i = 0; i < 13; i++) m_lblTower[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x40, 0x40, 0x40));
@@ -439,6 +442,7 @@ void CSetupEquipDlg::Display_EquipData()
 	else m_rdoLightCur[0].SetCheck(TRUE);
 	m_chkDryRun.SetCheck(gData.bUseDryRun);
 	strData.Format("%d", pEquipData->nNoWorkTime); m_stcNoWorkTime.SetWindowText(strData);
+	strData.Format("%d", pEquipData->nDownActionTime); m_stcDownReportTime.SetWindowText(strData);
 
 	m_chkUseInspectBtm.SetCheck(pEquipData->bUseBottom);
 	m_chkUseInspectTop1.SetCheck(pEquipData->bUseTop1);
@@ -588,6 +592,7 @@ void CSetupEquipDlg::Save_EquipData()
 
 	m_stcTimeOver[2].GetWindowText(strData); nData = atoi(strData); INI.Set_Integer("OPTION", "MARGINAL_TRAY", nData);
 	m_stcNoWorkTime.GetWindowText(strData); nData = atoi(strData); INI.Set_Integer("EQUIPMENT", "NOWORK_TIME", nData);
+	m_stcDownReportTime.GetWindowText(strData); nData = atoi(strData); INI.Set_Integer("EQUIPMENT", "DOWN_REPORT_TIME", nData);
 
 	m_stcCmTrayData[0].GetWindowText(strData); nData = atoi(strData); INI.Set_Integer("TRAY", "COUNT_X", nData);
 	m_stcCmTrayData[1].GetWindowText(strData); nData = atoi(strData); INI.Set_Integer("TRAY", "COUNT_Y", nData);
@@ -921,4 +926,14 @@ void CSetupEquipDlg::OnBnClickedBtnMdjRefresh()
 		CString strIp = pRosData->lstMdjIp.GetNext(pos);
 		m_lstMdjIp.AddString(strIp);
 	}
+}
+
+
+void CSetupEquipDlg::OnStnClickedStcDownactionTime()
+{
+	CString strOld, strNew;
+	m_stcDownReportTime.GetWindowText(strOld);
+	if (g_objCommon.Show_NumPad(strOld, strNew) != IDOK) return;
+
+	m_stcDownReportTime.SetWindowText(strNew);
 }

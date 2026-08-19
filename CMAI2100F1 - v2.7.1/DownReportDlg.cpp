@@ -26,6 +26,7 @@ CDownReportDlg::~CDownReportDlg()
 void CDownReportDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_LBL_TITLE, m_LabelTitle);
 	for (int i = 0; i < 5; i++) DDX_Control(pDX, IDC_LABEL_0 + i, m_Label[i]);
 	DDX_Control(pDX, IDC_STC_ALM_CAT, m_stcAlmCatNo);
 	DDX_Control(pDX, IDC_CBO_DOWNREASONCAT, m_cboDownReasonCat);
@@ -53,6 +54,9 @@ END_MESSAGE_MAP()
 BOOL CDownReportDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	Initial_Controls();
+
 	
 	CString strErrPick, strMiddle, strMiddleMsg;
 
@@ -158,6 +162,9 @@ BOOL CDownReportDlg::PreTranslateMessage(MSG* pMsg)
 		}
 	}
 
+	if (pMsg->message == WM_KEYDOWN && (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE))
+		return TRUE;
+
 	return CDialogEx::PreTranslateMessage(pMsg);
 }
 
@@ -168,7 +175,10 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 	if (bShow) 
 	{
-		m_stcAlmCatNo.SetWindowText("33");
+		CString sTempCat;
+		sTempCat.Format("00004%s", gAlm.sAlmCatMajor);
+
+		m_stcAlmCatNo.SetWindowText(sTempCat);
 		m_edtActionDetail.SetWindowText("");
 
 		CString strErrPick, strMiddle, strMiddleMsg;
@@ -319,14 +329,22 @@ void CDownReportDlg::OnBnClickedBtnReport()
 
 void CDownReportDlg::Initial_Controls() 
 {
-	for (int i = 0; i < 5; i++) m_Label[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x60, 0x60, 0x60));
-	m_cboDownReasonCat.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
+	m_LabelTitle.Init_Ctrl("¹ÙÅÁ", 24, TRUE, RGB(0xFF, 0xFF, 0xFF),RGB(0x2F, 0x20, 0xA0));
 
-	m_cboDownReason.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
-	m_cboDownAction.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
-	m_cboDownActionDetail.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
+	for (int i = 0; i < 5; i++) m_Label[i].Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x60, 0x60, 0x60));
 
-	m_stcAlmTime.Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
+	m_stcAlmTime.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));	
+
+	m_cboDownReasonCat.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
+
+	m_cboDownReason.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
+	m_cboDownAction.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
+	m_cboDownActionDetail.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
+
+	m_stcAlmTime.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
+	m_stcAlmCatNo.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
+
+	m_edtActionDetail.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xE0, 0xF0, 0xF0));
 }
 
 void CDownReportDlg::Set_DownActionCboList(CString sData)

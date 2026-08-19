@@ -15,6 +15,7 @@ public:
 // 대화 상자 데이터입니다.
 	enum { IDD = IDD_DOWN_REPORT_DLG };
 
+	CLabelCS	m_LabelTitle;
 	CLabelCS	m_Label[5];
 
 	CStaticCS	m_stcAlmCatNo;
