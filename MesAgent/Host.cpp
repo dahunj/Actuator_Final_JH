@@ -980,7 +980,7 @@ void CHost::Set_S6F11_EquipState(int nState, int nErrNo, int nErrCat)
 	CString	strState, strErrNo, strOldState, strErrCat;
 	strState.Format("%d", nState);
 	strErrNo.Format("%d", nErrNo);
-	strErrCat.Format("00004%d", nErrCat);
+	strErrCat.Format("00004%02d", nErrCat);
 	if (nErrNo < 1) { strErrNo = gData.sAlarmTxt = ""; }
 
 	gData.nPreEquipState = gData.nPreEquipState == 0 ? 1 : gData.nCurEquipState;
@@ -1571,8 +1571,8 @@ void CHost::Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetai
 
 	CString strTime, sAlmCat;
 	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
-
-	sAlmCat.Format("00004%s", sErrCat); // 7자리 3자리(유닛번호)+2자리(긴급도)+2자리(대분류)
+	int nErrCat = atoi(sErrCat);
+	sAlmCat.Format("00004%02d", nErrCat); // 7자리 3자리(유닛번호)+2자리(긴급도)+2자리(대분류)
 
 	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
 
