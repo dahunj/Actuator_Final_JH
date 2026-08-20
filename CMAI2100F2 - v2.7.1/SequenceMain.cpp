@@ -2937,10 +2937,10 @@ BOOL CSequenceMain::Run_Transfer1()
 		}
 		break;
 	case 2:
-		if (g_objCommon.Check_Position(AX_TRANSFER_Z1, 0)) {
-			gData.nTransferX1Pos = nFmTran1Pos;
-			g_objCommon.Move_Position(AX_TRANSFER_X1, gData.nTransferX1Pos);
-			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
+			if (g_objCommon.Check_Position(AX_TRANSFER_Z1, 0)) {
+		gData.nTransferX1Pos = nFmTran1Pos;
+		g_objCommon.Move_Position(AX_TRANSFER_X1, gData.nTransferX1Pos);
+		m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(30000);
 		}
 		break;
 	case 3:
@@ -4298,12 +4298,12 @@ BOOL CSequenceMain::Run_LoadStage1()
 		}
 		break;
 	case 2:
-		if (m_pDX04->iLoadStage1MasterIn && !m_pDX04->iLoadStage1MasterOut) {
+		/*if (m_pDX04->iLoadStage1MasterIn && !m_pDX04->iLoadStage1MasterOut) {
 			m_tLoadStage1Loop.Takt_Save(10, 1); m_tLoadStage1Loop.Takt_Start(10, 2);
 			m_pDY04->oLoadStage1SlaveIn = TRUE; m_pDY04->oLoadStage1SlaveOut = FALSE;
 			g_objAJinAXL.Write_Output(4);
 			m_nLoadStage1Case++; m_tLoadStage1Loop.Set_LoopTime(5000);
-		}
+		}*/
 		break;
 	case 3:
 		if (m_pDX04->iLoadStage1SlaveIn && !m_pDX04->iLoadStage1SlaveOut) {
