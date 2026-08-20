@@ -79,7 +79,8 @@ void CWorkDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STC_MES_CONNECT, m_stcMesConnect);
 	DDX_Control(pDX, IDC_STC_MES_ONLINE, m_stcMesOnline);
 	DDX_Control(pDX, IDC_BTN_NGLOT_END, m_btnNGLotEnd);
-	DDX_Control(pDX, IDC_BUTTON2, m_TestBtn2);
+	DDX_Control(pDX, IDC_BUTTON2, m_BtnTest2);
+	DDX_Control(pDX, IDC_BUTTON3, m_BtnTest3);
 }
 
 BEGIN_MESSAGE_MAP(CWorkDlg, CDialogEx)
@@ -114,6 +115,7 @@ BEGIN_MESSAGE_MAP(CWorkDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_IDLE_REPORT, &CWorkDlg::OnBnClickedBtnIdleReport)
 	ON_BN_CLICKED(IDC_BTN_NGLOT_END, &CWorkDlg::OnBnClickedBtnNGLotEnd)
 
+	ON_BN_CLICKED(IDC_BUTTON3, &CWorkDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 // CWorkDlg 메시지 처리기입니다.
@@ -138,10 +140,13 @@ BOOL CWorkDlg::OnInitDialog()
 	gData.bResultTest = FALSE;
 #endif
 
-	m_TestBtn2.ShowWindow(SW_HIDE);
+	m_BtnTest2.ShowWindow(SW_HIDE);
+	m_BtnTest3.ShowWindow(SW_HIDE);
 #ifndef AJIN_BOARD_USE
-	m_TestBtn2.ShowWindow(SW_SHOW);
+	m_BtnTest2.ShowWindow(SW_SHOW);
+	m_BtnTest2.ShowWindow(SW_SHOW);
 #endif
+
 
 	m_rdoWorkStop.SetCheck(TRUE);
 	m_rdoWorkStop.Set_Color(RGB(0xFF, 0x00, 0x00), COLOR_DEFAULT);
@@ -255,7 +260,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 	} else if (pDX13->iStopSw && !m_rdoWorkStop.GetCheck()) {
 		g_objLogFile.Save_HandlerLog("[Work Mode] STOP S/W push");
 		m_rdoWorkStop.SetCheck(TRUE);
-		pMainDlg->Set_MainState(STATE_INITEND);
+		pMainDlg->Set_MainState(STATE_READY);
 	}
 /*
 	if (pDX13->iElevator1Sw) ElevatorOpen(1);
@@ -266,13 +271,18 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 	if (pDX13->iElevator6Sw) ElevatorOpen(6);
 	if (pDX13->iElevator7Sw) ElevatorOpen(7);
 */
+
 	Display_Status();
 
-	if (m_rdoWorkStart.GetCheck()) {
+	if (m_rdoWorkStart.GetCheck()) 
+	{
 		if (!m_bAutoRunning) {		// First AutoRun
 			if (!Work_Start()) { SetTimer(0, 100, NULL); m_rdoWorkStop.SetCheck(TRUE); return; }
 
-			if (g_objSequenceInit.Get_InitComplete()) {
+			if (g_objSequenceInit.Get_InitComplete()) 
+			{
+				gDown.bDownClear = TRUE;
+
 				m_bAutoRunning = TRUE;
 				g_objCommon.Locking_MainDoor(TRUE, TRUE);
 				pMainDlg->Enable_ModeButton(FALSE);
@@ -287,7 +297,8 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 				g_objSequenceMain.Begin_MainRunThread();
 
 				pMainDlg->Set_EquipRunStart();
-				g_objMesAgent.Set_EquipState(5);	//Run
+				g_objMesAgent.Set_EquipState(eEquipState::RUN);	
+				g_objMesAgent.Set_UnitState(eEquipState::RUN);
 
 			} else {
 				g_objCommon.Show_Error(40);		// 초기화 완료 에러
@@ -296,7 +307,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 		} else {				// Auto Running
 			if (!g_objSequenceMain.Is_MainThreadRun()) {
 				g_objLogFile.Save_HandlerLog("[Work Mode] Auto STOP");
-				pMainDlg->Set_MainState(STATE_INITEND);
+				pMainDlg->Set_MainState(STATE_READY);
 			}
 		}
 
@@ -375,6 +386,7 @@ void CWorkDlg::OnStcCmsCountSClick(UINT nID)
 */
 	CString strOld, strNew, strValue;
 
+
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (pEquipData->bUseMES && pEquipData->bUseCntAutoSet) 
 	{
@@ -382,11 +394,10 @@ void CWorkDlg::OnStcCmsCountSClick(UINT nID)
 		if (strValue.GetLength() > 0 && (gMes.nLotStatus[ID] == 0 || gMes.nLotStatus[ID] == 9 || strValue != gLot.sLotID[ID])) 
 		{
 			gLot.sLotID[ID] = strValue;
-			g_objMesAgent.Set_LotStart(0, ID, gLot.sLotID[ID], gData.sRecipeName, gLot.nCmCount[ID]);            
+			g_objMesAgent.Set_LotStart(0, ID, gLot.sLotID[ID], gData.sRecipeName, gLot.nCmCount[ID]);			
 		}
 		return;
 	}
-
 
 	m_stcCmsCountS[ID].GetWindowText(strOld);
 	if (g_objCommon.Show_NumPad(strOld, strNew) != IDOK) return;
@@ -408,7 +419,7 @@ void CWorkDlg::OnStcCmsCountSClick(UINT nID)
 	m_stcTrayCountS[ID].SetWindowText(strValue);
 
 	if (LotID_Check()==FALSE) { m_stcTrayCountS[ID].SetWindowText(""); m_stcTrayCountS[ID].SetWindowText(""); return; }
-	if (gMes.nLotStatus[ID] != 2 ) g_objMesAgent.Set_LotStart(0, ID, gLot.sLotID[ID], gData.sRecipeName, gLot.nCmCount[ID]);
+	if (gMes.nLotStatus[ID] != 2) g_objMesAgent.Set_LotStart(0, ID, gLot.sLotID[ID], gData.sRecipeName, gLot.nCmCount[ID]);
 
 	strNew.Format("[Work Mode] Module Count Input(%d-%d-%d-%s-%d-%d)", ID, nCmCnt, nTrayCnt, gLot.sLotID[ID], gLot.nCmCount[ID], gMes.nLotStatus[ID]);
 	g_objLogFile.Save_HandlerLog(strNew);
@@ -516,9 +527,10 @@ void CWorkDlg::OnBnClickedRdoWorkStart()
 void CWorkDlg::OnBnClickedRdoWorkStop()
 {
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
-	pMainDlg->Set_MainState(STATE_INITEND);
+	pMainDlg->Set_MainState(STATE_READY);
 	dwStopSTime = GetTickCount();
-	g_objMesAgent.Set_EquipState(6);	//Pause
+	g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
+	g_objMesAgent.Set_UnitState(eEquipState::DOWN);
 
 	g_objLogFile.Save_HandlerLog("[Work Mode] STOP button push");
 }
@@ -638,7 +650,12 @@ void CWorkDlg::OnBnClickedBtnIdleReport()
 	if (!pEquipData->bUseMES) return;
 
 	if (g_dlgNoWork.IsWindowVisible()) g_dlgNoWork.ShowWindow(SW_HIDE);
-	else g_dlgNoWork.ShowWindow(SW_SHOW);	
+	else
+	{
+		g_dlgNoWork.Set_Auto(FALSE);
+		g_dlgNoWork.ShowWindow(SW_SHOW);
+	}
+			
 }
 //------------------MES------------------------------------------------------------//
 
@@ -752,6 +769,7 @@ BOOL CWorkDlg::Work_Start()
 		g_objCommon.Show_MsgBox(1, "Input Operator ID");
 		return FALSE;
 	}
+
 
 	if (LotID_Check() == FALSE) return FALSE;
 /*
@@ -1225,9 +1243,9 @@ void CWorkDlg::Display_Status()
 	m_ledVisionSts[0].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC1));
 	m_ledVisionSts[1].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC2));
 	m_ledVisionSts[2].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC3));
+	m_ledVisionSts[3].Set_On(g_objDispatcher.Is_Connected());
 	m_ledVisionSts[4].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC4));
 	m_ledVisionSts[5].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC5));
-	m_ledVisionSts[3].Set_On(g_objDispatcher.Is_Connected());
 
 	if		(gLot.nLotStatus[0] == 1)		m_stcLotsIdS[0].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//작업중일때
 	else if (gMes.nLotStatus[0] == 2 || gMes.nLotStatus[0] == 4)		m_stcLotsIdS[0].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//매거진 있을때
@@ -1428,7 +1446,7 @@ void CWorkDlg::Reset_AlarmLog()
 	g_objLogFile.Save_SpcErrorLog(strLog, gAlm.sLotID);
 
 	strErrNo.Format("%04d", gAlm.nAlmNo);
-	g_objMesAgent.Set_ErrorUpdate(0, strErrNo);
+	g_objMesAgent.Set_ErrorUpdate(0, strErrNo, gAlm.sAlmCatMajor);
 
 	if (gAlm.nPortNo > 0) {
 		gLot.dwErrorTime[gAlm.nPortNo-1] += gAlm.dwProcTime; gLot.nErrorCount[gAlm.nPortNo-1]++;
@@ -1632,7 +1650,8 @@ LRESULT CWorkDlg::OnJobComplete(WPARAM wParam, LPARAM lParam)
 
 	if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "Job 완료.");
 	else					  g_objCommon.Show_MsgBox(1, "Job complete.");
-	g_objMesAgent.Set_EquipState(4);	//Ready
+	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
+	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 
 	return 0;
 }
@@ -1681,6 +1700,34 @@ LRESULT CWorkDlg::OnShowLotEndMsg(WPARAM wParam, LPARAM lParam)
 		else					  g_objCommon.Show_MsgBox(1, "Lot is complete.\nClear and take it out.");
 	}
 */
+}
+
+void CWorkDlg::OnBnClickedButton1()
+{
+	DY_DATA_14 *pDY14 = g_objAJinAXL.Get_pDY14();
+
+	if (pDY14->oInsideLight)	pDY14->oInsideLight = FALSE;
+	else						pDY14->oInsideLight = TRUE;
+	g_objAJinAXL.Write_Output(14);
+
+	//double click //////////////////////////
+	static int time = GetTickCount();
+	static int cnt=0;
+	if(GetTickCount()-time > 500){
+		cnt = 0;
+		time = GetTickCount();
+	}
+
+	if(cnt == 1){
+		cnt = 0;
+		time = GetTickCount();
+	} else {
+		cnt++;
+		time = GetTickCount();
+		return;
+	}
+	////////////////////////////////////////
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1894,7 +1941,7 @@ UINT CWorkDlg::Thread_ElevatorRun(LPVOID lpVoid)
 			g_dlgWork.ElevatorOpen(4);
 		}
 		if (pDX13->iElevator5Sw && !gData.bElevatorWorking[eElevator::NgBuffer])
-		{	
+		{    
 			g_dlgWork.ElevatorOpen(5);
 		}
 		if (pDX13->iElevator6Sw && !gData.bElevatorWorking[eElevator::Unload1])
@@ -2355,33 +2402,6 @@ void CWorkDlg::DoEvents(int nSleep)
 	if (nSleep > 0) Sleep(nSleep);
 }
 
-void CWorkDlg::OnBnClickedButton1()
-{
-	DY_DATA_14 *pDY14 = g_objAJinAXL.Get_pDY14();
-
-	if (pDY14->oInsideLight)	pDY14->oInsideLight = FALSE;
-	else						pDY14->oInsideLight = TRUE;
-	g_objAJinAXL.Write_Output(14);
-
-	//double click //////////////////////////
-	static int time = GetTickCount();
-	static int cnt=0;
-	if(GetTickCount()-time > 500){
-		cnt = 0;
-		time = GetTickCount();
-	}
-
-	if(cnt == 1){
-		cnt = 0;
-		time = GetTickCount();
-	} else {
-		cnt++;
-		time = GetTickCount();
-		return;
-	}
-	////////////////////////////////////////
-}
-
 void CWorkDlg::OnBnClickedBtnNGLotEnd()
 {
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
@@ -2424,6 +2444,17 @@ void CWorkDlg::OnBnClickedBtnNGLotEnd()
 
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void CWorkDlg::OnBnClickedButton2()
+{
+	OnUpdateBarcode(0, 0);
+}
+
+void CWorkDlg::OnBnClickedButton3()
+{
+	OnUpdateBarcode(0,1);
+}
+
 
 void CWorkDlg::Set_LotCount(int nPortNo, CString sLotID, int nCount)
 {
@@ -2448,52 +2479,12 @@ void CWorkDlg::Set_LotCount(int nPortNo, CString sLotID, int nCount)
 	g_objLogFile.Save_HandlerLog(sLog);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void CWorkDlg::OnBnClickedButton2()
-{
-	OnUpdateBarcode(0, 1);
-
-}
 
 void CWorkDlg::OnBnClickedBtnBuzzerOff()
 {
 	g_objCommon.BuzzerOff();
 
-//	g_objCommon.Show_Error(9310);
-/*
-	CString sLog, sNGCode20[3];
-	sNGCode20[0] = "";
-	for(int i=0; i<5; i++) {
-		if (i==0) sNGCode20[1] = "B1";
-		if (i==1) sNGCode20[1] = "AG";
-		if (i==2) sNGCode20[1] = "T1";
-		if (i==3) sNGCode20[1] = "TG";
-		if (i==4) sNGCode20[1] = "T2";
-		for(int j=0; j<20; j++) {
-			sNGCode20[2].Format(",%sNGCode%02d", sNGCode20[1], j+1);
-			sNGCode20[0] = sNGCode20[0] + sNGCode20[2];
-		}
-	}
-	AfxMessageBox(sNGCode20[0]);
-*/
-/*	
-	CString sLog, sData, sData1, sData2, sData3, sData4;
-	sData1 = "INSPECT,COMPLETE,AG,GPSAA1BBDC6A4A,1,2,16,G,G,0";
-	sData2 = "INSPECT,COMPLETE,B1,GPSAA1BBDC6A4A,1,2,12,N,AB_B_DA,1";
-	sData3 = "INSPECT,COMPLETE,B1,GPSAA1BBDC6A4A,1,2,12,N,AB_B_DA,1,,,,,,,,,,,,,,,,,,,,";
-	sData4 = "INSPECT,COMPLETE,B1,GPSAA1BBDC6A4A,1,2,12,N,AB_B_DA,1,1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,20";
-
-	sData = sData4;
-	CString strArg[10];
-	for (int i = 0; i < 20; i++) AfxExtractSubString(gNG->sNGCode[0][0][0][0][i], sData, i + 10, ',');
-	sLog.Format("[%s] [%s] [%s]", gNG->sNGCode[0][0][0][0][0], gNG->sNGCode[0][0][0][0][9], gNG->sNGCode[0][0][0][0][19]);
-	AfxMessageBox(sLog);
-*/
-//	g_objInspector.Get_ConnectEnd(INSPECTOR_PC5);
-
-//	g_objCommon.Show_Error(5001);
-//	g_objCommon.Show_Error(5002);
-//	g_objCommon.Show_Error(7007);
+//	if (gMes.nLotPortNo > 0 && gMes.nLotPortNo < 7) gMes.nLotStatus[gMes.nLotPortNo-1] = 0;
 /*
 	CString sLog;
 	m_stcCmsCountS[0].GetWindowText(sLog);
@@ -2524,3 +2515,5 @@ void CWorkDlg::OnBnClickedBtnBuzzerOff()
 //	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
 //	pMainDlg->StdLogAllDelete();
 }
+
+

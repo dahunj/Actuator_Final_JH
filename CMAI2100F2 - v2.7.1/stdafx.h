@@ -244,6 +244,8 @@ typedef struct {
 	CString	sLotID[6];
 	int		nCmCount[6];
 	CString	sRecipeName[6];
+	CString sModelID[6];
+	CString sProcID[6];
 	int		nTrayCount[6];
 	int		nLastCount[6];	//ÀÜ·®
 	int		nLotStatus[6];	//0:Wait, 1:Run, 3:Lot_End
@@ -313,6 +315,8 @@ typedef struct {
 	int		nAlmNo;
 	int		nPortNo;
 	CString sAlmMsg;
+	CString sAlmCatMajor;
+	CString sAlmCatMiddle;
 	CString sStartTime;
 	CString sEndTime;
 	CString sLotID;
@@ -344,7 +348,8 @@ typedef struct {
 	int			nHostRcvCmCount;			// Host ¼ö½Å Lot´ç CM ÃÑ°¹¼ö
 	CString		sHostRecipe[6];				// Host ¼ö½Å Recipe
 	int			nHostCmCount[6];			// Host ¼ö½Å Lot´ç CM ÃÑ°¹¼ö
-
+	CString     sHostProcID[6];
+	CString     sHostModel[6];
 	// Cancel Data
 	CString		sHostCancelLotId;
 	CString		sHostCancelModule;			// Host Cancel ¼ö½Å code
@@ -363,11 +368,23 @@ typedef struct {
 	CString		sHostCancelNGText;			// Host Cancel ¼ö½Å ³»¿ë
 } GLOVAL_MES;
 
+typedef struct  
+{
+	BOOL			bDownHappen;
+	BOOL			bDownClear;
+
+	int				nErrorNo;
+	CString			strErrNo;
+	CString			strErrMsg;
+
+} GLOVAL_DOWN;
+
+
 extern GLOVAL_DATA		gData;
 extern GLOVAL_LOT		gLot;
 extern GLOVAL_ALM		gAlm;
 extern GLOVAL_MES		gMes;
-
+extern GLOVAL_DOWN		gDown;
 
 
 struct eElevator
@@ -382,5 +399,34 @@ struct eElevator
 		Unload1 = 5,
 		Unload2 = 6,
 
+	};
+};
+
+
+struct eEquipState
+{
+	enum Name
+	{
+		RUN = 1,
+		IDLE = 2,
+		DOWN = 3,
+		IDLE_STARVED = 4,
+		IDLE_BLOCKED = 5, 
+
+	};
+};
+
+
+struct eAccessMode
+{
+	enum Name
+	{
+		Undefined = 0,
+		OP = 1,
+		Maint = 2,
+		Eng_Vendor = 3,
+		Eng_MI = 4,
+		Engineer = 5,
+		Admini = 6,
 	};
 };

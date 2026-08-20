@@ -97,6 +97,8 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	if (bShow) {
 		if (gData.bAlarmShow) return;
 		gData.bAlarmShow = TRUE;
+		gDown.bDownHappen = TRUE;
+		gDown.bDownClear = FALSE;
 
 		BringWindowToTop();				// 화면 위로...
 		m_btnErrOK.EnableWindow(TRUE);	//2018.8.24+
@@ -105,7 +107,11 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 		CString strErrNo, strErrMsg, strErrPick, strShow, strLog, strNo, strCMNo, strInfo;
 		if (m_nErrNo == 3007) m_nErrNo = 9000;
-		strErrNo.Format("%04d", m_nErrNo);
+
+		strErrNo.Format("%04d", m_nErrNo); 
+		gDown.strErrNo.Format("%04d", m_nErrNo);
+		gDown.nErrorNo = m_nErrNo;
+
 		m_stcErrNo.SetWindowText(strErrNo);
 		
 		if (gData.nLanguage == 0) strErrPick = gsCurrentDir + "\\System\\ErrorList_KOR.ini";
@@ -221,11 +227,26 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		}
 
 		m_strErrMsg = strErrMsg + strErrPick + m_strErrSubMsg;
-
+		gDown.strErrMsg = m_strErrMsg;
+		
 		strShow = m_strErrMsg;
 		if (strShow.Left(1) == "#") strShow.Delete(0);
 		strShow.Replace("#", "\n\n");
 		m_stcErrMsg.SetWindowText(strShow);
+
+		int nIndex = 0;
+		gAlm.sAlmCatMajor.Empty();
+		gAlm.sAlmCatMiddle.Empty();
+
+		CString strCat, strTemp;
+		strCat = INI.Get_String("CAT_ID_MATCH", strErrNo, "");
+		AfxExtractSubString(gAlm.sAlmCatMajor, strCat, 0, '-');
+		AfxExtractSubString(gAlm.sAlmCatMiddle, strCat, 1, '-');
+
+		CString strCatMsg, strMajorNo;
+		strMajorNo.Format("CAT_TYPE_%s", gAlm.sAlmCatMajor);
+		strCatMsg = INI.Get_String(strMajorNo, gAlm.sAlmCatMiddle, "");
+
 
 		SYSTEMTIME time;
 		GetLocalTime(&time);
@@ -234,7 +255,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		gData.sAlarmTime[0].Format("%02d:%02d:%02d", time.wHour, time.wMinute, time.wSecond);
 		gData.sAlarmList[0].Format("[%s] %s", strErrNo, m_strErrMsg);
 
-		g_objMesAgent.Set_ErrorUpdate(1, strErrNo);
+		g_objMesAgent.Set_ErrorUpdate(1, strErrNo, gAlm.sAlmCatMajor);
 		Set_SPCError(m_nErrNo, m_strErrMsg);
 		Set_AlarmLog(m_nErrNo, m_strErrMsg);
 		strLog.Format("%s,%s,%s", m_strLotID, strErrNo, m_strErrMsg);
@@ -274,7 +295,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 		m_strErrSubMsg = "";
 		for (int i = 0; i < 14; i++) m_stcErrPos[i].Set_Color(RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
-		pMainDlg->Set_MainState(STATE_INITEND);
+		pMainDlg->Set_MainState(STATE_READY);
 //		g_objMES.Set_Alarm(2, m_nErrNo, m_strErrMsg);
 		gData.bAlarmShow = FALSE;
 		g_objLogFile.Save_HandlerLog("[Error Mode] Close Error");

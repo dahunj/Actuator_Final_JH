@@ -19,7 +19,9 @@
 #include <string>
 #include <fstream>
 #include "Wininet.h"
+
 #include "WorkDlg.h"
+#include "DownReportDlg.h"
 
 // CCommon
 CCommon g_objCommon;
@@ -1141,6 +1143,16 @@ void CCommon::Display_MESRecipe(CString sRecipe)
 
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
 	pMainDlg->Display_EquipName();
+}
+
+void CCommon::Set_LotCount(int nPortNo, CString sLotID, int nCount)
+{
+	g_dlgWork.Set_LotCount(nPortNo, sLotID, nCount);
+}
+
+void CCommon::Set_DownActionCboList(CString sData)
+{
+	g_dlgDownReport.Set_DownActionCboList(sData);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3044,9 +3056,4 @@ void CCommon::Save_Motion(int nAxis, int nMoveIdx, double dTraget)
 	strLog.Format("%s,%s,%0.3lf,%0.3lf", strInfo, strAxis, dCheckPos, dCurrentPos);
 
 	g_objLogFile.Save_SpcMotionLog(strLog, strLotId);
-}
-
-void CCommon::Set_LotCount(int nPortNo, CString sLotID, int nCount)
-{
-	 g_dlgWork.Set_LotCount(nPortNo, sLotID, nCount);
 }

@@ -113,6 +113,10 @@ public:
 	BOOL Read_FocusOffset();
 	void Display_MESRecipe(CString sRecipe);
 
+	void Set_LotCount(int nPortNo, CString sLotID, int nCount);
+
+	void Set_DownActionCboList(CString sData);
+
 	///////////////////////////////////////////////////////////////////////////
 
 	void Wait_Time(int msec);
@@ -152,9 +156,6 @@ public:
 	BOOL Get_UnloadPickerCheck(int nPickNo, int nNo=0, int *nCMInfo=NULL);
 
 	///////////////////////////////////////////////////////////////////////////
-	void Set_LotCount(int nPortNo, CString sLotID, int nCount);
-
-
 	void Save_Motion(int nAxis, int nIdx, double dTraget = 0.0);		// SPC 로그 중 위치정밀도 기록용도
 	void Wait(DWORD dwMillisecond);
 };

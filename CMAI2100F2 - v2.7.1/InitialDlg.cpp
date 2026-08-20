@@ -129,14 +129,18 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 
 	Display_Status();
 
-	if (m_rdoInitStart.GetCheck()) {
-		if (!m_bInitialRunning) {	// First Start
+	if (m_rdoInitStart.GetCheck())
+	{
+		if (!m_bInitialRunning)
+		{	// First Start
 			CString sText;
 			if (gData.nLanguage == 0) sText.Format("초기화를 하시겠습니까?");
 			else					  sText.Format("Do you want to Initialize?");
 
-			if (g_objCommon.Show_MsgBox(2, sText) == IDOK) {
-				if (g_objCommon.Check_TraySlide(9)) {
+			if (g_objCommon.Show_MsgBox(2, sText) == IDOK) 
+			{
+				if (g_objCommon.Check_TraySlide(9))
+				{
 					m_bInitialRunning = TRUE;
 
 					g_objCommon.Locking_MainDoor(TRUE, TRUE);
@@ -152,6 +156,8 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 					m_nBackColorLoop = 0;
 					Set_StatusColor(0, 2);	// Green
 					for (int i = 1; i < 10; i++) Set_StatusColor(i, 0);	// White
+
+					pMainDlg->Set_MainState(STATE_RUN);
 
 					g_objSequenceInit.Begin_InitialThread();
 				} else {
@@ -195,9 +201,14 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 		}
 
-	} else if (m_rdoInitStop.GetCheck()) {	
-		if (m_bInitialRunning) {	// First Stop
+	} 
+	else if (m_rdoInitStop.GetCheck()) 
+	{
+		
+		if (m_bInitialRunning) 
+		{	// First Stop
 			m_bInitialRunning = FALSE;
+			pMainDlg->Set_MainState(STATE_READY);
 
 			m_rdoInitStart.Set_Color(RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
 			m_rdoInitStop.Set_Color(RGB(0xFF, 0x00, 0x00), COLOR_DEFAULT);

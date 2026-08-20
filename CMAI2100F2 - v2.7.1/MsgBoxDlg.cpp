@@ -103,7 +103,7 @@ void CMsgBoxDlg::OnBnClickedBtnTwoCancel()
 {
 	if (m_nBtnCnt == 3) {
 		CString strTemp;
-		m_stcOperId.GetWindowText(strTemp);
+		m_stcOperId.GetWindowText(strTemp) ;
 		if (strTemp == "Oper ID") { AfxMessageBox("Input the Operator ID."); return; }
 
 		g_dlgNoWork.m_strOperId = strTemp;

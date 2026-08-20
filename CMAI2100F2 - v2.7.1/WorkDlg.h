@@ -173,7 +173,10 @@ public:
 	void Set_AutoRunStatus(BOOL bAutoRun) { m_bAutoRunning = bAutoRun; }
 
 	void Set_LotCount(int nPortNo, CString sLotID, int nCount);
-	CButton m_TestBtn2;
+
+	afx_msg void OnBnClickedButton3();
+	CButton m_BtnTest2;
+	CButton m_BtnTest3;
 };
 
 extern CWorkDlg g_dlgWork;

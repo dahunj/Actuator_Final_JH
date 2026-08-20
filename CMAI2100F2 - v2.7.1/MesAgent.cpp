@@ -9,6 +9,8 @@
 //#include "OperatorDlg.h"
 #include "MesAgent.h"
 
+
+
 #define	MES_AGENT_IP	"127.0.0.1"
 #define MES_AGENT_PORT	10000		// MesAgent Handler Port
 
@@ -82,7 +84,8 @@ LRESULT CMesAgent::OnClientConnect(WPARAM wConnect, LPARAM lParam)
 	if (!m_bConnected) return 0;
 
 	Set_OperUpdate(gData.sOperID);
-	Set_EquipState(4);	//Ready
+	Set_EquipState(eEquipState::IDLE);	
+	Set_UnitState(eEquipState::IDLE);
 	g_objLogFile.Save_MesAgentLog("MesAgent Connected");
 	return 0;
 }
@@ -135,14 +138,17 @@ LRESULT CMesAgent::OnClientReceive(WPARAM wParam, LPARAM lParam)
 		CString strArg[5];
 		for (int i = 0; i < 5; i++) AfxExtractSubString(strArg[i], strRecv, i + 2, chSep);
 
-		if (strCmd == "CONTROL") {
+		if (strCmd == "CONTROL") 
+		{
 			if (strOp == "STATE") Get_ControlState(strArg[0]);
 
-		} else if (strCmd == "LOT") {
-			if (strOp == "START")  Get_LotStart(strArg[0], strArg[1], strArg[2]);
+		} else if (strCmd == "LOT") 
+		{
+			if (strOp == "START")  Get_LotStart(strArg[0], strArg[1], strArg[2], strArg[3], strArg[4]);
 			if (strOp == "CANCEL") Get_LotCancel(strArg[0], strArg[1],  strArg[2]);
 
-		} else if (strCmd == "TIME") {
+		}
+		else if (strCmd == "TIME") {
 			if (strOp == "UPDATE") Get_TimeSync();
 
 		} else if (strCmd == "RECIPE") {
@@ -159,6 +165,11 @@ LRESULT CMesAgent::OnClientReceive(WPARAM wParam, LPARAM lParam)
 			if (strOp == "START")  Get_NGLotStart(strArg[0], strArg[1]);
 			if (strOp == "CANCEL") Get_NGLotCancel(strArg[0], strArg[1],  strArg[2]);
 
+		}
+		else if (strCmd == "CODE")
+		{
+			if (strOp == "IDLEREASON") Get_IdleReasonCode(strArg[0]);
+			if (strOp == "DOWNACTION") Get_DownActionCode(strArg[0]);
 		}
 	}
 
@@ -188,7 +199,7 @@ void CMesAgent::Get_ControlState(CString sFlag)
 	m_bHostOnline = (nOnline == 1 ? TRUE : FALSE);
 }
 
-void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount)
+void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount, CString sProcessID, CString sModel)
 {
 	int nPortNo = 99;
 	int nCmCount = atoi(sCmCount);
@@ -197,7 +208,7 @@ void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount)
 	gMes.sHostCancelLotId = sLotId;
 	gMes.sHostCancelCode = sRecipe;
 	gMes.sHostCancelText = sCmCount;
-
+	
 	for(int i=0; i<6; i++) {
 		if (gLot.sLotID[i] == sLotId) { nPortNo = i; break; }
 	}
@@ -205,16 +216,17 @@ void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount)
 
 	gMes.sHostRecipe[nPortNo]  = sRecipe;
 	gMes.nHostCmCount[nPortNo] = nCmCount;
+	gMes.sHostProcID[nPortNo] = sProcessID;
+	gMes.sHostModel[nPortNo] = sModel;
 
 	if (sRecipe.GetLength() < 1) { g_objCommon.Show_Error(9001); return; }
-
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 
 	if(!pEquipData->bUseCntAutoSet)
 	{
 		if (gLot.nCmCount[nPortNo] != nCmCount) { g_objCommon.Show_Error(9010); return; }
 	}
-	
+
 	if (Exist_Recipe(sRecipe) == FALSE) {
 		g_objCommon.Show_Error(9007);	return;
 	}
@@ -379,6 +391,18 @@ void CMesAgent::Get_NGLotCancel(CString sLotId, CString sCode, CString sText)
 	g_objLogFile.Save_MesAgentLog(sLog);
 }
 
+void CMesAgent::Get_IdleReasonCode(CString sData)
+{
+
+
+
+}
+
+
+void CMesAgent::Get_DownActionCode(CString sData)
+{
+	g_objCommon.Set_DownActionCboList(sData);
+}
 ///////////////////////////////////////////////////////////////////////////////
 // Set Command
 
@@ -390,10 +414,18 @@ void CMesAgent::Set_EquipState(int nFlag)
 	Send_Command(strSend);
 }
 
-void CMesAgent::Set_ErrorUpdate(int nFlag, CString sErrNo)
+void CMesAgent::Set_UnitState(int nState)
+{
+	// MES : Init, idle, Setup, Ready, Executing(=Run), Paused(=Down)
+	CString strSend;
+	strSend.Format("UNIT,STATE,%d", nState);	// 1:Init, 2:Idle, 3:Setup, 4:Ready, 5:Run(=Executing), 6;Pause(=Down)
+	Send_Command(strSend);
+}
+
+void CMesAgent::Set_ErrorUpdate(int nFlag, CString sErrNo, CString sErrCat)
 {
 	CString strSend;
-	strSend.Format("ERROR,UPDATE,%d,%s", nFlag, sErrNo);
+	strSend.Format("ERROR,UPDATE,%d,%s,%s", nFlag, sErrNo, sErrCat);
 	Send_Command(strSend);
 }
 
@@ -422,6 +454,13 @@ void CMesAgent::Set_LotEnd(int nPortNo, CString sLotId, CString sRecipe, int nHC
 	Send_Command(strSend);
 }
 
+void CMesAgent::Set_UnitMaterialCount(int nMDCount, int nPortNo, int nInputCnt, int nOk, int nNG)
+{	
+	CString strSend;
+	strSend.Format("UNIT,COUNT,%d,%d,%d,%d,%d", nMDCount, nPortNo, nInputCnt, nOk, nNG);
+	Send_Command(strSend);
+}
+
 void CMesAgent::Set_LotAbort(CString sLotId)
 {
 	CString strSend;
@@ -437,10 +476,17 @@ void CMesAgent::Set_OperUpdate(CString sOperId)
 	Send_Command(strSend);
 }
 
-void CMesAgent::Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sType)
+void CMesAgent::Set_IdleReport(CString sOperId, CString sSTime, CString sETime, CString sCode, CString sText, CString sType)
 {
 	CString strSend;
-	strSend.Format("IDLE,REPORT,%s,%s,%s,%s,%s", sOperId, sSTime, sETime, sCode, sType);
+	strSend.Format("IDLE,REPORT,%s,%s,%s,%s,%s,%s", sOperId, sSTime, sETime, sCode, sText, sType);
+	Send_Command(strSend);
+}
+
+void CMesAgent::Set_ModeChanged(int nMode)
+{
+	CString strSend;
+	strSend.Format("ACCESS,CHANGED,%d", nMode);
 	Send_Command(strSend);
 }
 
@@ -506,31 +552,34 @@ void CMesAgent::Set_CmEnd(int nType, int nPortNo, int nTrayNo, int nCmNo, int nO
 	int nSpecialNG  = gLot.nSpecialNG[nPortNo-1][nTrayNo-1][nCmNo-1];
 
 	CString strResult, strNgCode, strRosResult;
-	if (nType == 1) {
+	if (nType == 1)
+	{
 //		if (nNGType == 4) { strResult = "MOK"; gMes.nNGCount[0]++; }
 //		else			  { strResult = "NG";  gMes.nNGCount[1]++; }
 //		strResult = "MOK"; gMes.nNGCount[0]++;
 		if (nSpecialNG == 1) { strResult = "NG";  gMes.nNGCount[1]++; }
 		else				 { strResult = "MOK"; gMes.nNGCount[0]++; }
 		strNgCode = Set_NGSort(nPortNo, nTrayNo, nCmNo);
-	} else {
+	}
+	else
+	{
 		strResult = "OK";
 		strNgCode = "00";
 	}
-		
+
 	if(nRosInfo == 2)
 	{
 		strRosResult = "OK";
-	}
+	}	
 	else if(nRosInfo == 3 || nRosInfo == 4)
 	{
 		strRosResult = "NG";
-	}
+	}	
 	else
 	{
 		strRosResult = "Empty";
 	}
-	
+
 	CString strSend;
 	strSend.Format("CM,END,%s,%s,%s,%s,%s,%d", sLotID, strCmId, strResult, strNgCode, strRosResult, nOut);
 	g_objLogFile.Save_TestLog(strSend);
@@ -611,6 +660,24 @@ void CMesAgent::Set_NGLotEnd(CString sLotId, int nOk, int nNg)
 	sLog.Format("\t%s \t%d \t%d \t%d \t%d", gMes.sGUItNGLotID, gMes.nGUICount[2], (gMes.nGUICount[0]+gMes.nGUICount[1]), gMes.nGUICount[0], gMes.nGUICount[1]);
 	g_objLogFile.Save_NGLotLog(sLog);
 }
+
+
+void CMesAgent::Set_DownActionReport(CString sActionCode, CString sActionDetail, CString sStartTime, CString sEndTime, int nErrNo, int nErrCat, CString sErrMsg)
+{
+	CString strSend;
+	strSend.Format("DOWN,REPORT,%s,%s,%s,%s,%d,%d,%s", sActionCode, sActionDetail, sStartTime, sEndTime, nErrNo, nErrCat, sErrMsg);
+	Send_Command(strSend);
+}
+
+
+void CMesAgent::Set_UnitProcessingTimeReport(CString sLotID, CString sProcessID, CString sModelID, CString sRecipe, CString sTactTime, CString sCycleTime)
+{
+	CString strSend;
+	strSend.Format("UNIT,REPORT,%s,%s,%s,%s,%s,%s", sLotID, sProcessID, sModelID, sRecipe, sTactTime, sCycleTime);
+	Send_Command(strSend);
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 
