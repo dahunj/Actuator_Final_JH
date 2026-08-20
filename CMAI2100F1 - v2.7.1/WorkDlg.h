@@ -177,6 +177,7 @@ public:
 	afx_msg void OnBnClickedButton3();
 	CButton m_BtnTest2;
 	CButton m_BtnTest3;
+	afx_msg void OnBnClickedBtnPdt();
 };
 
 extern CWorkDlg g_dlgWork;

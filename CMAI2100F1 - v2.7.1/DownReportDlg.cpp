@@ -135,9 +135,9 @@ BOOL CDownReportDlg::OnInitDialog()
 
 	for(int i = 1; ;i++)
 	{
-		sKey.Format("%d", i);
-		sAction = INI.Get_String("DOWNACTION", sKey, "");
-		sDetail = INI.Get_String("ACTIONDETAIL", sKey, "");
+		sKey.Format("%02d", i);
+		sAction = INI.Get_String("DOWN_ACTION", sKey, "");
+		sDetail = INI.Get_String("ACTION_DETAIL", sKey, "");
 
 		m_cboDownAction.AddString(sAction);
 		m_cboDownActionDetail.AddString(sDetail);
@@ -155,11 +155,11 @@ BOOL CDownReportDlg::PreTranslateMessage(MSG* pMsg)
 {
 	if (pMsg->message == WM_SYSKEYDOWN)
 	{
-		if (pMsg->wParam == VK_F4)
-		{
-			// Alt + F4 차단
-			return TRUE;
-		}
+		//if (pMsg->wParam == VK_F4)
+		//{
+		//	// Alt + F4 차단
+		//	return TRUE;
+		//}
 	}
 
 	if (pMsg->message == WM_KEYDOWN && (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE))
@@ -175,6 +175,9 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 	if (bShow) 
 	{
+		gDown.bDownClear = FALSE;
+		gDown.bDownHappen = TRUE;
+
 		CString sTempCat;
 		sTempCat.Format("00004%s", gAlm.sAlmCatMajor);
 
@@ -224,8 +227,23 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		nIndex = m_cboDownReason.FindStringExact(-1, strCatMsg);
 		m_cboDownReason.SetCurSel(nIndex);
 
-		m_cboDownAction.SetCurSel(0);
+		
 
+		/*CString strDownAction, sIndex;
+		
+		strDownAction.Empty();
+		nIndex = 0;
+		
+		m_cboDownAction.Clear();
+		while(1)
+		{
+			nIndex++; 
+			sIndex.Format("%02d", nIndex);
+			strDownAction = INI.Get_String(strDownAction, sIndex, "");
+			if(strDownAction == "") break;
+			m_cboDownAction.AddString(strDownAction);
+		}*/
+		
 		SYSTEMTIME time;
 		GetLocalTime(&time);
 
@@ -264,6 +282,8 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	{
 		m_cboDownReasonCat.GetLBText(nIndex, strReasonCat);
 	}
+
+	gAlm.sAlmCatMajor.Format("%02d", nIndex+1);
 
 	if (!strReasonCat.IsEmpty())
 	{
@@ -317,7 +337,7 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	SYSTEMTIME time;
 	GetLocalTime(&time);
 	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
-
+	
 	g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 
 	gDown.bDownHappen = FALSE;
