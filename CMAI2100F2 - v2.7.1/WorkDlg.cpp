@@ -16,6 +16,7 @@
 #include "OperatorDlg.h"
 #include "CMAI2100Dlg.h"
 #include "NoWorkDlg.h"
+#include "DownReportDlg.h"
 
 // CWorkDlg 대화 상자입니다.
 CWorkDlg g_dlgWork;
@@ -116,6 +117,7 @@ BEGIN_MESSAGE_MAP(CWorkDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_NGLOT_END, &CWorkDlg::OnBnClickedBtnNGLotEnd)
 
 	ON_BN_CLICKED(IDC_BUTTON3, &CWorkDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDC_BTN_PDT, &CWorkDlg::OnBnClickedBtnPdt)
 END_MESSAGE_MAP()
 
 // CWorkDlg 메시지 처리기입니다.
@@ -2517,3 +2519,17 @@ void CWorkDlg::OnBnClickedBtnBuzzerOff()
 }
 
 
+
+
+void CWorkDlg::OnBnClickedBtnPdt()
+{
+	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+	if (!pEquipData->bUseMES) return;
+
+	if (g_dlgDownReport.IsWindowVisible()) g_dlgDownReport.ShowWindow(SW_HIDE);
+	else
+	{
+		//g_dlgDownReport.Set_Auto(FALSE);
+		g_dlgDownReport.ShowWindow(SW_SHOW);
+	}
+}

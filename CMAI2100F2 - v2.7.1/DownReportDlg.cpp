@@ -136,8 +136,8 @@ BOOL CDownReportDlg::OnInitDialog()
 	for(int i = 1; ;i++)
 	{
 		sKey.Format("%d", i);
-		sAction = INI.Get_String("DOWNACTION", sKey, "");
-		sDetail = INI.Get_String("ACTIONDETAIL", sKey, "");
+		sAction = INI.Get_String("DOWN_ACTION", sKey, "");
+		sDetail = INI.Get_String("ACTION_DETAIL", sKey, "");
 
 		m_cboDownAction.AddString(sAction);
 		m_cboDownActionDetail.AddString(sDetail);
@@ -175,6 +175,9 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 	if (bShow) 
 	{
+		gDown.bDownClear = FALSE;
+		gDown.bDownHappen = FALSE;
+
 		CString sTempCat;
 		sTempCat.Format("00004%s", gAlm.sAlmCatMajor);
 
@@ -264,6 +267,7 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	{
 		m_cboDownReasonCat.GetLBText(nIndex, strReasonCat);
 	}
+	gAlm.sAlmCatMajor.Format("%02d", nIndex+1);
 
 	if (!strReasonCat.IsEmpty())
 	{

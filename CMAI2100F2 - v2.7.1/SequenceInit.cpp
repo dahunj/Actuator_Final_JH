@@ -207,8 +207,7 @@ BOOL CSequenceInit::Initial_MainRun()
 		gData.bElevatorWorking[eElevator::GoodEmpty] = FALSE;
 		gData.bElevatorWorking[eElevator::NgBuffer] = FALSE;
 		gData.bElevatorWorking[eElevator::Unload1] = FALSE;
-		gData.bElevatorWorking[eElevator::Unload2] = FALSE;
-	
+		gData.bElevatorWorking[eElevator::Unload2] = FALSE;	
 
 		g_objLogFile.Save_HandlerLog("[Initial Sequence - Main] start");
 		g_objMesAgent.Set_EquipState(1);	//Init

@@ -1573,7 +1573,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo)
 
 	CString sProcessID, sTact, sCycle;
 		
-	sTact.Format("%0.1lf", gLot.dLLTackTime);
+	sTact.Format("%0.1lf", (dwTime - gLot.dwErrorTime[nNo]) / 1000.0);
 	sCycle.Format("%0.1lf", (dwTime / 1000.0));
 	
 	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], gLot.sProcID[nNo], gLot.sModelID[nNo], gLot.sRecipeName[nNo], sTact , sCycle);
