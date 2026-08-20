@@ -271,7 +271,8 @@ void CSequenceMain::Begin_MainRunThread()
 
 void CSequenceMain::End_MainRunThread(DWORD dwWait)
 {
-	if (m_pThreadMainRun) {
+	if (m_pThreadMainRun) 
+	{
 		m_bThreadMainRun = FALSE;
 		WaitForSingleObject(m_pThreadMainRun->m_hThread, dwWait);
 	}
