@@ -135,7 +135,7 @@ BOOL CDownReportDlg::OnInitDialog()
 
 	for(int i = 1; ;i++)
 	{
-		sKey.Format("%d", i);
+		sKey.Format("%02d", i);
 		sAction = INI.Get_String("DOWN_ACTION", sKey, "");
 		sDetail = INI.Get_String("ACTION_DETAIL", sKey, "");
 
