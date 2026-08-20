@@ -708,7 +708,7 @@ void CCMAI2100Dlg::Set_DownAction()
 		return;
 	}
 	int nState = gData.m_nMS;
-	if (nState == STATE_NONE || nState == STATE_RUN || nState == STATE_LOTEND || nState == STATE_INITEND || (nState == STATE_READY && !gDown.bDownHappen))  
+	if (nState == STATE_NONE || nState == STATE_RUN || nState == STATE_LOTEND || nState == STATE_INITEND || (nState == STATE_READY && !gDown.bDownHappen && gDown.bDownClear))  
 	{ 
 		m_dwDownActionTime = GetTickCount(); 
 		return; 
