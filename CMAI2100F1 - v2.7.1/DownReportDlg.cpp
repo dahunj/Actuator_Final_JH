@@ -176,7 +176,7 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	if (bShow) 
 	{
 		gDown.bDownClear = FALSE;
-		gDown.bDownHappen = TRUE;
+		gDown.bDownHappen = FALSE;
 
 		CString sTempCat;
 		sTempCat.Format("00004%s", gAlm.sAlmCatMajor);
