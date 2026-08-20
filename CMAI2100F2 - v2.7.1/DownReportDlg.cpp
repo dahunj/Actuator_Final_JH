@@ -175,6 +175,9 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 	if (bShow) 
 	{
+		g_objMesAgent.Set_EquipState(eEquipState::DOWN);    
+		g_objMesAgent.Set_UnitState(eEquipState::DOWN);
+
 		gDown.bDownClear = FALSE;
 		gDown.bDownHappen = FALSE;
 
@@ -323,6 +326,9 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
 
 	g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+
+	g_objMesAgent.Set_EquipState(eEquipState::IDLE);    
+	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 
 	gDown.bDownHappen = FALSE;
 	gDown.bDownClear = TRUE;
