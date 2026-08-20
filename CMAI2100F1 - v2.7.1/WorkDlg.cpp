@@ -317,7 +317,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 		if (m_bAutoRunning) {	// First AutoStop
 			m_bAutoRunning = FALSE;
 
-			g_objSequenceMain.End_MainRunThread();
+			g_objSequenceMain.End_MainRunThread(3000);
 			g_objCommon.Stop_Elevator();
 
 			m_rdoWorkStart.Set_Color(RGB(0x00, 0x00, 0x00), COLOR_DEFAULT);
