@@ -229,6 +229,8 @@ typedef struct {
 	int		nNG_MC[5][2];	//0:MC, 1:GF, 2:Barcode, 3:Vision-timover, 4:MES_NG
 
 	BOOL	bElevatorWorking[7]; //load1, load2, ng Empty, Good Empty, Ng Buffer, Unload 1, Unload 2
+
+	BOOL	bPDT;
 } GLOVAL_DATA;
 
 typedef struct {

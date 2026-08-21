@@ -67,7 +67,7 @@ BOOL CDownReportDlg::OnInitDialog()
 		AfxMessageBox("ErrorList.ini File Not Found!!!");
 		return FALSE;
 	}
-
+	m_cboDownReason.Clear();
 	for(int i = 0; i < 5; i++)
 	{
 		strMiddle.Format("%02d", i+1);
@@ -133,6 +133,8 @@ BOOL CDownReportDlg::OnInitDialog()
 
 	CString sAction, sDetail, sKey;
 
+	m_cboDownAction.Clear();
+	m_cboDownActionDetail.Clear();
 	for(int i = 1; ;i++)
 	{
 		sKey.Format("%02d", i);
@@ -144,8 +146,7 @@ BOOL CDownReportDlg::OnInitDialog()
 
 		if(sAction == "") break;
 	}	
-
-
+	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
@@ -230,23 +231,7 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		nIndex = m_cboDownReason.FindStringExact(-1, strCatMsg);
 		m_cboDownReason.SetCurSel(nIndex);
 
-		
 
-		/*CString strDownAction, sIndex;
-		
-		strDownAction.Empty();
-		nIndex = 0;
-		
-		m_cboDownAction.Clear();
-		while(1)
-		{
-			nIndex++; 
-			sIndex.Format("%02d", nIndex);
-			strDownAction = INI.Get_String(strDownAction, sIndex, "");
-			if(strDownAction == "") break;
-			m_cboDownAction.AddString(strDownAction);
-		}*/
-		
 		SYSTEMTIME time;
 		GetLocalTime(&time);
 
@@ -341,8 +326,11 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	GetLocalTime(&time);
 	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
 	
-	g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+	if(gData.bPDT) g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , 0, gDown.strErrMsg);
+	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 
+
+	
 	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
 	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 
@@ -381,6 +369,7 @@ void CDownReportDlg::Set_DownActionCboList(CString sData)
 
 	int i = 1, j = 2;
 	BOOL bCode = FALSE, bText = FALSE;
+	m_cboDownReasonCat.Clear();
 	while(TRUE)
 	{
 		bCode = AfxExtractSubString(sCode, sData, i, '-');
