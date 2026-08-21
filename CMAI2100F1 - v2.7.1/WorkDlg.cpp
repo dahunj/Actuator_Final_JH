@@ -2532,7 +2532,7 @@ void CWorkDlg::OnBnClickedBtnPdt()
 	else
 	{
 		//g_dlgDownReport.Set_Auto(FALSE);
-		gData.bPDT = TRUE;
+		gDown.bPDT = TRUE;
 		g_dlgDownReport.ShowWindow(SW_SHOW);
 	}
 }

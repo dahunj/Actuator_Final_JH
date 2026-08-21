@@ -1022,6 +1022,12 @@ void CHost::Set_S6F11_EquipState(int nState, int nErrNo, int nErrCat)
 	
 	if(strState == "3")
 	{
+		if(nErrNo == 0 )
+		{
+			strErrNo = "0000";
+			strErrCat = "0000000";
+		}
+
 		strSend += "      <DV NAME=\"ALARMLISTQTY\" VALUE=\"1\" />" + CRLF;
 		strSend += "      <DV NAME=\"ALARMID#1\" VALUE=\"" + strErrNo + "\" />" + CRLF;
 		strSend += "      <DV NAME=\"ALARMCATEGORY#1\" VALUE=\"" + strErrCat +  "\" />" + CRLF;
@@ -1572,8 +1578,11 @@ void CHost::Set_S6F11_DownActionReport(CString sActionCode, CString sActionDetai
 	CString strTime, sAlmCat;
 	strTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
 	int nErrCat = atoi(sErrCat);
-	sAlmCat.Format("00004%02d", nErrCat); // 7자리 3자리(유닛번호)+2자리(긴급도)+2자리(대분류)
 
+	if(nErrCat == 0) sAlmCat.Format("0000000"); // 7자리 3자리(유닛번호)+2자리(긴급도)+2자리(대분류)
+	else sAlmCat.Format("00004%02d", nErrCat); // 7자리 3자리(유닛번호)+2자리(긴급도)+2자리(대분류)
+
+	
 	CString strSend = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + CRLF;
 
 	strSend += "<EIF VERSION=\"2.0\" ID=\"S6F11\" NAME=\"Event Report\">" + CRLF;

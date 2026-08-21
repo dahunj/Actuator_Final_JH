@@ -230,7 +230,7 @@ typedef struct {
 
 	BOOL	bElevatorWorking[7]; //load1, load2, ng Empty, Good Empty, Ng Buffer, Unload 1, Unload 2
 
-	BOOL	bPDT;
+	
 } GLOVAL_DATA;
 
 typedef struct {
@@ -371,6 +371,8 @@ typedef struct
 	int				nErrorNo;
 	CString			strErrNo;
 	CString			strErrMsg;
+
+	BOOL			bPDT;
 
 } GLOVAL_DOWN;
 

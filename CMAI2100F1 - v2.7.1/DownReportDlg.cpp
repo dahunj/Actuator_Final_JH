@@ -67,7 +67,7 @@ BOOL CDownReportDlg::OnInitDialog()
 		AfxMessageBox("ErrorList.ini File Not Found!!!");
 		return FALSE;
 	}
-	m_cboDownReason.Clear();
+	m_cboDownReason.ResetContent();
 	for(int i = 0; i < 5; i++)
 	{
 		strMiddle.Format("%02d", i+1);
@@ -133,8 +133,8 @@ BOOL CDownReportDlg::OnInitDialog()
 
 	CString sAction, sDetail, sKey;
 
-	m_cboDownAction.Clear();
-	m_cboDownActionDetail.Clear();
+	m_cboDownAction.ResetContent();
+	m_cboDownActionDetail.ResetContent();
 	for(int i = 1; ;i++)
 	{
 		sKey.Format("%02d", i);
@@ -326,7 +326,7 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	GetLocalTime(&time);
 	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
 	
-	if(gData.bPDT) g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , 0, gDown.strErrMsg);
+	if(gDown.bPDT) g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , 0, gDown.strErrMsg);
 	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 
 
@@ -363,13 +363,12 @@ void CDownReportDlg::Initial_Controls()
 
 void CDownReportDlg::Set_DownActionCboList(CString sData)
 {
-	m_cboDownAction.Clear();
-
+	
 	CString sCode, sText;
 
 	int i = 1, j = 2;
 	BOOL bCode = FALSE, bText = FALSE;
-	m_cboDownReasonCat.Clear();
+	m_cboDownReasonCat.ResetContent();
 	while(TRUE)
 	{
 		bCode = AfxExtractSubString(sCode, sData, i, '-');
