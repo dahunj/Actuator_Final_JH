@@ -99,6 +99,7 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		gData.bAlarmShow = TRUE;
 		gDown.bDownHappen = TRUE;
 		gDown.bDownClear = FALSE;
+		gDown.bPDT = FALSE;
 
 		BringWindowToTop();				// 화면 위로...
 		m_btnErrOK.EnableWindow(TRUE);	//2018.8.24+

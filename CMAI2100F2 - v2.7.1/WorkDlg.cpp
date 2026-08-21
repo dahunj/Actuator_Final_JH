@@ -2529,6 +2529,7 @@ void CWorkDlg::OnBnClickedBtnPdt()
 	if (g_dlgDownReport.IsWindowVisible()) g_dlgDownReport.ShowWindow(SW_HIDE);
 	else
 	{
+		gDown.bPDT = TRUE;
 		//g_dlgDownReport.Set_Auto(FALSE);
 		g_dlgDownReport.ShowWindow(SW_SHOW);
 	}

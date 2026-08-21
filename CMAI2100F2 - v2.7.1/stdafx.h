@@ -377,6 +377,8 @@ typedef struct
 	CString			strErrNo;
 	CString			strErrMsg;
 
+	BOOL			bPDT;
+
 } GLOVAL_DOWN;
 
 

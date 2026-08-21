@@ -694,6 +694,7 @@ void CCMAI2100Dlg::Set_NoWork()
 	strLog.Format("비가동 집계 시작\t%s", g_dlgNoWork.m_strStartTime);
 	g_objLogFile.Save_HandlerLog(strLog);
 
+	g_dlgNoWork.Set_Auto(TRUE);
 	g_dlgNoWork.ShowWindow(TRUE);
 }
 
@@ -708,7 +709,8 @@ void CCMAI2100Dlg::Set_DownAction()
 		return;
 	}
 	int nState = gData.m_nMS;
-	if (nState == STATE_NONE || nState == STATE_RUN || nState == STATE_LOTEND || nState == STATE_INITEND || (nState == STATE_READY && !gDown.bDownHappen && gDown.bDownClear) || (nState == STATE_ALARM && !gDown.bDownHappen && gDown.bDownClear))  
+	if (nState == STATE_NONE || nState == STATE_RUN || nState == STATE_LOTEND || nState == STATE_INITEND 
+		|| (nState == STATE_READY && !gDown.bDownHappen && gDown.bDownClear) || (nState == STATE_ALARM && !gDown.bDownHappen && gDown.bDownClear))  
 	{ 
 		m_dwDownActionTime = GetTickCount(); 
 		return; 
