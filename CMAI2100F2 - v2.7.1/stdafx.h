@@ -379,6 +379,8 @@ typedef struct
 
 	BOOL			bPDT;
 
+	DWORD			dwDownTime;
+
 } GLOVAL_DOWN;
 
 

@@ -283,7 +283,27 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 
 			if (g_objSequenceInit.Get_InitComplete()) 
 			{
-				gDown.bDownClear = TRUE;
+				//Down Report Show                 
+				int nTerm = (int)(GetTickCount() - gDown.dwDownTime);
+				if (nTerm > pEquipData->nDownActionTime * 1000 && !g_dlgDownReport.IsWindowVisible() 
+					&& gDown.bDownHappen && !gDown.bDownClear)
+				{
+					g_dlgDownReport.m_bStart = TRUE;
+					gDown.bDownClear = TRUE;
+					gDown.bDownHappen = FALSE;
+					gDown.dwDownTime = GetTickCount();
+
+					CTime CurTime = CTime::GetCurrentTime(); 
+					CurTime -= pEquipData->nNoWorkTime;
+					g_dlgDownReport.m_dwStartTime = GetTickCount();
+					g_dlgDownReport.m_strStartTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+
+					CString strLog;
+					strLog.Format("Down Report Ω√¿€\t%s", g_dlgDownReport.m_strStartTime);
+					g_objLogFile.Save_HandlerLog(strLog);
+
+					g_dlgDownReport.ShowWindow(TRUE);
+				}
 
 				m_bAutoRunning = TRUE;
 				g_objCommon.Locking_MainDoor(TRUE, TRUE);
