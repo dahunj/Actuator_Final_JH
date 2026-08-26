@@ -1,4 +1,4 @@
-// WorkDlg.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// WorkDlg.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 #include "stdafx.h"
 #include "CMAI2100.h"
@@ -18,7 +18,7 @@
 #include "NoWorkDlg.h"
 #include "DownReportDlg.h"
 
-// CWorkDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CWorkDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 CWorkDlg g_dlgWork;
 
 IMPLEMENT_DYNAMIC(CWorkDlg, CDialogEx)
@@ -120,13 +120,13 @@ BEGIN_MESSAGE_MAP(CWorkDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_PDT, &CWorkDlg::OnBnClickedBtnPdt)
 END_MESSAGE_MAP()
 
-// CWorkDlg ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CWorkDlg ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 BOOL CWorkDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// TODO:  ¿©±â¿¡ Ãß°¡ ÃÊ±âÈ­ ÀÛ¾÷À» Ãß°¡ÇÕ´Ï´Ù.
+	// TODO:  ì—¬ê¸°ì— ì¶”ê°€ ì´ˆê¸°í™” ì‘ì—…ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
 	SetWindowPos(this, 0, 75, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
 	Initial_Controls();
@@ -149,12 +149,13 @@ BOOL CWorkDlg::OnInitDialog()
 	m_BtnTest2.ShowWindow(SW_SHOW);
 #endif
 
+	gDown.dwDownTime = 0;
 
 	m_rdoWorkStop.SetCheck(TRUE);
 	m_rdoWorkStop.Set_Color(RGB(0xFF, 0x00, 0x00), COLOR_DEFAULT);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// ¿¹¿Ü: OCX ¼Ó¼º ÆäÀÌÁö´Â FALSE¸¦ ¹İÈ¯ÇØ¾ß ÇÕ´Ï´Ù.
+	// ì˜ˆì™¸: OCX ì†ì„± í˜ì´ì§€ëŠ” FALSEë¥¼ ë°˜í™˜í•´ì•¼ í•©ë‹ˆë‹¤.
 }
 
 BOOL CWorkDlg::PreTranslateMessage(MSG* pMsg)
@@ -283,8 +284,28 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 
 			if (g_objSequenceInit.Get_InitComplete()) 
 			{
-				gDown.bDownClear = TRUE;
+				//Down Report Show 				
+				int nTerm = (int)(GetTickCount() - gDown.dwDownTime);
+				if (nTerm > pEquipData->nDownActionTime * 1000 && !g_dlgDownReport.IsWindowVisible() 
+					&& gDown.bDownHappen && !gDown.bDownClear)
+				{
+					g_dlgDownReport.m_bStart = TRUE;
+					gDown.bDownClear = TRUE;
+					gDown.bDownHappen = FALSE;
+					gDown.dwDownTime = GetTickCount();
 
+					CTime CurTime = CTime::GetCurrentTime(); 
+					CurTime -= pEquipData->nNoWorkTime;
+					g_dlgDownReport.m_dwStartTime = GetTickCount();
+					g_dlgDownReport.m_strStartTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+
+					CString strLog;
+					strLog.Format("Down Report ì‹œì‘\t%s", g_dlgDownReport.m_strStartTime);
+					g_objLogFile.Save_HandlerLog(strLog);
+
+					g_dlgDownReport.ShowWindow(TRUE);
+				}
+				
 				m_bAutoRunning = TRUE;
 				g_objCommon.Locking_MainDoor(TRUE, TRUE);
 				pMainDlg->Enable_ModeButton(FALSE);
@@ -303,7 +324,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 				g_objMesAgent.Set_UnitState(eEquipState::RUN);
 
 			} else {
-				g_objCommon.Show_Error(40);		// ÃÊ±âÈ­ ¿Ï·á ¿¡·¯
+				g_objCommon.Show_Error(40);		// ì´ˆê¸°í™” ì™„ë£Œ ì—ëŸ¬
 			}
 
 		} else {				// Auto Running
@@ -354,7 +375,7 @@ void CWorkDlg::OnStcLotsIdSClick(UINT nID)
 		if (ID == 5) nNo = 4;
 		m_stcLotsIdS[nNo].GetWindowText(strTemp);
 		if (strTemp.GetLength() < 1) {
-			AfxMessageBox(_T("»óÀ§ LotIDºÎÅÍ ÀÔ·ÂÀ» ÇØ¾ß ÇÕ´Ï´Ù."));
+			AfxMessageBox(_T("ìƒìœ„ LotIDë¶€í„° ì…ë ¥ì„ í•´ì•¼ í•©ë‹ˆë‹¤."));
 			return;
 		}
 	}
@@ -362,7 +383,7 @@ void CWorkDlg::OnStcLotsIdSClick(UINT nID)
 	CString strKey, strNew, strMsg;
 	if (g_objCommon.Show_KeyPad(strKey) != IDOK) return;
 	if (strKey.Find("_") >= 0) {
-		if (gData.nLanguage == 0) strMsg.Format("[%s] Lot ID ( _ ) ÀÔ·ÂºÒ°¡...", strKey);
+		if (gData.nLanguage == 0) strMsg.Format("[%s] Lot ID ( _ ) ì…ë ¥ë¶ˆê°€...", strKey);
 		else					  strMsg.Format("[%s] Lot ID Unable to endter(_)...", strKey);
 		g_objCommon.Show_MsgBox(1, strMsg);
 		return;
@@ -381,7 +402,7 @@ void CWorkDlg::OnStcCmsCountSClick(UINT nID)
 	int ID = nID - IDC_STC_CMS_COUNT_S_0;
 /*
 	if (m_rdoWorkStart.GetCheck()) {
-		if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "Àåºñ Stop »óÅÂ¿¡¼­ ÁøÇàÀÌ °¡´ÉÇÕ´Ï´Ù.....");
+		if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "ì¥ë¹„ Stop ìƒíƒœì—ì„œ ì§„í–‰ì´ ê°€ëŠ¥í•©ë‹ˆë‹¤.....");
 		else					  g_objCommon.Show_MsgBox(1, "You can proceed with the equipment stopped.");
 		return;
 	}
@@ -407,7 +428,7 @@ void CWorkDlg::OnStcCmsCountSClick(UINT nID)
 	int nCmCnt = atoi(strNew);
 	if (nCmCnt < 1 || nCmCnt > MAX_CM) {
 		m_stcCmsCountS[ID].SetWindowText("");
-		if (gData.nLanguage == 0) AfxMessageBox(_T("Lot´ç CM¼ö·®Àº 320°³ÀÌ»ó ÀÔ·ÂÇÒ¼ö ¾ø½À´Ï´Ù.........."));
+		if (gData.nLanguage == 0) AfxMessageBox(_T("Lotë‹¹ CMìˆ˜ëŸ‰ì€ 320ê°œì´ìƒ ì…ë ¥í• ìˆ˜ ì—†ìŠµë‹ˆë‹¤.........."));
 		else					  AfxMessageBox(_T("CM quantity per lot cannot be entered more than 320."));
 		return;
 	}
@@ -444,12 +465,12 @@ void CWorkDlg::OnStcTrayCountSClick(UINT nID)
 	int nTrayCnt = atoi(strNew);
 	if (nTrayCnt < 2 || nTrayCnt > 10) {
 		m_stcTrayCountS[ID].SetWindowText("");
-		AfxMessageBox(_T("Lot´ç Tray¼ö·®Àº 2~10°³±îÁö ÀÔ·ÂÇÒ¼ö ÀÖ½À´Ï´Ù.........."));
+		AfxMessageBox(_T("Lotë‹¹ Trayìˆ˜ëŸ‰ì€ 2~10ê°œê¹Œì§€ ì…ë ¥í• ìˆ˜ ìˆìŠµë‹ˆë‹¤.........."));
 		return;
 	}
 	if (nTrayCnt < nTrayGGCnt) {
 		m_stcTrayCountS[ID].SetWindowText("");
-		AfxMessageBox(_T("Lot Tray¼ö·® ÀÔ·Â Error..."));
+		AfxMessageBox(_T("Lot Trayìˆ˜ëŸ‰ ì…ë ¥ Error..."));
 		return;
 	}
 	strValue.Format("%d", nTrayCnt);
@@ -468,7 +489,7 @@ void CWorkDlg::OnBnClickedRdoSlectNo(UINT nID)
 	if (nID > 0 && nID < 7) ID = nID - 1;
 /*
 	if (m_rdoWorkStart.GetCheck()) {
-		if (gData.nLanguage == 0) AfxMessageBox(_T("Àåºñ Stop »óÅÂ¿¡¼­ ÁøÇàÀÌ °¡´ÉÇÕ´Ï´Ù....."));
+		if (gData.nLanguage == 0) AfxMessageBox(_T("ì¥ë¹„ Stop ìƒíƒœì—ì„œ ì§„í–‰ì´ ê°€ëŠ¥í•©ë‹ˆë‹¤....."));
 		else					  AfxMessageBox(_T("You can proceed with the equipment stopped."));
 		m_rdoSlectNo[ID].SetCheck(FALSE);
 		return;
@@ -489,13 +510,13 @@ void CWorkDlg::OnBnClickedRdoSlectNo(UINT nID)
 
 				if(cnt[i] == 1){ /*
 					if (g_objSequenceMain.Get_IsAutoRun()) {
-						AfxMessageBox(_T("ÁøÇàÁßÀÎ Lot ¿Ï·áÈÄ ´ÙÀ½ Lot ÁøÇàÀÌ °¡´ÉÇÕ´Ï´Ù."));
+						AfxMessageBox(_T("ì§„í–‰ì¤‘ì¸ Lot ì™„ë£Œí›„ ë‹¤ìŒ Lot ì§„í–‰ì´ ê°€ëŠ¥í•©ë‹ˆë‹¤."));
 						m_rdoSlectNo[i].SetCheck(FALSE);
 						m_bShowWindow = FALSE;
 						return;
 					}
 					*/
-					if (g_objCommon.Show_MsgBox(2, "Lot Data¸¦ »èÁ¦ ÇÏ½Ã°Ú½À´Ï±î?") != IDOK) return;
+					if (g_objCommon.Show_MsgBox(2, "Lot Dataë¥¼ ì‚­ì œ í•˜ì‹œê² ìŠµë‹ˆê¹Œ?") != IDOK) return;
 
 					m_stcLotsIdS[i].GetWindowText(strTemp);
 					strLog.Format("[Work Mode] Lot Delete Click.. LotID[%s-%s] Count[%d] Sts[%d]", strTemp, gLot.sLotID[i], gLot.nCmCount[i], gMes.nLotStatus[i]);
@@ -504,7 +525,7 @@ void CWorkDlg::OnBnClickedRdoSlectNo(UINT nID)
 					m_stcCmsCountS[i].SetWindowText("");
 					m_stcTrayCountS[i].SetWindowText("");
 
-					//2018.11.13+ ÀÚµ¿¸ğµå »óÅÂ¿¡¼­ LotID¸¦ Áö¿ì¸é¼­ ¹ØÀÇ º¯¼öµéÀ» ÃÊ±âÈ­ ½ÃÄÑÁÖÁö ¾Ê¾Æ ÅõÀÔ µÇ¸é ¾ÈµÇ´Â Lot°¡ ÅõÀÔ µÈ´Ù.
+					//2018.11.13+ ìë™ëª¨ë“œ ìƒíƒœì—ì„œ LotIDë¥¼ ì§€ìš°ë©´ì„œ ë°‘ì˜ ë³€ìˆ˜ë“¤ì„ ì´ˆê¸°í™” ì‹œì¼œì£¼ì§€ ì•Šì•„ íˆ¬ì… ë˜ë©´ ì•ˆë˜ëŠ” Lotê°€ íˆ¬ì… ëœë‹¤.
 					g_objCommon.Set_LotDataClear(i);
 					/////////////////////////
 					cnt[i] = 0;
@@ -540,7 +561,7 @@ void CWorkDlg::OnBnClickedRdoWorkStop()
 void CWorkDlg::OnBnClickedChkCycleStop()
 {
 	if (m_rdoWorkStart.GetCheck()) {
-		if (gData.nLanguage == 0) AfxMessageBox(_T("Àåºñ Stop »óÅÂ¿¡¼­ ÁøÇàÀÌ °¡´ÉÇÕ´Ï´Ù....."));
+		if (gData.nLanguage == 0) AfxMessageBox(_T("ì¥ë¹„ Stop ìƒíƒœì—ì„œ ì§„í–‰ì´ ê°€ëŠ¥í•©ë‹ˆë‹¤....."));
 		else					  AfxMessageBox(_T("You can proceed with the equipment stopped."));
 		m_chkCycleStop.SetCheck(FALSE);
 		return;
@@ -621,11 +642,11 @@ void CWorkDlg::OnBnClickedBtnMesAbort()
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (!pEquipData->bUseMES) return;
 
-	if (!g_objMesAgent.Is_Connected()) { AfxMessageBox("MES Disconnect »óÅÂ¿¡¼­´Â Ã³¸®¸¦ ÇÒ¼ö ¾ø½À´Ï´Ù."); return; }
-	if (!g_objMesAgent.Is_HostOnline()) { AfxMessageBox("MES Offline »óÅÂ¿¡¼­´Â Ã³¸®¸¦ ÇÒ¼ö ¾ø½À´Ï´Ù."); return; }
-	if (gData.nSelectNo < 1 || gData.nSelectNo > 6) { AfxMessageBox("Abort LotÀ» ¸ÕÀú ¼±ÅÃÇØ ÁÖ¼¼¿ä."); return; }
-	if (!m_rdoWorkStop.GetCheck()) { AfxMessageBox("Àåºñ Stop»óÅÂ¿¡¼­ AbortÃ³¸® ÇÏ¼¼¿ä."); return; }
-	if (gMes.nLotStatus[gData.nSelectNo-1] == 0) { AfxMessageBox("ÁøÇàÁßÀÎ Lot¸¸ AbortÃ³¸®°¡ °¡´ÉÇÕ´Ï´Ù."); return; }
+	if (!g_objMesAgent.Is_Connected()) { AfxMessageBox("MES Disconnect ìƒíƒœì—ì„œëŠ” ì²˜ë¦¬ë¥¼ í• ìˆ˜ ì—†ìŠµë‹ˆë‹¤."); return; }
+	if (!g_objMesAgent.Is_HostOnline()) { AfxMessageBox("MES Offline ìƒíƒœì—ì„œëŠ” ì²˜ë¦¬ë¥¼ í• ìˆ˜ ì—†ìŠµë‹ˆë‹¤."); return; }
+	if (gData.nSelectNo < 1 || gData.nSelectNo > 6) { AfxMessageBox("Abort Lotì„ ë¨¼ì € ì„ íƒí•´ ì£¼ì„¸ìš”."); return; }
+	if (!m_rdoWorkStop.GetCheck()) { AfxMessageBox("ì¥ë¹„ Stopìƒíƒœì—ì„œ Abortì²˜ë¦¬ í•˜ì„¸ìš”."); return; }
+	if (gMes.nLotStatus[gData.nSelectNo-1] == 0) { AfxMessageBox("ì§„í–‰ì¤‘ì¸ Lotë§Œ Abortì²˜ë¦¬ê°€ ê°€ëŠ¥í•©ë‹ˆë‹¤."); return; }
 
 	CString sData;
 	sData.Format("Are you want to cancel this Port[%d] Lot[%s]?", gData.nSelectNo, gLot.sLotID[gData.nSelectNo-1]);
@@ -671,42 +692,42 @@ BOOL CWorkDlg::Work_Start()
 	g_objCommon.Locking_Slide(TRUE, 0);
 	
 	if (gData.bAlarmShow) {
-		g_objCommon.Show_MsgBox(1, "Alarm È­¸éÀ» CloseÇÏ°í Run ÁøÇàÇÏ¼¼¿ä.....");
+		g_objCommon.Show_MsgBox(1, "Alarm í™”ë©´ì„ Closeí•˜ê³  Run ì§„í–‰í•˜ì„¸ìš”.....");
 		m_rdoWorkStop.SetCheck(TRUE);
 		return FALSE;
 	}
 
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (pEquipData->bUseDoorLock==FALSE) {
-		sText.Format("Door lock ÇØÁ¦ »óÅÂÀÔ´Ï´Ù.  ÁøÇàÇÏ½Ã°Ú½À´Ï±î?");
+		sText.Format("Door lock í•´ì œ ìƒíƒœì…ë‹ˆë‹¤.  ì§„í–‰í•˜ì‹œê² ìŠµë‹ˆê¹Œ?");
 		if (g_objCommon.Show_MsgBox(2, sText) != IDOK){
 			m_rdoWorkStop.SetCheck(TRUE);
 			return FALSE;
 		}
 	}
 	if(gData.bUseDryRun) {
-		sText.Format("Dry RunÀ¸·Î ¼³Á¤µÇ¾î ÀÖ½À´Ï´Ù.\nDry RunÀ¸·Î START ÇÏ½Ã°Ú½À´Ï±î?");
+		sText.Format("Dry Runìœ¼ë¡œ ì„¤ì •ë˜ì–´ ìˆìŠµë‹ˆë‹¤.\nDry Runìœ¼ë¡œ START í•˜ì‹œê² ìŠµë‹ˆê¹Œ?");
 		if (g_objCommon.Show_MsgBox(2, sText) != IDOK){
 			m_rdoWorkStop.SetCheck(TRUE);
 			return FALSE;
 		}
 	}
 	if (pEquipData->bUseBottom==FALSE || pEquipData->bUseTop1==FALSE || pEquipData->bUseTop2==FALSE || pEquipData->bUseBotAng==FALSE || pEquipData->bUseTopAng==FALSE) {
-		sText.Format("Vision InspectionÀ» »ç¿ëÇÏÁö ¾Ê°í START ÇÏ½Ã°Ú½À´Ï±î?");
+		sText.Format("Vision Inspectionì„ ì‚¬ìš©í•˜ì§€ ì•Šê³  START í•˜ì‹œê² ìŠµë‹ˆê¹Œ?");
 		if (g_objCommon.Show_MsgBox(2, sText) != IDOK){
 			m_rdoWorkStop.SetCheck(TRUE);
 			return FALSE;
 		}
 	}
 	if (pEquipData->bUseROS==FALSE) {
-		sText.Format("ROS¸¦ »ç¿ëÇÏÁö ¾Ê°í START ÇÏ½Ã°Ú½À´Ï±î?");
+		sText.Format("ROSë¥¼ ì‚¬ìš©í•˜ì§€ ì•Šê³  START í•˜ì‹œê² ìŠµë‹ˆê¹Œ?");
 		if (g_objCommon.Show_MsgBox(2, sText) != IDOK){
 			m_rdoWorkStop.SetCheck(TRUE);
 			return FALSE;
 		}
 	}
 	if (gAlm.dMotionChkPos < 0.01) {
-		sText.Format("Motion Interlock ÇØÁ¦ »óÅÂÀÔ´Ï´Ù.\n±×´ë·Î START ÇÏ½Ã°Ú½À´Ï±î?");
+		sText.Format("Motion Interlock í•´ì œ ìƒíƒœì…ë‹ˆë‹¤.\nê·¸ëŒ€ë¡œ START í•˜ì‹œê² ìŠµë‹ˆê¹Œ?");
 		if (g_objCommon.Show_MsgBox(2, sText) != IDOK){
 			m_rdoWorkStop.SetCheck(TRUE);
 			return FALSE;
@@ -716,7 +737,7 @@ BOOL CWorkDlg::Work_Start()
 	for (int i=1; i<8; i++) {
 		if (gData.nElevatorOpen[i] > 0) {
 			m_rdoWorkStop.SetCheck(TRUE);
-			strMsg.Format("Elevator %d Door ¹öÅÏÀ» ´­·¯ ÁÖ½Ã°í, Lot ½ÃÀÛÇØ ÁÖ¼¼¿ä......", i);
+			strMsg.Format("Elevator %d Door ë²„í„´ì„ ëˆŒëŸ¬ ì£¼ì‹œê³ , Lot ì‹œì‘í•´ ì£¼ì„¸ìš”......", i);
 			g_objCommon.Show_MsgBox(1, strMsg);
 			return FALSE;
 		}
@@ -738,7 +759,7 @@ BOOL CWorkDlg::Work_Start()
 		return FALSE;
 	}
 	if (!g_objCommon.Check_SlideLock()) {
-		if (gData.nLanguage == 0) sText.Format("Slide Lock ÇÏ½Ã°í ÁøÇàÇØ ÁÖ¼¼¿ä.");
+		if (gData.nLanguage == 0) sText.Format("Slide Lock í•˜ì‹œê³  ì§„í–‰í•´ ì£¼ì„¸ìš”.");
 		else					  sText.Format("Slide lock and proceed.");
 		g_objCommon.Show_MsgBox(1, sText);
 		m_rdoWorkStop.SetCheck(TRUE);
@@ -749,7 +770,7 @@ BOOL CWorkDlg::Work_Start()
 	if (nMotionNo < 99) {
 		double dCurrentPos = g_objAJinAXL.Get_Position(nMotionNo);
 		CString strName = g_objAJinAXL.Get_AxisName(nMotionNo);
-		if (gData.nLanguage == 0) sText.Format("Motion(%s) À§Ä¡¸¦ Check ÇÏ¼¼¿ä.\nÀÌÀüÀ§Ä¡(%0.3lf) != ÇöÀçÀ§Ä¡(%0.3lf)", strName, gAlm.dMotionPos[nMotionNo], dCurrentPos);
+		if (gData.nLanguage == 0) sText.Format("Motion(%s) ìœ„ì¹˜ë¥¼ Check í•˜ì„¸ìš”.\nì´ì „ìœ„ì¹˜(%0.3lf) != í˜„ì¬ìœ„ì¹˜(%0.3lf)", strName, gAlm.dMotionPos[nMotionNo], dCurrentPos);
 		else					  sText.Format("Motion(%s) Check Position. => Pre-Position(%0.3lf) != Current-Position(%0.3lf)", strName, gAlm.dMotionPos[nMotionNo], dCurrentPos);
 		g_objLogFile.Save_HandlerLog(sText);
 
@@ -775,7 +796,7 @@ BOOL CWorkDlg::Work_Start()
 	if (pEquipData->bUseMES && gMes.nLotPortNo > 0 && gMes.nLotPortNo < 7 && gMes.nLotStatus[gMes.nLotPortNo-1] == 1) {
 		if (gLot.nCmCount[gMes.nLotPortNo-1] == gMes.nHostRcvCmCount) gMes.nLotStatus[gMes.nLotPortNo-1] = 2;
 		else {
-			sText.Format("MES Module ¼ö·®(%d)°ú °°¾Æ¾ß Lot ÁøÇàÀÌ °¡´ÉÇÕ´Ï´Ù.", gMes.nHostRcvCmCount);
+			sText.Format("MES Module ìˆ˜ëŸ‰(%d)ê³¼ ê°™ì•„ì•¼ Lot ì§„í–‰ì´ ê°€ëŠ¥í•©ë‹ˆë‹¤.", gMes.nHostRcvCmCount);
 			g_objLogFile.Save_HandlerLog(sText);
 			g_objCommon.Show_MsgBox(1, sText);
 			return FALSE;
@@ -798,8 +819,8 @@ BOOL CWorkDlg::Work_Start()
 		g_objAJinAXL.Write_Output(4);
 //	}
 
-	// JobÃ³À½ Start½Ã Check
-//	if (g_objSequenceMain.Get_IsAutoRun()) return TRUE;	// Auto RunÀÌ¸é ½ºÅµ gjc
+	// Jobì²˜ìŒ Startì‹œ Check
+//	if (g_objSequenceMain.Get_IsAutoRun()) return TRUE;	// Auto Runì´ë©´ ìŠ¤í‚µ gjc
 	if (gLot.nJobStatus > 0) return TRUE;
 
 	for (int i=0; i<6; i++) {
@@ -818,28 +839,28 @@ BOOL CWorkDlg::Work_Start()
 
 	if (gLot.nCmCount[0] > 0 || gLot.nCmCount[1] > 0 || gLot.nCmCount[2] > 0) {
 		if (pDX00->iElevator1TrayExist == FALSE) {
-			strMsg.Format("Elevator Load 1¿¡ Tray¸¦ ³Ö¾î ÁÖ¼¼¿ä..........");
+			strMsg.Format("Elevator Load 1ì— Trayë¥¼ ë„£ì–´ ì£¼ì„¸ìš”..........");
 			g_objCommon.Show_MsgBox(1, strMsg);
 			return FALSE;
 		}
 	}
 	if (gLot.nCmCount[3] > 0 || gLot.nCmCount[4] > 0 || gLot.nCmCount[5] > 0) {
 		if (pDX00->iElevator2TrayExist == FALSE) {
-			strMsg.Format("Elevator Load 2¿¡ Tray¸¦ ³Ö¾î ÁÖ¼¼¿ä..........");
+			strMsg.Format("Elevator Load 2ì— Trayë¥¼ ë„£ì–´ ì£¼ì„¸ìš”..........");
 			g_objCommon.Show_MsgBox(1, strMsg);
 			return FALSE;
 		}
 	}
 	if (pDX00->iElevator1TrayExist) {
 		if (gLot.nCmCount[0] < 1) {
-			strMsg.Format("Elevator Load 1¿¡ Á¤º¸¿Í ½Ç¹°ÀÌ ¸ÂÁö ¾Ê½À´Ï´Ù.......");
+			strMsg.Format("Elevator Load 1ì— ì •ë³´ì™€ ì‹¤ë¬¼ì´ ë§ì§€ ì•ŠìŠµë‹ˆë‹¤.......");
 			g_objCommon.Show_MsgBox(1, strMsg);
 			return FALSE;
 		}
 	}
 	if (pDX00->iElevator2TrayExist) {
 		if (gLot.nCmCount[3] < 1) {
-			strMsg.Format("Elevator Load 2¿¡ Á¤º¸¿Í ½Ç¹°ÀÌ ¸ÂÁö ¾Ê½À´Ï´Ù.......");
+			strMsg.Format("Elevator Load 2ì— ì •ë³´ì™€ ì‹¤ë¬¼ì´ ë§ì§€ ì•ŠìŠµë‹ˆë‹¤.......");
 			g_objCommon.Show_MsgBox(1, strMsg);
 			return FALSE;
 		}
@@ -847,23 +868,23 @@ BOOL CWorkDlg::Work_Start()
 
 	if (!pDX01->iElevator3TrayExist) {
 		m_rdoWorkStop.SetCheck(TRUE);
-		g_objCommon.Show_MsgBox(1, "Elevator Empty NG¿¡ Tray°¡ ¾ø½À´Ï´Ù. È®ÀÎÇØ ÁÖ¼¼¿ä.");	return FALSE;
+		g_objCommon.Show_MsgBox(1, "Elevator Empty NGì— Trayê°€ ì—†ìŠµë‹ˆë‹¤. í™•ì¸í•´ ì£¼ì„¸ìš”.");	return FALSE;
 	}
 	if (!pDX01->iElevator4TrayExist) {
 		m_rdoWorkStop.SetCheck(TRUE);
-		g_objCommon.Show_MsgBox(1, "Elevator Empty Good¿¡ Tray°¡ ¾ø½À´Ï´Ù. È®ÀÎÇØ ÁÖ¼¼¿ä.");	return FALSE;
+		g_objCommon.Show_MsgBox(1, "Elevator Empty Goodì— Trayê°€ ì—†ìŠµë‹ˆë‹¤. í™•ì¸í•´ ì£¼ì„¸ìš”.");	return FALSE;
 	}
 	if (pDX02->iElevator5TrayExist) {
 		m_rdoWorkStop.SetCheck(TRUE);
-		g_objCommon.Show_MsgBox(1, "Elevator Buffer NG¿¡ Tray°¡ ÀÖ½À´Ï´Ù.. ºñ¿öÁÖ¼¼¿ä..");	return FALSE;
+		g_objCommon.Show_MsgBox(1, "Elevator Buffer NGì— Trayê°€ ìˆìŠµë‹ˆë‹¤.. ë¹„ì›Œì£¼ì„¸ìš”..");	return FALSE;
 	}
 	if (pDX02->iElevator6TrayExist) {
 		m_rdoWorkStop.SetCheck(TRUE);
-		g_objCommon.Show_MsgBox(1, "Elevator Good1 ¹èÃâºÎ¿¡ Tray°¡ ÀÖ½À´Ï´Ù.. ºñ¿öÁÖ¼¼¿ä..");	return FALSE;
+		g_objCommon.Show_MsgBox(1, "Elevator Good1 ë°°ì¶œë¶€ì— Trayê°€ ìˆìŠµë‹ˆë‹¤.. ë¹„ì›Œì£¼ì„¸ìš”..");	return FALSE;
 	}
 	if (pDX02->iElevator7TrayExist) {
 		m_rdoWorkStop.SetCheck(TRUE);
-		g_objCommon.Show_MsgBox(1, "Elevator Good2 ¹èÃâºÎ¿¡ Tray°¡ ÀÖ½À´Ï´Ù.. ºñ¿öÁÖ¼¼¿ä..");	return FALSE;
+		g_objCommon.Show_MsgBox(1, "Elevator Good2 ë°°ì¶œë¶€ì— Trayê°€ ìˆìŠµë‹ˆë‹¤.. ë¹„ì›Œì£¼ì„¸ìš”..");	return FALSE;
 	}
 #endif
 
@@ -903,26 +924,26 @@ BOOL CWorkDlg::LotID_Check()
 		// Input Error Check
 		if (nCMCnt > 0) {
 			if (strTemp.GetLength() < 1) {
-				if (gData.nLanguage == 0) strMsg.Format("[%d] Check Lot ID, ¼ö·® ....................", i+1);
+				if (gData.nLanguage == 0) strMsg.Format("[%d] Check Lot ID, ìˆ˜ëŸ‰ ....................", i+1);
 				else					  strMsg.Format("[%d] Check Lot ID, Quantity ....................", i+1);
 				g_objCommon.Show_MsgBox(1, strMsg);
 				return FALSE;
 			}
 			if (nTrayCnt < 2) {
-				if (gData.nLanguage == 0) strMsg.Format("[%d] Check Lot ID, Tray ¼ö·® ....................", i+1);
+				if (gData.nLanguage == 0) strMsg.Format("[%d] Check Lot ID, Tray ìˆ˜ëŸ‰ ....................", i+1);
 				else					  strMsg.Format("[%d] Check Lot ID, Tray Quantity ....................", i+1);
 				g_objCommon.Show_MsgBox(1, strMsg);
 				return FALSE;
 			}
 		} else {
 			if (strTemp.GetLength() > 0) {
-				if (gData.nLanguage == 0) strMsg.Format("[%d] Check Lot ID, ¼ö·® ....................", i+1);
+				if (gData.nLanguage == 0) strMsg.Format("[%d] Check Lot ID, ìˆ˜ëŸ‰ ....................", i+1);
 				else					  strMsg.Format("[%d] Check Lot ID, Quantity ....................", i+1);
 				g_objCommon.Show_MsgBox(1, strMsg);
 				return FALSE;
 			}
 			if (nTrayCnt > 0 ) {
-				if (gData.nLanguage == 0) strMsg.Format("[%d] Check Lot ID, Tray ¼ö·® ....................", i+1);
+				if (gData.nLanguage == 0) strMsg.Format("[%d] Check Lot ID, Tray ìˆ˜ëŸ‰ ....................", i+1);
 				else					  strMsg.Format("[%d] Check Lot ID, Tray Quantity ....................", i+1);
 				g_objCommon.Show_MsgBox(1, strMsg);
 				return FALSE;
@@ -946,7 +967,7 @@ BOOL CWorkDlg::LotID_Check()
 		}
 	}
 	if (nLotCnt < 1 && bElevatorRun == FALSE) {
-		g_objCommon.Show_MsgBox(1, "Lot Á¤º¸¸¦ ÀÔ·ÂÇØ¾ß ÇÕ´Ï´Ù.....");
+		g_objCommon.Show_MsgBox(1, "Lot ì •ë³´ë¥¼ ì…ë ¥í•´ì•¼ í•©ë‹ˆë‹¤.....");
 		return FALSE;
 	}
 
@@ -954,7 +975,7 @@ BOOL CWorkDlg::LotID_Check()
 		for(int j=0; j<6; j++) {
 			if (i != j && gLot.sLotID[i].GetLength() > 0 && gLot.sLotID[i] == gLot.sLotID[j]) {
 				gLot.nCmCount[j] = 0;
-				if (gData.nLanguage == 0) strMsg.Format("[%d-%d]¿¡ µ¿ÀÏ Lot ID°¡ ÀÖ½À´Ï´Ù........", i+1, j+1);
+				if (gData.nLanguage == 0) strMsg.Format("[%d-%d]ì— ë™ì¼ Lot IDê°€ ìˆìŠµë‹ˆë‹¤........", i+1, j+1);
 				else					  strMsg.Format("[%d-%d] has the same Lot ID........", i+1, j+1);
 				g_objCommon.Show_MsgBox(1, strMsg);
 				return FALSE;
@@ -965,28 +986,28 @@ BOOL CWorkDlg::LotID_Check()
 	if (gLot.nCmCount[1] > 0 || gLot.nCmCount[2] > 0) {
 		if (gLot.nCmCount[0] < 1) {
 			gLot.nCmCount[1] = gLot.nCmCount[2] = 0;
-			g_objCommon.Show_MsgBox(1, "[1] Lot ID´Â Ã¹¹øÂ°ºÎÅÍ ÀÔ·ÂÇØ¾ß ÇÕ´Ï´Ù.....");
+			g_objCommon.Show_MsgBox(1, "[1] Lot IDëŠ” ì²«ë²ˆì§¸ë¶€í„° ì…ë ¥í•´ì•¼ í•©ë‹ˆë‹¤.....");
 			return FALSE;
 		}
 	}
 	if (gLot.nCmCount[2] > 0) {
 		if (gLot.nCmCount[1] < 1) {
 			gLot.nCmCount[2] = 0;
-			g_objCommon.Show_MsgBox(1, "[2] Lot ID´Â ¼ø¼­µÇ·Î ÀÔ·ÂÇØ¾ß ÇÕ´Ï´Ù.....");
+			g_objCommon.Show_MsgBox(1, "[2] Lot IDëŠ” ìˆœì„œë˜ë¡œ ì…ë ¥í•´ì•¼ í•©ë‹ˆë‹¤.....");
 			return FALSE;
 		}
 	}
 	if (gLot.nCmCount[4] > 0 || gLot.nCmCount[5] > 0) {
 		if (gLot.nCmCount[3] < 1) {
 			gLot.nCmCount[4] = gLot.nCmCount[5] = 0;
-			g_objCommon.Show_MsgBox(1, "[4] Lot ID´Â Ã¹¹øÂ°ºÎÅÍ ÀÔ·ÂÇØ¾ß ÇÕ´Ï´Ù.....");
+			g_objCommon.Show_MsgBox(1, "[4] Lot IDëŠ” ì²«ë²ˆì§¸ë¶€í„° ì…ë ¥í•´ì•¼ í•©ë‹ˆë‹¤.....");
 			return FALSE;
 		}
 	}
 	if (gLot.nCmCount[5] > 0) {
 		if (gLot.nCmCount[4] < 1) {
 			gLot.nCmCount[5] = 0;
-			g_objCommon.Show_MsgBox(1, "[5] Lot ID´Â ¼ø¼­µÇ·Î ÀÔ·ÂÇØ¾ß ÇÕ´Ï´Ù.....");
+			g_objCommon.Show_MsgBox(1, "[5] Lot IDëŠ” ìˆœì„œë˜ë¡œ ì…ë ¥í•´ì•¼ í•©ë‹ˆë‹¤.....");
 			return FALSE;
 		}
 	}
@@ -996,40 +1017,40 @@ BOOL CWorkDlg::LotID_Check()
 
 void CWorkDlg::Initial_Controls() 
 {
-	for (int i = 0; i < 7; i++) m_Group[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, COLOR_DEFAULT, COLOR_DEFAULT);
-	for (int i = 0; i < 4; i++) m_Label[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x80, 0x80, 0x80));		// Tray
-	for (int i = 0; i < 16; i++) m_lblLot[i].Init_Ctrl("¹ÙÅÁ", 8, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x20, 0x20, 0x80));		// Lot Run
+	for (int i = 0; i < 7; i++) m_Group[i].Init_Ctrl("ë°”íƒ•", 12, TRUE, COLOR_DEFAULT, COLOR_DEFAULT);
+	for (int i = 0; i < 4; i++) m_Label[i].Init_Ctrl("ë°”íƒ•", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x80, 0x80, 0x80));		// Tray
+	for (int i = 0; i < 16; i++) m_lblLot[i].Init_Ctrl("ë°”íƒ•", 8, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x20, 0x20, 0x80));		// Lot Run
 	for (int i = 0; i < 6; i++) m_stcLotsIdS[i].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));
-	for (int i = 0; i < 6; i++) m_stcCmsCountS[i].Init_Ctrl("¹ÙÅÁ", 11, TRUE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));
-	for (int i = 0; i < 6; i++) m_stcTrayCountS[i].Init_Ctrl("¹ÙÅÁ", 11, TRUE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));
-	for (int i = 0; i < 7; i++) m_stcElevtorSts[i].Init_Ctrl("¹ÙÅÁ", 10, TRUE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));
-	for (int i = 0; i < 6; i++) m_rdoSlectNo[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
+	for (int i = 0; i < 6; i++) m_stcCmsCountS[i].Init_Ctrl("ë°”íƒ•", 11, TRUE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));
+	for (int i = 0; i < 6; i++) m_stcTrayCountS[i].Init_Ctrl("ë°”íƒ•", 11, TRUE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));
+	for (int i = 0; i < 7; i++) m_stcElevtorSts[i].Init_Ctrl("ë°”íƒ•", 10, TRUE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));
+	for (int i = 0; i < 6; i++) m_rdoSlectNo[i].Init_Ctrl("ë°”íƒ•", 12, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
 //	m_bmpEquipment.LoadBitmap(IDB_EQUIP_WORK);
 //	m_imgEquipment.SetBitmap(m_bmpEquipment);
 	for (int i = 0; i < 9; i++) m_ledEquipOption[i].Init_Ctrl("Arial", 10, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);
 	for (int i = 0; i < 6; i++) m_ledVisionSts[i].Init_Ctrl("Arial", 10, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);
 //	m_stcEquipType.Init_Ctrl("Arial", 10, TRUE, RGB(0x00, 0x00, 0xFF), COLOR_DEFAULT);
-	m_stcEquipType.Init_Ctrl("¹ÙÅÁ", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x66, 0xFF, 0xCC));
-//	for (int i = 0; i < 17; i++) m_stcJobLotID[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xD0, 0xD0, 0xD0));
-//	for (int i = 0; i < 17; i++) m_stcJobCarNo[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xD0, 0xD0, 0xD0));
-	for (int i = 0; i < 17; i++) m_stcJobLotID[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xF0, 0xD0, 0xFF));
-	for (int i = 0; i < 17; i++) m_stcJobCarNo[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xF0, 0xF0, 0xFF));
+	m_stcEquipType.Init_Ctrl("ë°”íƒ•", 16, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x66, 0xFF, 0xCC));
+//	for (int i = 0; i < 17; i++) m_stcJobLotID[i].Init_Ctrl("ë°”íƒ•", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xD0, 0xD0, 0xD0));
+//	for (int i = 0; i < 17; i++) m_stcJobCarNo[i].Init_Ctrl("ë°”íƒ•", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xD0, 0xD0, 0xD0));
+	for (int i = 0; i < 17; i++) m_stcJobLotID[i].Init_Ctrl("ë°”íƒ•", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xF0, 0xD0, 0xFF));
+	for (int i = 0; i < 17; i++) m_stcJobCarNo[i].Init_Ctrl("ë°”íƒ•", 12, TRUE, RGB(0x00, 0x00, 0x00), RGB(0xF0, 0xF0, 0xFF));
 
-	m_rdoWorkStart.Init_Ctrl("¹ÙÅÁ", 20, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
-	m_rdoWorkStop.Init_Ctrl("¹ÙÅÁ", 20, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
-	m_ledInitComplete.Init_Ctrl("¹ÙÅÁ", 12, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em24);
-	m_chkCycleStop.Init_Ctrl("¹ÙÅÁ", 11, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
+	m_rdoWorkStart.Init_Ctrl("ë°”íƒ•", 20, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
+	m_rdoWorkStop.Init_Ctrl("ë°”íƒ•", 20, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
+	m_ledInitComplete.Init_Ctrl("ë°”íƒ•", 12, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em24);
+	m_chkCycleStop.Init_Ctrl("ë°”íƒ•", 11, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
 	for (int i = 0; i < 5; i++) m_picTrayBack[i].Set_Color(COLOR_DEFAULT, RGB(0xF0, 0xF0, 0xC0));
-	m_stcAlignLine.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
-	m_stcCarrierLine.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
-	m_stcNGLine.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
-	m_stcGoodLine.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
+	m_stcAlignLine.Init_Ctrl("ë°”íƒ•", 11, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
+	m_stcCarrierLine.Init_Ctrl("ë°”íƒ•", 11, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
+	m_stcNGLine.Init_Ctrl("ë°”íƒ•", 11, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
+	m_stcGoodLine.Init_Ctrl("ë°”íƒ•", 11, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
 	Initial_Grid(&m_grdAlign, TRAY_CM_Y, TRAY_CM_X);
 	Initial_Grid(&m_grdCarrier, TRAY_CM_Y, TRAY_CM_X);
 	Initial_Grid(&m_grdGoodTray, TRAY_CM_Y, TRAY_CM_X);
 	Initial_Grid(&m_grdNGTray, TRAY_CM_Y, TRAY_CM_X);
 	Initial_JobGrid(&m_grdJob, 10, 9);
-	for (int i = 0; i < 24; i++) m_stcWorkCase[i].Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x40, 0x40, 0x40));
+	for (int i = 0; i < 24; i++) m_stcWorkCase[i].Init_Ctrl("ë°”íƒ•", 11, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x40, 0x40, 0x40));
 
 	for (int i = 0; i < 8; i++) m_ledLoadPicker1[i].Init_Ctrl("Arial", 10, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);	//CLedCS::emBlue
 	for (int i = 0; i < 8; i++) m_ledLoadPicker2[i].Init_Ctrl("Arial", 10, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);
@@ -1039,14 +1060,14 @@ void CWorkDlg::Initial_Controls()
 	for (int i = 0; i < 8; i++) m_ledVision4[i].Init_Ctrl("Arial", 10, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);
 	for (int i = 0; i < 8; i++) m_ledUnloadPicker1[i].Init_Ctrl("Arial", 10, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);
 	for (int i = 0; i < 8; i++) m_ledUnloadPicker2[i].Init_Ctrl("Arial", 10, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);
-	for (int i = 0; i < 4; i++) m_stcStageInfor[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0xFF));
+	for (int i = 0; i < 4; i++) m_stcStageInfor[i].Init_Ctrl("ë°”íƒ•", 12, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0xFF));
 	for (int i = 0; i <15; i++) m_ledTrayCheck[i].Init_Ctrl("Arial", 10, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);
 
-	m_stcMesConnect.Init_Ctrl("¹ÙÅÁ", 8, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
-	m_stcMesOnline.Init_Ctrl("¹ÙÅÁ", 10, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
-	m_lblOperId.Init_Ctrl("¹ÙÅÁ", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x20, 0x20, 0x80));
-	m_stcOperId.Init_Ctrl("¹ÙÅÁ", 12, TRUE, COLOR_DEFAULT, RGB(0xD0, 0xD0, 0xD0));
-	m_btnNGLotEnd.Init_Ctrl("¹ÙÅÁ", 11, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
+	m_stcMesConnect.Init_Ctrl("ë°”íƒ•", 8, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
+	m_stcMesOnline.Init_Ctrl("ë°”íƒ•", 10, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x00, 0x00, 0x00));
+	m_lblOperId.Init_Ctrl("ë°”íƒ•", 11, FALSE, RGB(0xFF, 0xFF, 0xFF), RGB(0x20, 0x20, 0x80));
+	m_stcOperId.Init_Ctrl("ë°”íƒ•", 12, TRUE, COLOR_DEFAULT, RGB(0xD0, 0xD0, 0xD0));
+	m_btnNGLotEnd.Init_Ctrl("ë°”íƒ•", 11, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
 }
 
 void CWorkDlg::Initial_Grid(CGridCS *pGrid, int nRows, int nCols)
@@ -1122,7 +1143,7 @@ void CWorkDlg::Display_Status()
 	BOOL bInitComplete = g_objSequenceInit.Get_InitComplete();
 	m_ledInitComplete.Set_On(bInitComplete);
 
-	//Inspection Stage 1,2,3,4 À§Ä¡ Display
+	//Inspection Stage 1,2,3,4 ìœ„ì¹˜ Display
 	for (int i=0; i<4; i++) {
 		if		(gData.nVisionPos[0][i] > 0 && gData.nVisionPos[1][i] > 0) strText.Format("%d,%d", gData.nVisionPos[1][i], gData.nVisionPos[0][i]);
 		else if (gData.nVisionPos[0][i] > 0)							   strText.Format("%d", gData.nVisionPos[0][i]);
@@ -1130,10 +1151,10 @@ void CWorkDlg::Display_Status()
 		else															   strText = "";
 		m_stcStageInfor[i].SetWindowText(strText);
 	}
-	strText.Format("ROS ´ë±â¼ö·®: %d", gData.nROSReqCount);
+	strText.Format("ROS ëŒ€ê¸°ìˆ˜ëŸ‰: %d", gData.nROSReqCount);
 	m_stcEquipType.SetWindowText(strText);
 
-	//Elevator 1~7 »óÅÂ Display
+	//Elevator 1~7 ìƒíƒœ Display
 	if		(gData.nElevatorOpen[1] == 0) { if (g_objCommon.Check_SlideLock(1)) m_stcElevtorSts[0].SetWindowText("Lock"); else  m_stcElevtorSts[0].SetWindowText("Unlock"); }
 	else if (gData.nElevatorOpen[1] == 1) m_stcElevtorSts[0].SetWindowText("Open");
 	else if (gData.nElevatorOpen[1] == 2) m_stcElevtorSts[0].SetWindowText("Opened");
@@ -1250,24 +1271,24 @@ void CWorkDlg::Display_Status()
 	m_ledVisionSts[4].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC4));
 	m_ledVisionSts[5].Set_On(g_objInspector.Get_VisionStatus(INSPECTOR_PC5));
 
-	if		(gLot.nLotStatus[0] == 1)		m_stcLotsIdS[0].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ÀÛ¾÷ÁßÀÏ¶§
-	else if (gMes.nLotStatus[0] == 2 || gMes.nLotStatus[0] == 4)		m_stcLotsIdS[0].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//¸Å°ÅÁø ÀÖÀ»¶§
-	else									m_stcLotsIdS[0].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//¸Å°ÅÁø ¾øÀ»¶§
-	if		(gLot.nLotStatus[1] == 1)		m_stcLotsIdS[1].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ÀÛ¾÷ÁßÀÏ¶§
-	else if (gMes.nLotStatus[1] == 2 || gMes.nLotStatus[1] == 4)		m_stcLotsIdS[1].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//¸Å°ÅÁø ÀÖÀ»¶§
-	else									m_stcLotsIdS[1].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//¸Å°ÅÁø ¾øÀ»¶§
-	if		(gLot.nLotStatus[2] == 1)		m_stcLotsIdS[2].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ÀÛ¾÷ÁßÀÏ¶§
-	else if (gMes.nLotStatus[2] == 2 || gMes.nLotStatus[2] == 4)		m_stcLotsIdS[2].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//¸Å°ÅÁø ÀÖÀ»¶§
-	else									m_stcLotsIdS[2].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//¸Å°ÅÁø ¾øÀ»¶§
-	if		(gLot.nLotStatus[3] == 1)		m_stcLotsIdS[3].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ÀÛ¾÷ÁßÀÏ¶§
-	else if (gMes.nLotStatus[3] == 2 || gMes.nLotStatus[3] == 4)		m_stcLotsIdS[3].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//¸Å°ÅÁø ÀÖÀ»¶§
-	else									m_stcLotsIdS[3].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//¸Å°ÅÁø ¾øÀ»¶§
-	if		(gLot.nLotStatus[4] == 1)		m_stcLotsIdS[4].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ÀÛ¾÷ÁßÀÏ¶§
-	else if (gMes.nLotStatus[4] == 2 || gMes.nLotStatus[4] == 4)		m_stcLotsIdS[4].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//¸Å°ÅÁø ÀÖÀ»¶§
-	else									m_stcLotsIdS[4].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//¸Å°ÅÁø ¾øÀ»¶§
-	if		(gLot.nLotStatus[5] == 1)		m_stcLotsIdS[5].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ÀÛ¾÷ÁßÀÏ¶§
-	else if (gMes.nLotStatus[5] == 2 || gMes.nLotStatus[5] == 4)		m_stcLotsIdS[5].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//¸Å°ÅÁø ÀÖÀ»¶§
-	else									m_stcLotsIdS[5].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//¸Å°ÅÁø ¾øÀ»¶§
+	if		(gLot.nLotStatus[0] == 1)		m_stcLotsIdS[0].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ì‘ì—…ì¤‘ì¼ë•Œ
+	else if (gMes.nLotStatus[0] == 2 || gMes.nLotStatus[0] == 4)		m_stcLotsIdS[0].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//ë§¤ê±°ì§„ ìˆì„ë•Œ
+	else									m_stcLotsIdS[0].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//ë§¤ê±°ì§„ ì—†ì„ë•Œ
+	if		(gLot.nLotStatus[1] == 1)		m_stcLotsIdS[1].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ì‘ì—…ì¤‘ì¼ë•Œ
+	else if (gMes.nLotStatus[1] == 2 || gMes.nLotStatus[1] == 4)		m_stcLotsIdS[1].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//ë§¤ê±°ì§„ ìˆì„ë•Œ
+	else									m_stcLotsIdS[1].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//ë§¤ê±°ì§„ ì—†ì„ë•Œ
+	if		(gLot.nLotStatus[2] == 1)		m_stcLotsIdS[2].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ì‘ì—…ì¤‘ì¼ë•Œ
+	else if (gMes.nLotStatus[2] == 2 || gMes.nLotStatus[2] == 4)		m_stcLotsIdS[2].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//ë§¤ê±°ì§„ ìˆì„ë•Œ
+	else									m_stcLotsIdS[2].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//ë§¤ê±°ì§„ ì—†ì„ë•Œ
+	if		(gLot.nLotStatus[3] == 1)		m_stcLotsIdS[3].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ì‘ì—…ì¤‘ì¼ë•Œ
+	else if (gMes.nLotStatus[3] == 2 || gMes.nLotStatus[3] == 4)		m_stcLotsIdS[3].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//ë§¤ê±°ì§„ ìˆì„ë•Œ
+	else									m_stcLotsIdS[3].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//ë§¤ê±°ì§„ ì—†ì„ë•Œ
+	if		(gLot.nLotStatus[4] == 1)		m_stcLotsIdS[4].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ì‘ì—…ì¤‘ì¼ë•Œ
+	else if (gMes.nLotStatus[4] == 2 || gMes.nLotStatus[4] == 4)		m_stcLotsIdS[4].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//ë§¤ê±°ì§„ ìˆì„ë•Œ
+	else									m_stcLotsIdS[4].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//ë§¤ê±°ì§„ ì—†ì„ë•Œ
+	if		(gLot.nLotStatus[5] == 1)		m_stcLotsIdS[5].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xA0, 0x00));	//ì‘ì—…ì¤‘ì¼ë•Œ
+	else if (gMes.nLotStatus[5] == 2 || gMes.nLotStatus[5] == 4)		m_stcLotsIdS[5].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x00, 0xFF, 0x00));	//ë§¤ê±°ì§„ ìˆì„ë•Œ
+	else									m_stcLotsIdS[5].Init_Ctrl("Arial", 12, FALSE, COLOR_DEFAULT, RGB(0x80, 0xF0, 0xF0));	//ë§¤ê±°ì§„ ì—†ì„ë•Œ
 
 	int *pCase = g_objSequenceMain.Get_pMainRunCase();
 	CString strCase;
@@ -1509,7 +1530,7 @@ LRESULT CWorkDlg::OnUpdateTrayInfo(WPARAM nTray, LPARAM lParam)
 				if		(gData.InfoNgTray[i][j] == 1) m_grdNgTray.Set_CellBackClr(i, j, RGB(0xFF, 0x80, 0xFF));	// 1 Module
 				else if	(gData.InfoNgTray[i][j] == 2) m_grdNgTray.Set_CellBackClr(i, j, RGB(0x00, 0xFF, 0x00));	// 2 Good
 				else if (gData.InfoNgTray[i][j] == 3) m_grdNgTray.Set_CellBackClr(i, j, RGB(0xFF, 0x00, 0x00));	// 3 Normal NG
-				else if (gData.InfoNgTray[i][j] == 4) m_grdNgTray.Set_CellBackClr(i, j, RGB(0xF0, 0xF0, 0x00));	// 4 MES ¼º´ÉºÒ·®
+				else if (gData.InfoNgTray[i][j] == 4) m_grdNgTray.Set_CellBackClr(i, j, RGB(0xF0, 0xF0, 0x00));	// 4 MES ì„±ëŠ¥ë¶ˆëŸ‰
 				else if (gData.InfoNgTray[i][j] == 5) m_grdNgTray.Set_CellBackClr(i, j, RGB(0xFF, 0x60, 0xFF));	// 5 Barcode Mismatch
 				else if (gData.InfoNgTray[i][j] == 6) m_grdNgTray.Set_CellBackClr(i, j, RGB(0x80, 0x40, 0xF0));	// 6 HREN
 				else if (gData.InfoNgTray[i][j] == 7) m_grdNgTray.Set_CellBackClr(i, j, RGB(0x00, 0x80, 0xFF));	// 7 Spider
@@ -1534,26 +1555,26 @@ LRESULT CWorkDlg::OnUpdateBarcode(WPARAM wParam, LPARAM lParam)
 	if (sData.GetLength() < 1) return 0;
 /*
 	if (m_rdoWorkStart.GetCheck()) {
-		if (gData.nLanguage == 0) AfxMessageBox(_T("Àåºñ Stop »óÅÂ¿¡¼­ ÁøÇàÀÌ °¡´ÉÇÕ´Ï´Ù....."));
+		if (gData.nLanguage == 0) AfxMessageBox(_T("ì¥ë¹„ Stop ìƒíƒœì—ì„œ ì§„í–‰ì´ ê°€ëŠ¥í•©ë‹ˆë‹¤....."));
 		else					  AfxMessageBox(_T("You can proceed with the equipment stopped."));
 		return 0;
 	}*/
 	if (gData.nSelectNo < 1 || gData.nSelectNo > 6) {
-		if (gData.nLanguage == 0) AfxMessageBox(_T("LotÀ» ¸ÕÀú ¼±ÅÃÈÄ ÁøÇàÇÏ¼¼¿ä..."));
+		if (gData.nLanguage == 0) AfxMessageBox(_T("Lotì„ ë¨¼ì € ì„ íƒí›„ ì§„í–‰í•˜ì„¸ìš”..."));
 		else					  AfxMessageBox(_T("Select Lot first and proceed."));
 		return 0;
 	}
 
 	m_stcLotsIdS[gData.nSelectNo-1].GetWindowText(strTemp);
 	if (strTemp.GetLength() > 0) {
-		if (gData.nLanguage == 0) AfxMessageBox(_T("±âÁ¸ Lot ID Clear¸¦ ¸ÕÀúÇÏ°í ÁøÇàÇÏ¼¼¿ä..."));
+		if (gData.nLanguage == 0) AfxMessageBox(_T("ê¸°ì¡´ Lot ID Clearë¥¼ ë¨¼ì €í•˜ê³  ì§„í–‰í•˜ì„¸ìš”..."));
 		else					  AfxMessageBox(_T("Please proceed with the existing Lot ID Clear first."));
 		return 0;
 	}
 
-	//¹ÙÄÚµå ÀÎ½Ä ÈÄ ÀÛ¾÷ ¸ğµ¨ÀÌ ¸Â´ÂÁö È®ÀÎ.
+	//ë°”ì½”ë“œ ì¸ì‹ í›„ ì‘ì—… ëª¨ë¸ì´ ë§ëŠ”ì§€ í™•ì¸.
 	if(BarcodeLotID_Check(sData) == FALSE){
-		if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "¸ğµ¨ È®ÀÎ ÈÄ ´Ù½Ã ÀÔ·ÂÇØ ÁÖ½Ê½Ã¿À.....");
+		if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "ëª¨ë¸ í™•ì¸ í›„ ë‹¤ì‹œ ì…ë ¥í•´ ì£¼ì‹­ì‹œì˜¤.....");
 		else					  g_objCommon.Show_MsgBox(1, "Please check the model and re-enter...");
 		return 0;
 	}
@@ -1577,7 +1598,7 @@ LRESULT CWorkDlg::OnResetCycleStop(WPARAM wParam, LPARAM lParam)
 	gData.bCycleStop = FALSE;
 	m_chkCycleStop.SetCheck(FALSE);
 	m_chkCycleStop.Set_Color(RGB(0x00, 0x00, 0x00), RGB(0xF0, 0xF0, 0xF0));
-	if (wParam == 1) g_objSequenceInit.Set_InitComplete(FALSE);	// ÃÊ±âÈ­ ÇÊ¿ä
+	if (wParam == 1) g_objSequenceInit.Set_InitComplete(FALSE);	// ì´ˆê¸°í™” í•„ìš”
 
 	return 0;
 }
@@ -1651,7 +1672,7 @@ LRESULT CWorkDlg::OnJobComplete(WPARAM wParam, LPARAM lParam)
 	}
 	g_objSequenceMain.Beep_Post(1000);
 
-	if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "Job ¿Ï·á.");
+	if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "Job ì™„ë£Œ.");
 	else					  g_objCommon.Show_MsgBox(1, "Job complete.");
 	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
 	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
@@ -1673,12 +1694,12 @@ LRESULT CWorkDlg::OnShowLotEndMsg(WPARAM wParam, LPARAM lParam)
 	int nNo2 = lParam;
 	if(nNo2 == 0) {
 		g_objSequenceMain.Beep_Post(1000);
-		if (gData.nLanguage == 0) sMsg.Format("%d¹ø Port LotÀÌ ³¡³µ½À´Ï´Ù.", nNo+1);
+		if (gData.nLanguage == 0) sMsg.Format("%dë²ˆ Port Lotì´ ëë‚¬ìŠµë‹ˆë‹¤.", nNo+1);
 		else					  sMsg.Format("No%d Port Lot is complete.", nNo+1);
 		g_objCommon.Show_MsgBox(1, sMsg);
 	}
 	if(nNo2 == 9) {
-		if (gData.nLanguage == 0) sMsg.Format("Reject %dea ÀÌ»ó °ËÃâ!!!\nTag ºÎÂøÈÄ °Ë»çÀÚ\nÀÎ°è ¹Ù¶ø´Ï´Ù.(Reject=%d)", gData.nRejectMaxCount, gData.nRejectLotCount);
+		if (gData.nLanguage == 0) sMsg.Format("Reject %dea ì´ìƒ ê²€ì¶œ!!!\nTag ë¶€ì°©í›„ ê²€ì‚¬ì\nì¸ê³„ ë°”ëë‹ˆë‹¤.(Reject=%d)", gData.nRejectMaxCount, gData.nRejectLotCount);
 		else					  sMsg.Format("More than %d reject detected!!!\nPlease attach the tag and hand it\nover to the inspector.(Reject=%d)", gData.nRejectMaxCount, gData.nRejectLotCount);
 		g_objCommon.Show_MsgBox(9, sMsg);
 	}
@@ -1687,19 +1708,19 @@ LRESULT CWorkDlg::OnShowLotEndMsg(WPARAM wParam, LPARAM lParam)
 /*
 	//g_dlgWork.PostMessage(UM_LOT_END_MSG, NULL, NULL);
 	if(wParam == 1) {
-		if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "JobÀÌ ³¡³ª°í ÃÊ±âÈ­ Áß ÀÔ´Ï´Ù.\nºÎÀú ¹× ¿Ï·á ¸Ş¼¼Áö°¡ ¶ã¶§±îÁö ±â´Ù·Á ÁÖ¼¼¿ä.");
+		if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "Jobì´ ëë‚˜ê³  ì´ˆê¸°í™” ì¤‘ ì…ë‹ˆë‹¤.\në¶€ì € ë° ì™„ë£Œ ë©”ì„¸ì§€ê°€ ëœ°ë•Œê¹Œì§€ ê¸°ë‹¤ë ¤ ì£¼ì„¸ìš”.");
 		else					  g_objCommon.Show_MsgBox(1, "Job is finished and initializing.\nPlease wait for the buzzer and completion message to appear.");
 	}
 	if(wParam == 2) {
-		if (gData.nLanguage == 0) g_objCommon.Show_Alarm("LotÀÌ ³¡³µ½À´Ï´Ù.\nÀÔ·Â¼ö·®°ú °Ë»ç¼ö·®ÀÌ ¸ÂÁö ¾Ê½À´Ï´Ù.\nÈ®ÀÎÇØ ÁÖ¼¼¿ä");
+		if (gData.nLanguage == 0) g_objCommon.Show_Alarm("Lotì´ ëë‚¬ìŠµë‹ˆë‹¤.\nì…ë ¥ìˆ˜ëŸ‰ê³¼ ê²€ì‚¬ìˆ˜ëŸ‰ì´ ë§ì§€ ì•ŠìŠµë‹ˆë‹¤.\ní™•ì¸í•´ ì£¼ì„¸ìš”");
 		else					  g_objCommon.Show_Alarm("Lot is complete.\nThe input quantity and the inspection quantity do not match.\nPlease check.");
 	}
 	if(wParam == 9) {
-		if (gData.nLanguage == 0) sMsg.Format("Reject %dea ÀÌ»ó °ËÃâ!!!\nTag ºÎÂøÈÄ °Ë»çÀÚ\nÀÎ°è ¹Ù¶ø´Ï´Ù.(Reject=%d)", gData.nRejectMaxCount, gData.nRejectLotCount);
+		if (gData.nLanguage == 0) sMsg.Format("Reject %dea ì´ìƒ ê²€ì¶œ!!!\nTag ë¶€ì°©í›„ ê²€ì‚¬ì\nì¸ê³„ ë°”ëë‹ˆë‹¤.(Reject=%d)", gData.nRejectMaxCount, gData.nRejectLotCount);
 		else					  sMsg.Format("More than %d reject detected!!!\nPlease attach the tag and hand it\nover to the inspector.(Reject=%d)", gData.nRejectMaxCount, gData.nRejectLotCount);
 		g_objCommon.Show_MsgBox(9, sMsg);
 	} else {
-		if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "LotÀÌ ³¡³µ½À´Ï´Ù.\nClear ÈÄ ²¨³» ÁÖ¼¼¿ä.");
+		if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "Lotì´ ëë‚¬ìŠµë‹ˆë‹¤.\nClear í›„ êº¼ë‚´ ì£¼ì„¸ìš”.");
 		else					  g_objCommon.Show_MsgBox(1, "Lot is complete.\nClear and take it out.");
 	}
 */
@@ -1776,11 +1797,11 @@ void CWorkDlg::SaveJobList()
 	}
 }
 
-//¹ÙÄÚµå¸¦ Âï¾úÀ»¶§ LotID°¡ ¼³ºñ ¸ğµ¨°ú ºñ±³ÇØÁØ´Ù.
+//ë°”ì½”ë“œë¥¼ ì°ì—ˆì„ë•Œ LotIDê°€ ì„¤ë¹„ ëª¨ë¸ê³¼ ë¹„êµí•´ì¤€ë‹¤.
 BOOL CWorkDlg::BarcodeLotID_Check(CString sLotID)
 {
 	CString sPath, strKey;
-	CString sData; // ini ÆÄÀÏ¿¡ ÀÖ´Â ¸ğµ¨º° µ¥ÀÌÅÍ
+	CString sData; // ini íŒŒì¼ì— ìˆëŠ” ëª¨ë¸ë³„ ë°ì´í„°
 
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 
@@ -1794,29 +1815,29 @@ BOOL CWorkDlg::BarcodeLotID_Check(CString sLotID)
 	
 	sData = INI.Get_String(strKey, "DATA", "");
 
-	if(sData == "") return TRUE;	// µ¥ÀÌÅÍ°¡ ¾øÀ¸¸é ¹«Á¶°Ç ÀÔ·ÂÇÒ¼öÀÖ°Ô ÇØÁØ´Ù.
-	if(sLotID.Find(sData) == 2) return TRUE; //°°Àº ¹®ÀÚ¿­ ½ÃÀÛÀÌ 2ÀÌ¸é °°Àº ¸ğµ¨ÀÓ.(GSXXXX, XXXX°¡ ¸ğµ¨º°·Î Á¤ÇØÁø µ¥ÀÌÅÍ)
+	if(sData == "") return TRUE;	// ë°ì´í„°ê°€ ì—†ìœ¼ë©´ ë¬´ì¡°ê±´ ì…ë ¥í• ìˆ˜ìˆê²Œ í•´ì¤€ë‹¤.
+	if(sLotID.Find(sData) == 2) return TRUE; //ê°™ì€ ë¬¸ìì—´ ì‹œì‘ì´ 2ì´ë©´ ê°™ì€ ëª¨ë¸ì„.(GSXXXX, XXXXê°€ ëª¨ë¸ë³„ë¡œ ì •í•´ì§„ ë°ì´í„°)
 
-	return FALSE;	//±×¿Ü ³ª¸ÓÁö´Â ´Ù¸¥ ¸ğµ¨ÀÎ°É·Î °£ÁÖ.
+	return FALSE;	//ê·¸ì™¸ ë‚˜ë¨¸ì§€ëŠ” ë‹¤ë¥¸ ëª¨ë¸ì¸ê±¸ë¡œ ê°„ì£¼.
 }
 
 void CWorkDlg::OnBnClickedBtnLotCancel()
 {
 	if (m_rdoWorkStart.GetCheck()) {
-		if (gData.nLanguage == 0) AfxMessageBox(_T("Àåºñ Stop »óÅÂ¿¡¼­ ÁøÇàÀÌ °¡´ÉÇÕ´Ï´Ù....."));
+		if (gData.nLanguage == 0) AfxMessageBox(_T("ì¥ë¹„ Stop ìƒíƒœì—ì„œ ì§„í–‰ì´ ê°€ëŠ¥í•©ë‹ˆë‹¤....."));
 		else					  AfxMessageBox(_T("You can proceed with the equipment stopped."));
 		return;
 	}
 
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (!pEquipData->bUseMES) {
-		if (gData.nLanguage == 0) AfxMessageBox(_T("MES »ç¿ë ¼³Á¤ÈÄ ÁøÇàÀÌ °¡´ÉÇÕ´Ï´Ù....."));
+		if (gData.nLanguage == 0) AfxMessageBox(_T("MES ì‚¬ìš© ì„¤ì •í›„ ì§„í–‰ì´ ê°€ëŠ¥í•©ë‹ˆë‹¤....."));
 		else					  AfxMessageBox(_T("Unable to proceed while the mes is not used."));
 		return;
 	}
 
 	if (gData.nLanguage == 0) {
-		if (g_objCommon.Show_MsgBox(2, "Lot Cancel¸¦ ÇÏ½Ã°Ú½À´Ï±î?") != IDOK) return;
+		if (g_objCommon.Show_MsgBox(2, "Lot Cancelë¥¼ í•˜ì‹œê² ìŠµë‹ˆê¹Œ?") != IDOK) return;
 	} else {
 		if (g_objCommon.Show_MsgBox(2, "Are you sure you want to Lot Cancel?") != IDOK) return;
 	}
@@ -1829,13 +1850,13 @@ void CWorkDlg::OnBnClickedBtnLotCancel()
 		}
 	}
 	if (nCount == 0) {
-		if (gData.nLanguage == 0) AfxMessageBox(_T("Ãë¼ÒÇÒ LotÀÌ ¾ø½À´Ï´Ù....."));
+		if (gData.nLanguage == 0) AfxMessageBox(_T("ì·¨ì†Œí•  Lotì´ ì—†ìŠµë‹ˆë‹¤....."));
 		else					  AfxMessageBox(_T("There is no Lot to cancel.."));
 		return;
 	}
 
 	CString sLog;
-	if (gData.nLanguage == 0) sLog.Format("Lot Cancel OK...  => Lot Ãë¼Ò¸¦ MES¿¡ Àü¼ÛÇÏ¿´½À´Ï´Ù.");
+	if (gData.nLanguage == 0) sLog.Format("Lot Cancel OK...  => Lot ì·¨ì†Œë¥¼ MESì— ì „ì†¡í•˜ì˜€ìŠµë‹ˆë‹¤.");
 	else					  sLog.Format("Lot Cancel OK...  => Lot cancel has been send to MES.");
 	AfxMessageBox(_T(sLog));
 }
@@ -1852,16 +1873,16 @@ void CWorkDlg::ElevatorOpen(int nEleNo)
 
 	if (gData.nElevatorOpen[nEleNo] == 0) {
 			if (g_objSequenceInit.Get_InitComplete()==FALSE) {
-				g_objCommon.Show_MsgBox(1, "Àåºñ ÃÊ±âÈ­ÈÄ ÁøÇàÇÏ¼¼¿ä....."); return;
+				g_objCommon.Show_MsgBox(1, "ì¥ë¹„ ì´ˆê¸°í™”í›„ ì§„í–‰í•˜ì„¸ìš”....."); return;
 			}
-//			if (g_objCommon.Show_MsgBox(2, "Elevator Door¸¦ Open ÇÏ½Ã°Ú½À´Ï±î?") != IDOK) return;
+//			if (g_objCommon.Show_MsgBox(2, "Elevator Doorë¥¼ Open í•˜ì‹œê² ìŠµë‹ˆê¹Œ?") != IDOK) return;
 
 			//1(LS1),2(LS2),3(L1),4(L2),5(EN),6(EG),7(NB),8(U1),9(U2),10(NG1),11(NG2),12(Good1),13(Good2)
-			//if ((gData.nTransferX1Pos-2) == nEleNo) { g_objCommon.Show_MsgBox(1, "Transfer 1 Elevator ÀÛ¾÷ÁßÀÔ´Ï´Ù.  ÀÛ¾÷ÈÄ ÁøÇàÇÏ¼¼¿ä."); return; }
-			//if ((gData.nTransferX2Pos-2) == nEleNo) { g_objCommon.Show_MsgBox(1, "Transfer 2 Elevator ÀÛ¾÷ÁßÀÔ´Ï´Ù.  ÀÛ¾÷ÈÄ ÁøÇàÇÏ¼¼¿ä."); return; }
+			//if ((gData.nTransferX1Pos-2) == nEleNo) { g_objCommon.Show_MsgBox(1, "Transfer 1 Elevator ì‘ì—…ì¤‘ì…ë‹ˆë‹¤.  ì‘ì—…í›„ ì§„í–‰í•˜ì„¸ìš”."); return; }
+			//if ((gData.nTransferX2Pos-2) == nEleNo) { g_objCommon.Show_MsgBox(1, "Transfer 2 Elevator ì‘ì—…ì¤‘ì…ë‹ˆë‹¤.  ì‘ì—…í›„ ì§„í–‰í•˜ì„¸ìš”."); return; }
 //			DX_DATA_03 *pDX03 = g_objAJinAXL.Get_pDX03();
-//			if (pDX03->iTransferZDown || !pDX03->iTransferZUp)  { g_objSequenceMain.Beep_Post(500); g_objCommon.Show_MsgBox(1, "Transfer Z1 Up»óÅÂ¿¡¼­ ÀÛ¾÷°¡´ÉÇÕ´Ï´Ù.."); return; }
-//			if (!g_objCommon.Check_Position(AX_TRANSFER_Z2, 0)) { g_objSequenceMain.Beep_Post(500); g_objCommon.Show_MsgBox(1, "Transfer Z2 Up»óÅÂ¿¡¼­ ÀÛ¾÷°¡´ÉÇÕ´Ï´Ù.."); return; }
+//			if (pDX03->iTransferZDown || !pDX03->iTransferZUp)  { g_objSequenceMain.Beep_Post(500); g_objCommon.Show_MsgBox(1, "Transfer Z1 Upìƒíƒœì—ì„œ ì‘ì—…ê°€ëŠ¥í•©ë‹ˆë‹¤.."); return; }
+//			if (!g_objCommon.Check_Position(AX_TRANSFER_Z2, 0)) { g_objSequenceMain.Beep_Post(500); g_objCommon.Show_MsgBox(1, "Transfer Z2 Upìƒíƒœì—ì„œ ì‘ì—…ê°€ëŠ¥í•©ë‹ˆë‹¤.."); return; }
 
 			gData.nElevatorOpen[nEleNo] = 1;
 			if (nEleNo == 1) { g_objSequenceMain.Set_MainRunCase(AUTO_ELEVATOR_1, 51); if (m_nWorkEleatorCase1==0) m_nWorkEleatorCase1 = 1; }
@@ -1875,7 +1896,7 @@ void CWorkDlg::ElevatorOpen(int nEleNo)
 //			Begin_ElevatorRunThread();
 	} else if (gData.nElevatorOpen[nEleNo] == 1) {
 //			gData.nElevatorOpen[nEleNo] = 0;
-//			g_objCommon.Show_MsgBox(1, "Elevator OpenÁßÀÔ´Ï´Ù.  ±â´Ù·Á ÁÖ¼¼¿ä."); return;
+//			g_objCommon.Show_MsgBox(1, "Elevator Openì¤‘ì…ë‹ˆë‹¤.  ê¸°ë‹¤ë ¤ ì£¼ì„¸ìš”."); return;
 			return;
 	} else if (gData.nElevatorOpen[nEleNo] == 2) {
 			g_objCommon.Locking_TrayDoor(TRUE, nEleNo);
@@ -2410,16 +2431,16 @@ void CWorkDlg::OnBnClickedBtnNGLotEnd()
 {
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (m_rdoWorkStart.GetCheck()) {
-		if (gData.nLanguage == 0) AfxMessageBox(_T("Àåºñ Stop »óÅÂ¿¡¼­ ÁøÇàÀÌ °¡´ÉÇÕ´Ï´Ù....."));
+		if (gData.nLanguage == 0) AfxMessageBox(_T("ì¥ë¹„ Stop ìƒíƒœì—ì„œ ì§„í–‰ì´ ê°€ëŠ¥í•©ë‹ˆë‹¤....."));
 		else					  AfxMessageBox(_T("You can proceed with the equipment stopped."));
 		return;
 	}
 	if (!pEquipData->bUseMES) {
-		AfxMessageBox(_T("MES »ç¿ë ¼³Á¤ »óÅÂ¿¡¼­ ÀÛ¾÷ÀÌ °¡´ÉÇÕ´Ï´Ù....."));
+		AfxMessageBox(_T("MES ì‚¬ìš© ì„¤ì • ìƒíƒœì—ì„œ ì‘ì—…ì´ ê°€ëŠ¥í•©ë‹ˆë‹¤....."));
 		return;
 	}
 	if (gMes.nMarStatus != 2) {
-		AfxMessageBox(_T("NG-Lot ÀÛ¾÷Áß¿¡¸¸ ¼öµ¿ ¿Ï°øÃ³¸®°¡ °¡´ÉÇÕ´Ï´Ù....."));
+		AfxMessageBox(_T("NG-Lot ì‘ì—…ì¤‘ì—ë§Œ ìˆ˜ë™ ì™„ê³µì²˜ë¦¬ê°€ ê°€ëŠ¥í•©ë‹ˆë‹¤....."));
 		return;
 	}
 
@@ -2427,11 +2448,11 @@ void CWorkDlg::OnBnClickedBtnNGLotEnd()
 	int nCase2 = g_objSequenceMain.Get_MainRunCase(AUTO_UNLOAD_PICKER_2);
 	if ((nCase1 == 0 && nCase2 == 50) || (nCase1 == 50 && nCase2 == 0)) {
 	} else {
-		AfxMessageBox(_T("RunÀÌ Á¤»óÀûÀ¸·Î Á¾·áµÈ »óÅÂ¿¡¼­ ¼öµ¿ ¿Ï°øÃ³¸®°¡ °¡´ÉÇÕ´Ï´Ù....."));
+		AfxMessageBox(_T("Runì´ ì •ìƒì ìœ¼ë¡œ ì¢…ë£Œëœ ìƒíƒœì—ì„œ ìˆ˜ë™ ì™„ê³µì²˜ë¦¬ê°€ ê°€ëŠ¥í•©ë‹ˆë‹¤....."));
 		return;
 	}
 
-	if (g_objCommon.Show_MsgBox(2, "NG-Lot ¼öµ¿ ¿Ï°øÃ³¸®¸¦ ÇÏ½Ã°Ú½À´Ï±î?") != IDOK) return;
+	if (g_objCommon.Show_MsgBox(2, "NG-Lot ìˆ˜ë™ ì™„ê³µì²˜ë¦¬ë¥¼ í•˜ì‹œê² ìŠµë‹ˆê¹Œ?") != IDOK) return;
 
 	CString sNGLotID, sLog;
 	int nTrayCnt = gMes.nMarTrayCount;
@@ -2440,10 +2461,10 @@ void CWorkDlg::OnBnClickedBtnNGLotEnd()
 	sNGLotID = gMes.sHostNGLotId;
 
 	g_objMesAgent.Set_NGLotEnd(sNGLotID, nMarCnt, nNGCnt);
-	sLog.Format("NG-Lot ¼öµ¿¿Ï°ø µÇ¾ú½À´Ï´Ù..\nNG-Lot(%s)\nNG¼ö·®(%d) Marginal¼ö·®(%d)", sNGLotID, nNGCnt, nMarCnt);
+	sLog.Format("NG-Lot ìˆ˜ë™ì™„ê³µ ë˜ì—ˆìŠµë‹ˆë‹¤..\nNG-Lot(%s)\nNGìˆ˜ëŸ‰(%d) Marginalìˆ˜ëŸ‰(%d)", sNGLotID, nNGCnt, nMarCnt);
 	g_objCommon.Show_Alarm(sLog);
 	
-	sLog.Format("[Work NGLot-End] - NGLot(%s) Seq(%d-%d) Sts(%d) ¼ö·®(%d-%d-%d)", sNGLotID, nCase1, nCase2, gMes.nMarStatus, nNGCnt, nMarCnt, nTrayCnt);
+	sLog.Format("[Work NGLot-End] - NGLot(%s) Seq(%d-%d) Sts(%d) ìˆ˜ëŸ‰(%d-%d-%d)", sNGLotID, nCase1, nCase2, gMes.nMarStatus, nNGCnt, nMarCnt, nTrayCnt);
 	g_objLogFile.Save_HandlerLog(sLog);
 
 }

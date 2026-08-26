@@ -1,4 +1,4 @@
-// InitialDlg.cpp : ±¸Çö ÆÄÀÏÀÔ´Ï´Ù.
+ï»¿// InitialDlg.cpp : êµ¬í˜„ íŒŒì¼ì…ë‹ˆë‹¤.
 //
 #include "stdafx.h"
 #include "CMAI2100.h"
@@ -13,8 +13,9 @@
 #include "Dispatcher.h"
 #include "OperatorDlg.h"
 #include "CMAI2100Dlg.h"
+#include "DownReportDlg.h"
 
-// CInitialDlg ´ëÈ­ »óÀÚÀÔ´Ï´Ù.
+// CInitialDlg ëŒ€í™” ìƒìì…ë‹ˆë‹¤.
 CInitialDlg g_dlgInitial;
 
 IMPLEMENT_DYNAMIC(CInitialDlg, CDialogEx)
@@ -53,13 +54,13 @@ BEGIN_MESSAGE_MAP(CInitialDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CInitialDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
-// CInitialDlg ¸Ş½ÃÁö Ã³¸®±âÀÔ´Ï´Ù.
+// CInitialDlg ë©”ì‹œì§€ ì²˜ë¦¬ê¸°ì…ë‹ˆë‹¤.
 
 BOOL CInitialDlg::OnInitDialog() 
 {
 	CDialogEx::OnInitDialog();
 
-	// TODO:  ¿©±â¿¡ Ãß°¡ ÃÊ±âÈ­ ÀÛ¾÷À» Ãß°¡ÇÕ´Ï´Ù.
+	// TODO:  ì—¬ê¸°ì— ì¶”ê°€ ì´ˆê¸°í™” ì‘ì—…ì„ ì¶”ê°€í•©ë‹ˆë‹¤.
 	SetWindowPos(this, 0, 75, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
 	Initial_Controls();
@@ -74,7 +75,7 @@ BOOL CInitialDlg::OnInitDialog()
 	m_rdoInitStop.Set_Color(RGB(0xFF, 0x00, 0x00), COLOR_DEFAULT);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
-	// ¿¹¿Ü: OCX ¼Ó¼º ÆäÀÌÁö´Â FALSE¸¦ ¹İÈ¯ÇØ¾ß ÇÕ´Ï´Ù.
+	// ì˜ˆì™¸: OCX ì†ì„± í˜ì´ì§€ëŠ” FALSEë¥¼ ë°˜í™˜í•´ì•¼ í•©ë‹ˆë‹¤.
 }
 
 BOOL CInitialDlg::PreTranslateMessage(MSG* pMsg) 
@@ -116,6 +117,8 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 	KillTimer(0);
 
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
+	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+
 	DX_DATA_13 *pDX13 = g_objAJinAXL.Get_pDX13();
 
 	if (pDX13->iStartSw && !m_rdoInitStart.GetCheck()) {
@@ -134,19 +137,40 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 		if (!m_bInitialRunning)
 		{	// First Start
 			CString sText;
-			if (gData.nLanguage == 0) sText.Format("ÃÊ±âÈ­¸¦ ÇÏ½Ã°Ú½À´Ï±î?");
+			if (gData.nLanguage == 0) sText.Format("ì´ˆê¸°í™”ë¥¼ í•˜ì‹œê² ìŠµë‹ˆê¹Œ?");
 			else					  sText.Format("Do you want to Initialize?");
 
 			if (g_objCommon.Show_MsgBox(2, sText) == IDOK) 
 			{
 				if (g_objCommon.Check_TraySlide(9))
 				{
+					//Down Report Show 				
+					int nTerm = (int)(GetTickCount() - gDown.dwDownTime);
+					if (nTerm > pEquipData->nDownActionTime * 1000 && !g_dlgDownReport.IsWindowVisible() 
+						&& gDown.bDownHappen && !gDown.bDownClear)
+					{
+						g_dlgDownReport.m_bStart = TRUE;
+						gDown.bDownClear = TRUE;
+						gDown.bDownHappen = FALSE;
+						gDown.dwDownTime = GetTickCount();
+
+						CTime CurTime = CTime::GetCurrentTime(); 
+						CurTime -= pEquipData->nNoWorkTime;
+						g_dlgDownReport.m_dwStartTime = GetTickCount();
+						g_dlgDownReport.m_strStartTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+
+						CString strLog;
+						strLog.Format("Down Report ì‹œì‘\t%s", g_dlgDownReport.m_strStartTime);
+						g_objLogFile.Save_HandlerLog(strLog);
+
+						g_dlgDownReport.ShowWindow(TRUE);
+					}
 					m_bInitialRunning = TRUE;
 
 					g_objCommon.Locking_MainDoor(TRUE, TRUE);
 					pMainDlg->Enable_ModeButton(FALSE);
 
-					//ºñÀü¿¡ ÃÊ±âÈ­ Ä¿¸Çµå ³¯·ÁÁÜ...?? ÇÊ¿äÇÑÁö..
+					//ë¹„ì „ì— ì´ˆê¸°í™” ì»¤ë§¨ë“œ ë‚ ë ¤ì¤Œ...?? í•„ìš”í•œì§€..
 					g_objInspector.Set_StatusUpdate(INSPECTOR_ALL, 0);
 					g_objInspector.Set_InitialRequest(INSPECTOR_ALL);
 
@@ -181,7 +205,7 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 
 				g_objLogFile.Save_HandlerLog("[Initial Mode] Initialization is complete");
 
-				if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "ÃÊ±âÈ­ ¿Ï·á ÇÏ¿´½À´Ï´Ù.");
+				if (gData.nLanguage == 0) g_objCommon.Show_MsgBox(1, "ì´ˆê¸°í™” ì™„ë£Œ í•˜ì˜€ìŠµë‹ˆë‹¤.");
 				else					  g_objCommon.Show_MsgBox(1, "Initialization is complete.");
 				g_objCommon.Save_MotionPos();
 
@@ -243,26 +267,26 @@ void CInitialDlg::OnBnClickedRdoInitStop()
 
 void CInitialDlg::Initial_Controls()
 {
-	for (int i = 0; i < 5; i++) m_Group[i].Init_Ctrl("¹ÙÅÁ", 12, TRUE, RGB(0x00, 0x00, 0xFF), COLOR_DEFAULT);
+	for (int i = 0; i < 5; i++) m_Group[i].Init_Ctrl("ë°”íƒ•", 12, TRUE, RGB(0x00, 0x00, 0xFF), COLOR_DEFAULT);
 
-	m_rdoInitStart.Init_Ctrl("¹ÙÅÁ", 15, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
-	m_rdoInitStop.Init_Ctrl("¹ÙÅÁ", 15, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
+	m_rdoInitStart.Init_Ctrl("ë°”íƒ•", 15, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
+	m_rdoInitStop.Init_Ctrl("ë°”íƒ•", 15, TRUE, RGB(0x00, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
 
-	m_ledInitialOK.Init_Ctrl("¹ÙÅÁ", 15, TRUE, RGB(0x00, 0x00, 0xA0),COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em32);
+	m_ledInitialOK.Init_Ctrl("ë°”íƒ•", 15, TRUE, RGB(0x00, 0x00, 0xA0),COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em32);
 
 	for (int i = 0; i < 3; i++) m_bmpImage[i].LoadBitmap(IDB_ARW4_DN);
 	for (int i = 0; i < 3; i++) m_Image[i].SetBitmap(m_bmpImage[i]);
 	for (int i = 0; i < 3; i++) m_Image[i].SetWindowPos(NULL, 0, 0, 36, 36, SWP_NOZORDER | SWP_NOMOVE);
 
 	for (int i = 0; i < 10; i++) m_picInitFlow[i].Init_Ctrl(COLOR_DEFAULT, RGB(0xFF, 0xFF, 0xFF));
-	for (int i = 0; i < 10; i++) m_stcInitFlow[i].Init_Ctrl("¹ÙÅÁ", 11, TRUE, COLOR_DEFAULT, RGB(0xFF, 0xFF, 0x00));
+	for (int i = 0; i < 10; i++) m_stcInitFlow[i].Init_Ctrl("ë°”íƒ•", 11, TRUE, COLOR_DEFAULT, RGB(0xFF, 0xFF, 0x00));
 
-	for (int i = 0; i < 4; i++) m_ledMainAir[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);
-	for (int i = 0; i < 6; i++) m_ledEmgSw[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emRed, CLedCS::em16);
-	for (int i = 0; i <21; i++) m_ledDoorUnlock[i].Init_Ctrl("¹ÙÅÁ", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);
+	for (int i = 0; i < 4; i++) m_ledMainAir[i].Init_Ctrl("ë°”íƒ•", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);
+	for (int i = 0; i < 6; i++) m_ledEmgSw[i].Init_Ctrl("ë°”íƒ•", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emRed, CLedCS::em16);
+	for (int i = 0; i <21; i++) m_ledDoorUnlock[i].Init_Ctrl("ë°”íƒ•", 11, FALSE, COLOR_DEFAULT, COLOR_DEFAULT, CLedCS::emGreen, CLedCS::em16);
 
-	m_stcInitCase[0].Init_Ctrl("¹ÙÅÁ", 10, TRUE, RGB(0xFF, 0xFF, 0x00), RGB(0x80, 0x80, 0x80));
-	for (int i = 1; i < 9; i++) m_stcInitCase[i].Init_Ctrl("¹ÙÅÁ", 10, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x80, 0x80, 0x80));
+	m_stcInitCase[0].Init_Ctrl("ë°”íƒ•", 10, TRUE, RGB(0xFF, 0xFF, 0x00), RGB(0x80, 0x80, 0x80));
+	for (int i = 1; i < 9; i++) m_stcInitCase[i].Init_Ctrl("ë°”íƒ•", 10, TRUE, RGB(0xFF, 0xFF, 0xFF), RGB(0x80, 0x80, 0x80));
 }
 
 void CInitialDlg::Display_Status()
