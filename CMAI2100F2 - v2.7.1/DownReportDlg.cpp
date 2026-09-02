@@ -248,6 +248,8 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	} 
 	else
 	{
+		gDown.bDownHappen = FALSE;
+		gDown.bDownClear = TRUE;
 		KillTimer(0);
 	}
 

@@ -2951,11 +2951,11 @@ BOOL CSequenceMain::Run_Transfer1()
 		}
 		break;
 	case 4:
-		/*if (!m_pDX03->iTransferLTrayExist) {
+		if (!m_pDX03->iTransferLTrayExist) {
 			m_pDY03->oTransferLGrabOpen = TRUE; m_pDY03->oTransferLGrabClose = FALSE;
 			g_objAJinAXL.Write_Output(3);
 			m_nTransfer1Case++; m_tTransfer1Loop.Set_LoopTime(5000);
-		}*/
+		}
 		break;
 	case 5:
 		if (m_pDX03->iTransferLGrab1Open && !m_pDX03->iTransferLGrab1Close) {
