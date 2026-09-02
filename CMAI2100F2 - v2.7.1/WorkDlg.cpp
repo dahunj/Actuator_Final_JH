@@ -289,8 +289,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 					&& gDown.bDownHappen && !gDown.bDownClear)
 				{
 					g_dlgDownReport.m_bStart = TRUE;
-					gDown.bDownClear = TRUE;
-					gDown.bDownHappen = FALSE;
+					
 					gDown.dwDownTime = GetTickCount();
 
 					CTime CurTime = CTime::GetCurrentTime(); 
@@ -304,6 +303,8 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 
 					g_dlgDownReport.ShowWindow(TRUE);
 				}
+				gDown.bDownClear = TRUE;
+				gDown.bDownHappen = FALSE;
 
 				m_bAutoRunning = TRUE;
 				g_objCommon.Locking_MainDoor(TRUE, TRUE);
