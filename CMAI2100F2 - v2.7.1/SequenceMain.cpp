@@ -267,6 +267,18 @@ void CSequenceMain::Begin_MainRunThread()
 	if (m_pThreadMainRun) End_MainRunThread(INFINITE);
 	m_bThreadMainRun = TRUE;
 	m_pThreadMainRun = AfxBeginThread(Thread_MainRun, NULL);
+
+
+	if(gLot.dwErrorStart != 0)
+	{    
+		gLot.dwErrorEnd = GetTickCount() - gLot.dwErrorStart;
+		for(int i = 0; i < 6; i++)
+		{
+			gLot.dwErrorTime[i] += gLot.dwErrorEnd;            
+		}
+		gLot.dwErrorStart = 0;
+		gLot.dwErrorEnd = 0;
+	}
 }
 
 void CSequenceMain::End_MainRunThread(DWORD dwWait)
@@ -758,36 +770,36 @@ void CSequenceMain::Set_NextLot(CString sLotID, DWORD dwTime)
 	int nNextPortLot = 0;
 	for (int i=0; i<2; i++) {
 		if (gData.sLotID_GoodTray[i].GetLength() > 1 && gData.nPortNo_GoodTray[i] > 0 && sLotID != gData.sLotID_GoodTray[i]) {
-			nNextPortLot = gData.nPortNo_GoodTray[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_GoodTray[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	for (int i=0; i<2; i++) {
 		if (gData.sLotID_NGTray[i].GetLength() > 1 && gData.nPortNo_NGTray[i] > 0 && sLotID != gData.sLotID_NGTray[i]) {
-			nNextPortLot = gData.nPortNo_NGTray[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_NGTray[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	for (int i=0; i<2; i++) {
 		if (gData.sLotID_UnloadPicker[i].GetLength() > 1 && gData.nPortNo_UnloadPicker[i] > 0 && sLotID != gData.sLotID_UnloadPicker[i]) {
-			nNextPortLot = gData.nPortNo_UnloadPicker[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_UnloadPicker[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	for (int i=0; i<4; i++) {
 		if (gData.sLotID_VisionStage[i].GetLength() > 1 && gData.nPortNo_VisionStage[i] > 0 && sLotID != gData.sLotID_VisionStage[i]) {
-			nNextPortLot = gData.nPortNo_VisionStage[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_VisionStage[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	for (int i=0; i<2; i++) {
 		if (gData.sLotID_LoadPicker[i].GetLength() > 1 && gData.nPortNo_LoadPicker[i] > 0 && sLotID != gData.sLotID_LoadPicker[i]) {
-			nNextPortLot = gData.nPortNo_LoadPicker[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_LoadPicker[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	for (int i=0; i<2; i++) {
 		if (gData.sLotID_LoadStage[i].GetLength() > 1 && gData.nPortNo_LoadStage[i] > 0 && sLotID != gData.sLotID_LoadStage[i]) {
-			nNextPortLot = gData.nPortNo_LoadStage[i]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+			nNextPortLot = gData.nPortNo_LoadStage[i]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 		}
 	}
 	if (gData.sLotID_Tansfer[0].GetLength() > 1 && gData.nPortNo_Tansfer[0] > 0 && sLotID != gData.sLotID_Tansfer[0]) {
-		nNextPortLot = gData.nPortNo_Tansfer[0]; gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
+		nNextPortLot = gData.nPortNo_Tansfer[0]; //gLot.dwLLLotStart[nNextPortLot-1] = dwTime;
 	}
 }
 
@@ -1574,7 +1586,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo)
 
 	CString sProcessID, sTact, sCycle;
 		
-	sTact.Format("%0.1lf", (dwTime - gLot.dwErrorTime[nNo]) / 1000.0);
+	sTact.Format("%0.1lf", (dwTime - gLot.dwErrorTime[nNo] - gLot.dwStopTime[nNo]) / 1000.0);
 	sCycle.Format("%0.1lf", (dwTime / 1000.0));
 	
 	if(m_pEquipData->bUseMES) g_objMesAgent.Set_UnitProcessingTimeReport(gLot.sLotID[nNo], gLot.sProcID[nNo], gLot.sModelID[nNo], gLot.sRecipeName[nNo], sTact , sCycle);
@@ -1647,6 +1659,9 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo)
 	gLot.sJobEndTime[gLot.nJobNo]	= gLot.sLLEndTime[nNo];
 	gLot.dJobTack[gLot.nJobNo]		= gLot.dLLTackTime[nNo];
 	gLot.nJobNo++; if (gLot.nJobNo >= 10) gLot.nJobNo = 0;
+
+	gLot.dwErrorTime[nNo] = 0;
+	gLot.dwStopTime[nNo] = 0;
 
 	if (gData.nRejectMaxCount > 0 && gData.nRejectLotCount >= gData.nRejectMaxCount)
 			g_dlgWork.PostMessage(UM_LOT_END_MSG, nPortNo, 9);

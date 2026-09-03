@@ -293,6 +293,15 @@ typedef struct {
 	CString sMESEndTime[6];
 	CString	sELotID;
 	int		nRunPortNo;
+
+
+
+	DWORD    dwStopStart;
+	DWORD    dwStopEnd;
+
+	DWORD    dwErrorStart;
+	DWORD    dwErrorEnd;
+
 	int		nErrorCount[6];
 	DWORD	dwErrorTime[6];
 	DWORD	dwStopTime[6];
