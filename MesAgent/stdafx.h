@@ -58,7 +58,7 @@
 	#pragma comment(lib, "CSServerSocketR.lib")
 #endif
 
-#define MAIN_VERSION	"1.1.8f"	//Varo-Tray
+#define MAIN_VERSION	"1.1.9f"	//Varo-Tray
 
 extern CString gsCurrentDir;		// 현재 프로젝트 폴더
 
