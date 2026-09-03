@@ -75,6 +75,9 @@ typedef struct {
 	int			nRcpCount;
 	CString		sRecipList[100];
 
+	int            nPreUnitState;        // 1:init, 2:idle, 3:Setup, 4:Ready, 5:Run, 6:Pause(Down)
+	int            nCurUnitState;
+
 	int			nPreEquipState;		// 1:init, 2:idle, 3:Setup, 4:Ready, 5:Run, 6:Pause(Down)
 	int			nCurEquipState;
 
