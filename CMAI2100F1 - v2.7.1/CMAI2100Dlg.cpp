@@ -265,6 +265,9 @@ void CCMAI2100Dlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	}
 	for(int i=0; i<7; i++) gData.dwSlideTime[i] = 0;
 
+	gDown.bDownClear = TRUE;
+	gDown.bDownHappen = FALSE;
+
 	theApp.uSleep(1000);
 
 	Clear_JobData();
