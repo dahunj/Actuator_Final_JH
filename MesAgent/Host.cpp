@@ -334,10 +334,10 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 				}				
 			}
 
-			for (int i = 0; ; ++i)
+			for (int i = 0; ; i++)
 			{
-				if (!AfxExtractSubString(sCodeTemp, sCode, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
-				if (!AfxExtractSubString(sTextTemp, sText, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
+				if (!AfxExtractSubString(sCodeTemp, sCode, i, ',')) break;  // 더 이상 파싱할 문자열이 없음
+				if (!AfxExtractSubString(sTextTemp, sText, i, ',')) break;  // 더 이상 파싱할 문자열이 없음
 
 				sCodeTemp.Trim();
 				sTextTemp.Trim();
@@ -368,10 +368,10 @@ BOOL CHost::Extract_Xml(CString sXmlData)
 				}				
 			}
 
-			for (int i = 0; ; ++i)
+			for (int i = 0; ; i++)
 			{
-				if (!AfxExtractSubString(sCodeTemp, sCode, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
-				if (!AfxExtractSubString(sTextTemp, sText, i, _T(','))) break;  // 더 이상 파싱할 문자열이 없음
+				if (!AfxExtractSubString(sCodeTemp, sCode, i, ',')) break;  // 더 이상 파싱할 문자열이 없음
+				if (!AfxExtractSubString(sTextTemp, sText, i, ',')) break;  // 더 이상 파싱할 문자열이 없음
 
 				sCodeTemp.Trim();
 				sTextTemp.Trim();
