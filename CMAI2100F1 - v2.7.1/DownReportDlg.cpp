@@ -337,9 +337,7 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	
 	if(gDown.bPDT) g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, 0 , 0, "PDT");
 	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
-
-
-	
+		
 	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
 	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 
