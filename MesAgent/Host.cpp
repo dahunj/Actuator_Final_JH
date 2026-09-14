@@ -49,6 +49,11 @@ void CHost::Initialize()
 	m_Server.Listen_Socket(gData.nHostPort, this);
 	m_nSendCmdCount = 0;
 	gMes.nAHostCount = 0;
+
+
+	CString strLog;
+	strLog.Format("Server Listen.");
+	g_objLogFile.Save_AgentLog(strLog);
 }
 
 void CHost::Terminate()
@@ -57,6 +62,11 @@ void CHost::Terminate()
 	m_bHostOnline = FALSE;
 	m_Server.Close_Socket();
 	if (g_objHandler.Is_Connected()) g_objHandler.Set_ControlState(2);	// 1:Online, 2:Offline
+
+	CString strLog;
+	strLog.Format("Server Terminated.");
+	g_objLogFile.Save_AgentLog(strLog);
+
 }
 
 /////////////////////////////////////////////////////////////////////////////

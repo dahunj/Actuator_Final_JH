@@ -29,6 +29,7 @@ protected:
 
 private:
 	CServerSocketCS m_Server;
+	
 	int		m_nClientIdx;
 	BOOL	m_bConnected;
 	BOOL	m_bHostOnline;
