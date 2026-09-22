@@ -14,6 +14,7 @@
 #include "OperatorDlg.h"
 #include "CMAI2100Dlg.h"
 #include "DownReportDlg.h"
+#include "MesAgent.h"
 
 // CInitialDlg 대화 상자입니다.
 CInitialDlg g_dlgInitial;
@@ -182,6 +183,9 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 					for (int i = 1; i < 10; i++) Set_StatusColor(i, 0);	// White
 
 					pMainDlg->Set_MainState(STATE_RUN);
+
+					g_objMesAgent.Set_EquipState(eEquipState::RUN);
+					g_objMesAgent.Set_UnitState(eEquipState::RUN);
 
 					g_objSequenceInit.Begin_InitialThread();
 				} else {
