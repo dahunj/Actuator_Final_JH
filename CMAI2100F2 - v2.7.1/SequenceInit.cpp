@@ -210,7 +210,8 @@ BOOL CSequenceInit::Initial_MainRun()
 		gData.bElevatorWorking[eElevator::Unload2] = FALSE;	
 
 		g_objLogFile.Save_HandlerLog("[Initial Sequence - Main] start");
-		g_objMesAgent.Set_EquipState(1);	//Init
+		g_objMesAgent.Set_EquipState(eEquipState::RUN);	
+		g_objMesAgent.Set_EquipState(eEquipState::IDLE);
 
 		m_pDY04->oBTMIonizerOn = FALSE;    m_pDY04->oBTMIonizerBlow = FALSE;
 		m_pDY04->oBTMSuctionOn = FALSE;    m_pDY04->oTOPIonizerOn = FALSE;
