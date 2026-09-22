@@ -184,8 +184,7 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 
 					pMainDlg->Set_MainState(STATE_RUN);
 
-					g_objMesAgent.Set_EquipState(eEquipState::RUN);
-					g_objMesAgent.Set_UnitState(eEquipState::RUN);
+					
 
 					g_objSequenceInit.Begin_InitialThread();
 				} else {
