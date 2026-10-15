@@ -125,6 +125,8 @@ BOOL CCMAI2100Dlg::OnInitDialog()
 	SetTimer(TIMER_SLIDE_CHECK, 900, NULL);
 	SetTimer(TIMER_DOOR_LOCK, 1000, NULL);
 
+	Set_MainState(STATE_READY);
+
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -273,7 +275,7 @@ void CCMAI2100Dlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	Clear_JobData();
 	dlgSplash.DestroyWindow();
 	gData.nSelectNo = 1;
-	Set_MainState(STATE_NONE);
+	Set_MainState(STATE_READY);
 	Set_CurrentMode(MODE_INITIAL);
 }
 
@@ -683,7 +685,7 @@ void CCMAI2100Dlg::Set_NoWork()
 	if (pEquipData->nNoWorkTime < 1 || g_dlgNoWork.m_bStart){ m_dwNoWorkTime = GetTickCount(); return; }
 
 	int nState = gData.m_nMS;
-	if (nState != STATE_NONE && nState != STATE_INITEND) { m_dwNoWorkTime = GetTickCount(); return; }
+	if (nState != STATE_NONE && nState != STATE_INITEND && nState != STATE_LOTEND) { m_dwNoWorkTime = GetTickCount(); return; }
 
 	if (g_dlgNoWork.IsWindowVisible()) { m_dwNoWorkTime = GetTickCount(); return; }
 
