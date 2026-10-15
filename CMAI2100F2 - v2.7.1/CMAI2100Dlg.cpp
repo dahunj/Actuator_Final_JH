@@ -687,6 +687,19 @@ void CCMAI2100Dlg::Set_NoWork()
 
 	if (g_dlgNoWork.IsWindowVisible()) { m_dwNoWorkTime = GetTickCount(); return; }
 
+	if(gData.m_nMS == STATE_ALARM || gData.m_nMS == STATE_EMER)
+	{		
+		m_dwNoWorkTime = GetTickCount();
+		return;
+	}
+	if(!g_objMesAgent.Is_Connected() || !g_objMesAgent.Is_HostOnline())
+	{
+		//AfxMessageBox("MES not Conneted or offline, Please Check");
+		m_dwNoWorkTime = GetTickCount();
+		return;
+	}
+
+
 	int nTerm = (int)(GetTickCount() - m_dwNoWorkTime);
 	if (nTerm < pEquipData->nNoWorkTime * 1000) return;	// 초 -> 밀리초
 

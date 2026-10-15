@@ -15,6 +15,8 @@
 #include "CMAI2100Dlg.h"
 #include "DownReportDlg.h"
 
+#include "MesAgent.h"
+
 // CInitialDlg 대화 상자입니다.
 CInitialDlg g_dlgInitial;
 
@@ -145,24 +147,39 @@ void CInitialDlg::OnTimer(UINT_PTR nIDEvent)
 				if (g_objCommon.Check_TraySlide(9))
 				{
 					//Down Report Show                 
-					int nTerm = (int)(GetTickCount() - gDown.dwDownTime);
+					int nTerm = (int)(GetTickCount() - gDown.dwDownStartTick);
 					if (nTerm > pEquipData->nDownActionTime * 1000 && !g_dlgDownReport.IsWindowVisible() 
 						&& gDown.bDownHappen && !gDown.bDownClear)
 					{
-						g_dlgDownReport.m_bStart = TRUE;
-						
-						gDown.dwDownTime = GetTickCount();
+						if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
+						{
+							g_dlgDownReport.m_bStart = TRUE;
 
-						CTime CurTime = CTime::GetCurrentTime(); 
-						CurTime -= pEquipData->nNoWorkTime;
-						g_dlgDownReport.m_dwStartTime = GetTickCount();
-						g_dlgDownReport.m_strStartTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+							gDown.dwDownStartTick = GetTickCount();
 
-						CString strLog;
-						strLog.Format("Down Report 시작\t%s", g_dlgDownReport.m_strStartTime);
-						g_objLogFile.Save_HandlerLog(strLog);
+							CTime CurTime = CTime::GetCurrentTime(); 
+							CurTime -= pEquipData->nNoWorkTime;
+							g_dlgDownReport.m_dwStartTime = GetTickCount();
+							g_dlgDownReport.m_strStartTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
 
-						g_dlgDownReport.ShowWindow(TRUE);
+							CString strLog;
+							strLog.Format("Down Report 시작\t%s", g_dlgDownReport.m_strStartTime);
+							g_objLogFile.Save_HandlerLog(strLog);
+
+							g_dlgDownReport.ShowWindow(TRUE);
+						}					
+					}
+					else if(gDown.bDownHappen)
+					{
+						if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
+						{
+							CTime CurTime = CTime::GetCurrentTime(); 
+							CString sDownStartTime, sDownEndTime;
+							sDownStartTime.Format("%04d%02d%02d%s", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), gData.sAlarmTime[0]);
+							sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+
+							g_objMesAgent.Set_DownActionReport("", "", sDownStartTime, sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+						}                    
 					}
 					gDown.bDownClear = TRUE;
 					gDown.bDownHappen = FALSE;

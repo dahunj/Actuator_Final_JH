@@ -239,13 +239,17 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		GetLocalTime(&time);
 
 		CString strTime;
-		if(gDown.bPDT) strTime.Format("%04d-%02d-%02d %02d:%02d:%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);  
-		else strTime.Format("%04d-%02d-%02d %s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);
+		if(gDown.bPDT) 
+		{
+			strTime.Format("%04d-%02d-%02d %02d:%02d:%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+			gDown.sDownStartTime.Format("%s", strTime);
+		}
+		else
+		{
+			strTime.Format("%04d-%02d-%02d %s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);
+			gDown.sDownStartTime.Format("%s", strTime);
+		} 		
 		m_stcAlmTime.SetWindowText(strTime);
-
-		m_strAlmStart.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
-
-		
 	} 
 	else
 	{
@@ -333,13 +337,17 @@ void CDownReportDlg::OnBnClickedBtnReport()
 
 	SYSTEMTIME time;
 	GetLocalTime(&time);
-	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
 
-	if(gDown.bPDT) g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, 0 , 0,"PDT");
-	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+	gDown.sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
 
-	g_objMesAgent.Set_EquipState(eEquipState::IDLE);    
-	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
+	if(gDown.bPDT)
+	{
+		g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, 0 , 0, "PDT");
+		g_objMesAgent.Set_EquipState(eEquipState::IDLE);    
+		g_objMesAgent.Set_UnitState(eEquipState::IDLE);
+	}		
+	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+	
 
 	gDown.bDownHappen = FALSE;
 	gDown.bDownClear = TRUE;
