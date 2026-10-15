@@ -218,9 +218,9 @@ void CMesAgent::Get_LotStart(CString sLotId, CString sRecipe, CString sCmCount, 
 	gMes.nHostCmCount[nPortNo] = nCmCount;
 	gMes.sHostProcID[nPortNo] = sProcessID;
 	gMes.sHostModel[nPortNo] = sModel;
-
-	if (sRecipe.GetLength() < 1) { g_objCommon.Show_Error(9001); return; }
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
+	if (sRecipe.GetLength() < 1) { g_objCommon.Show_Error(9001); return; }
+	
 
 	if(!pEquipData->bUseCntAutoSet)
 	{

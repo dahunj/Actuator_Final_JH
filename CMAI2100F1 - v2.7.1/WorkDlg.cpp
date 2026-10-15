@@ -149,7 +149,6 @@ BOOL CWorkDlg::OnInitDialog()
 	m_BtnTest2.ShowWindow(SW_SHOW);
 #endif
 
-	gDown.dwDownTime = 0;
 
 	m_rdoWorkStop.SetCheck(TRUE);
 	m_rdoWorkStop.Set_Color(RGB(0xFF, 0x00, 0x00), COLOR_DEFAULT);
@@ -262,8 +261,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 		m_rdoWorkStart.SetCheck(TRUE);
 	} else if (pDX13->iStopSw && !m_rdoWorkStop.GetCheck()) {
 		g_objLogFile.Save_HandlerLog("[Work Mode] STOP S/W push");
-		m_rdoWorkStop.SetCheck(TRUE);
-		pMainDlg->Set_MainState(STATE_READY);
+		m_rdoWorkStop.SetCheck(TRUE);		
 	}
 /*
 	if (pDX13->iElevator1Sw) ElevatorOpen(1);
@@ -284,28 +282,44 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 
 			if (g_objSequenceInit.Get_InitComplete()) 
 			{
-				//Down Report Show 				
-				int nTerm = (int)(GetTickCount() - gDown.dwDownTime);
+				//Down Report Show                 
+				int nTerm = (int)(GetTickCount() - gDown.dwDownStartTick);
 				if (nTerm > pEquipData->nDownActionTime * 1000 && !g_dlgDownReport.IsWindowVisible() 
 					&& gDown.bDownHappen && !gDown.bDownClear)
 				{
-					g_dlgDownReport.m_bStart = TRUE;
-					gDown.bDownClear = TRUE;
-					gDown.bDownHappen = FALSE;
-					gDown.dwDownTime = GetTickCount();
+					 if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
+					 {
+						 g_dlgDownReport.m_bStart = TRUE;
 
-					CTime CurTime = CTime::GetCurrentTime(); 
-					CurTime -= pEquipData->nNoWorkTime;
-					g_dlgDownReport.m_dwStartTime = GetTickCount();
-					g_dlgDownReport.m_strStartTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+						 gDown.dwDownStartTick = GetTickCount();
 
-					CString strLog;
-					strLog.Format("Down Report 시작\t%s", g_dlgDownReport.m_strStartTime);
-					g_objLogFile.Save_HandlerLog(strLog);
+						 CTime CurTime = CTime::GetCurrentTime(); 
+						 CurTime -= pEquipData->nNoWorkTime;
+						 g_dlgDownReport.m_dwStartTime = GetTickCount();
+						 g_dlgDownReport.m_strStartTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
 
-					g_dlgDownReport.ShowWindow(TRUE);
+						 CString strLog;
+						 strLog.Format("Down Report 시작\t%s", g_dlgDownReport.m_strStartTime);
+						 g_objLogFile.Save_HandlerLog(strLog);
+
+						 g_dlgDownReport.ShowWindow(TRUE);
+					 }					
 				}
-				
+				else if(gDown.bDownHappen)
+				{
+					if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
+					{
+						CTime CurTime = CTime::GetCurrentTime(); 
+						CString sDownStartTime, sDownEndTime;
+						sDownStartTime.Format("%04d%02d%02d%s", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), gData.sAlarmTime[0]);
+						sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
+
+						g_objMesAgent.Set_DownActionReport("", "", sDownStartTime, sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
+					}                    
+				}
+				gDown.bDownClear = TRUE;
+				gDown.bDownHappen = FALSE;
+
 				m_bAutoRunning = TRUE;
 				g_objCommon.Locking_MainDoor(TRUE, TRUE);
 				pMainDlg->Enable_ModeButton(FALSE);
@@ -328,7 +342,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 		} else {				// Auto Running
 			if (!g_objSequenceMain.Is_MainThreadRun()) {
 				g_objLogFile.Save_HandlerLog("[Work Mode] Auto STOP");
-				pMainDlg->Set_MainState(STATE_READY);
+				pMainDlg->Set_MainState(STATE_NONE);
 			}
 		}
 
@@ -552,20 +566,22 @@ void CWorkDlg::OnBnClickedRdoWorkStart()
 		gLot.dwStopStart = 0;
 		gLot.dwStopEnd = 0;
 	}
+
 	g_objLogFile.Save_HandlerLog("[Work Mode] START button push");
 }
 
 void CWorkDlg::OnBnClickedRdoWorkStop()
 {
 	CCMAI2100Dlg *pMainDlg = (CCMAI2100Dlg*)AfxGetMainWnd();
-	pMainDlg->Set_MainState(STATE_READY);
+	pMainDlg->Set_MainState(STATE_NONE);
 	dwStopSTime = GetTickCount();
-	g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
-	g_objMesAgent.Set_UnitState(eEquipState::DOWN);
+	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
+	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 	
 	gLot.dwErrorStart = 0;
 	gLot.dwStopStart = 0;
 	gLot.dwStopStart = GetTickCount();
+
 
 	g_objLogFile.Save_HandlerLog("[Work Mode] STOP button push");
 }
@@ -684,6 +700,13 @@ void CWorkDlg::OnBnClickedBtnIdleReport()
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (!pEquipData->bUseMES) return;
 
+	if(!g_objMesAgent.Is_Connected() || !g_objMesAgent.Is_HostOnline())
+	{
+		AfxMessageBox("MES not Conneted or offline, Please Check");
+		return;
+	}
+
+
 	if (g_dlgNoWork.IsWindowVisible()) g_dlgNoWork.ShowWindow(SW_HIDE);
 	else
 	{
@@ -702,9 +725,8 @@ BOOL CWorkDlg::Work_Start()
 	CString strTemp, strTemp2, sText, strMsg;
 
 	g_objCommon.Locking_Slide(TRUE, 0);
-	
 	if (gData.bAlarmShow) {
-		g_objCommon.Show_MsgBox(1, "Alarm 화면을 Close하고 Run 진행하세요.....");
+		g_objCommon.Show_MsgBox(1, "Alaram 화면을 Close하고 Run 진행하세요.....");
 		m_rdoWorkStop.SetCheck(TRUE);
 		return FALSE;
 	}
@@ -1485,7 +1507,7 @@ void CWorkDlg::Reset_AlarmLog()
 	g_objMesAgent.Set_ErrorUpdate(0, strErrNo, gAlm.sAlmCatMajor);
 
 	if (gAlm.nPortNo > 0) {
-		//gLot.dwErrorTime[gAlm.nPortNo-1] += gAlm.dwProcTime; 
+		/*gLot.dwErrorTime[gAlm.nPortNo-1] += gAlm.dwProcTime; */
 		gLot.nErrorCount[gAlm.nPortNo-1]++;
 	}
 }
@@ -2562,11 +2584,16 @@ void CWorkDlg::OnBnClickedBtnPdt()
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (!pEquipData->bUseMES) return;
 
-	if (g_dlgDownReport.IsWindowVisible()) g_dlgDownReport.ShowWindow(SW_HIDE);
-	else
+	if(!g_objMesAgent.Is_Connected() || !g_objMesAgent.Is_HostOnline())
 	{
-		//g_dlgDownReport.Set_Auto(FALSE);
+		AfxMessageBox("MES not Conneted or offline, Please Check");
+		return;
+	}
+
+	if(!g_dlgDownReport.IsWindowVisible())
+	{
 		gDown.bPDT = TRUE;
+		//g_dlgDownReport.Set_Auto(FALSE);
 		g_dlgDownReport.ShowWindow(SW_SHOW);
 	}
 }

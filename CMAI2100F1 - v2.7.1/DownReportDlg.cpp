@@ -67,6 +67,7 @@ BOOL CDownReportDlg::OnInitDialog()
 		AfxMessageBox("ErrorList.ini File Not Found!!!");
 		return FALSE;
 	}
+
 	m_cboDownReason.ResetContent();
 	for(int i = 0; i < 5; i++)
 	{
@@ -132,7 +133,6 @@ BOOL CDownReportDlg::OnInitDialog()
 	}
 
 	CString sAction, sDetail, sKey;
-
 	m_cboDownAction.ResetContent();
 	m_cboDownActionDetail.ResetContent();
 	for(int i = 1; ;i++)
@@ -146,7 +146,8 @@ BOOL CDownReportDlg::OnInitDialog()
 
 		if(sAction == "") break;
 	}	
-	
+
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
 }
@@ -176,16 +177,15 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 
 	if (bShow) 
 	{
-		g_objMesAgent.Set_EquipState(eEquipState::DOWN);	
+		g_objMesAgent.Set_EquipState(eEquipState::DOWN);    
 		g_objMesAgent.Set_UnitState(eEquipState::DOWN);
-		
+
 		gDown.bDownClear = FALSE;
 		gDown.bDownHappen = FALSE;
 
 		CString sTempCat;
 		sTempCat.Format("00004%s", gAlm.sAlmCatMajor);
 
-		
 		if(gDown.bPDT) m_stcAlmCatNo.SetWindowText("0000000");
 		else m_stcAlmCatNo.SetWindowText(sTempCat);
 		m_edtActionDetail.SetWindowText("");
@@ -233,22 +233,28 @@ void CDownReportDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		nIndex = m_cboDownReason.FindStringExact(-1, strCatMsg);
 		m_cboDownReason.SetCurSel(nIndex);
 
+		m_cboDownAction.SetCurSel(0);
 
 		SYSTEMTIME time;
 		GetLocalTime(&time);
 
 		CString strTime;
-		if(gDown.bPDT) strTime.Format("%04d-%02d-%02d %02d:%02d:%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);  
-		else strTime.Format("%04d-%02d-%02d %s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);
-
+		if(gDown.bPDT) 
+		{
+			strTime.Format("%04d-%02d-%02d %02d:%02d:%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+			gDown.sDownStartTime.Format("%s", strTime);
+		}
+		else
+		{
+			strTime.Format("%04d-%02d-%02d %s", time.wYear, time.wMonth, time.wDay, gData.sAlarmTime[0]);
+			gDown.sDownStartTime.Format("%s", strTime);
+		} 		
 		m_stcAlmTime.SetWindowText(strTime);
-
-		m_strAlmStart.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
-
-		
 	} 
 	else
 	{
+		gDown.bDownHappen = FALSE;
+		gDown.bDownClear = TRUE;
 		KillTimer(0);
 	}
 
@@ -274,7 +280,6 @@ void CDownReportDlg::OnBnClickedBtnReport()
 	{
 		m_cboDownReasonCat.GetLBText(nIndex, strReasonCat);
 	}
-
 	gAlm.sAlmCatMajor.Format("%02d", nIndex+1);
 
 	if (!strReasonCat.IsEmpty())
@@ -320,12 +325,11 @@ void CDownReportDlg::OnBnClickedBtnReport()
 
 	strActionDetail.Empty();
 	m_edtActionDetail.GetWindowText(strActionDetail);
-	
 	if(gDown.bPDT)
 	{
 		//pass
 	}
-	else if(strActionDetail.GetLength() < 5)	
+	else if(strActionDetail.GetLength() < 5)    
 	{
 		AfxMessageBox("Please Input Action Detail more than 5 string");
 		return;
@@ -333,13 +337,17 @@ void CDownReportDlg::OnBnClickedBtnReport()
 
 	SYSTEMTIME time;
 	GetLocalTime(&time);
-	m_strAlmEnd.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
+
+	gDown.sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);		
+
+	if(gDown.bPDT)
+	{
+		g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, 0 , 0, "PDT");
+		g_objMesAgent.Set_EquipState(eEquipState::IDLE);    
+		g_objMesAgent.Set_UnitState(eEquipState::IDLE);
+	}		
+	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 	
-	if(gDown.bPDT) g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, 0 , 0, "PDT");
-	else g_objMesAgent.Set_DownActionReport(strActionCode, strActionDetail, m_strAlmStart, m_strAlmEnd, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
-		
-	g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
-	g_objMesAgent.Set_UnitState(eEquipState::IDLE);
 
 	gDown.bDownHappen = FALSE;
 	gDown.bDownClear = TRUE;
@@ -375,6 +383,7 @@ void CDownReportDlg::Set_DownActionCboList(CString sData)
 
 	int i = 1, j = 2;
 	BOOL bCode = FALSE, bText = FALSE;
+
 	m_cboDownReasonCat.ResetContent();
 	while(TRUE)
 	{
