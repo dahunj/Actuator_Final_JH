@@ -343,8 +343,10 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 		}
 
-	} else if (m_rdoWorkStop.GetCheck()) {
-		if (m_bAutoRunning) {	// First AutoStop
+	} else if (m_rdoWorkStop.GetCheck()) 
+	{
+		if (m_bAutoRunning) // First AutoStop
+		{	
 			m_bAutoRunning = FALSE;
 
 			g_objSequenceMain.End_MainRunThread(3000);
@@ -361,7 +363,19 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 			pMainDlg->Save_EquipRunTime();
 			g_objCommon.Save_MotionPos();
 
-		} else {				// Stop
+			pMainDlg->Set_MainState(STATE_NONE);
+			dwStopSTime = GetTickCount();
+			g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
+			g_objMesAgent.Set_UnitState(eEquipState::IDLE);
+
+			gLot.dwErrorStart = 0;
+			gLot.dwStopStart = 0;
+			gLot.dwStopStart = GetTickCount();
+
+
+		}
+		else // Stop
+		{				
 			int nState = pMainDlg->Get_MainState();
 			if (nState != STATE_ALARM && nState != STATE_EMER) g_objCommon.Check_MainEmgAir();
 		}
@@ -2504,12 +2518,16 @@ void CWorkDlg::OnBnClickedBtnNGLotEnd()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CWorkDlg::OnBnClickedButton2()
 {
-	OnUpdateBarcode(0, 0);
+	DX_DATA_13 *pDX13 = g_objAJinAXL.Get_pDX13();
+	if(!pDX13->iStopSw) pDX13->iStopSw  = TRUE;
+	else pDX13->iStopSw  = FALSE;
+
 }
 
 void CWorkDlg::OnBnClickedButton3()
 {
-	OnUpdateBarcode(0,1);
+	DX_DATA_13 *pDX13 = g_objAJinAXL.Get_pDX13();
+	pDX13->iStopSw  = TRUE;
 }
 
 
