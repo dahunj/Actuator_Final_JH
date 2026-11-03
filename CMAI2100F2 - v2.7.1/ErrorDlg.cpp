@@ -1,6 +1,7 @@
 // ErrorDlg.cpp : 구현 파일입니다.
 //
 #include "stdafx.h"
+#include "OCAPManager.h"
 #include "CMAI2100.h"
 #include "ErrorDlg.h"
 #include "afxdialogex.h"
@@ -130,12 +131,14 @@ void CErrorDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 		}
 
 		strErrMsg = INI.Get_String("ERROR", strErrNo, "");
+		if (m_nErrNo >= 9181 && m_nErrNo <= 9188) strErrMsg = "OCAP - 연속 Lot 불량률 이상";
 
 		if (m_nErrNo <= 20) pMainDlg->Set_MainState(STATE_EMER);
 		else				pMainDlg->Set_MainState(STATE_ALARM);
 		if (m_nErrNo >= 1 && m_nErrNo <= 10) g_objSequenceInit.Set_InitComplete(FALSE);	// 초기화 필요
 
 		strErrPick = strNo = strCMNo = "";
+		if (m_nErrNo >= 9181 && m_nErrNo <= 9188) strErrPick = OCAP_GetAlarmMessage();
 		if (m_nErrNo >= 5 && m_nErrNo <= 10) g_objCommon.Locking_MainDoor(FALSE);
 		if (m_nErrNo == 4006 || m_nErrNo == 4506) strErrPick.Format(" #==> Recipe[%s]", gData.sReadyRecipe);
 		if (m_nErrNo == 4019 || m_nErrNo == 4519) {
@@ -793,8 +796,9 @@ void CErrorDlg::Set_SPCError(int nErrNo, CString sErrMsg)
 	if (nErrNo > 8400 && nErrNo < 8600) { strLotId = gData.sLotID_GoodTray[0];		if (strLotId == "") strLotId = gData.sLotID_GoodTray[2]; }
 	if (nErrNo > 8600 && nErrNo < 8800) { strLotId = gData.sLotID_GoodTray[1];		if (strLotId == "") strLotId = gData.sLotID_GoodTray[2]; }
 	if (nErrNo == 9180 || (nErrNo > 9200 && nErrNo < 9210)) strLotId = gAlm.sAlmLotID[0];
+	if (nErrNo >= 9181 && nErrNo <= 9188) strLotId = OCAP_GetAlarmLotID();
 
-	if (gLot.nJobStatus == 0) { gAlm.sLotID = m_strLotID = ""; return; }
+	if (gLot.nJobStatus == 0 && !(nErrNo >= 9181 && nErrNo <= 9188)) { gAlm.sLotID = m_strLotID = ""; return; }
 
 	if (strLotId == "") strLotId = gData.sLotID_Start;
 	if (strLotId == "") {

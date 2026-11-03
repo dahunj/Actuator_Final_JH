@@ -26,6 +26,10 @@
 #include "SequenceMain.h"
 #include "NoWorkDlg.h"
 #include "DownReportDlg.h"
+#include "OCAPFAI.h"
+#include "OCAPCosmetic.h"
+#include "OCAPSelect.h"
+#include "OCAPManager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -61,9 +65,11 @@ void CCMAI2100Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RDO_MAIN_PROHIBIT, m_rdoMainProhibit);
 	DDX_Control(pDX, IDC_BTN_MAIN_MONITOR, m_btnMainMonitor);
 	DDX_Control(pDX, IDC_BTN_MAIN_EXIT, m_btnMainExit);
+	DDX_Control(pDX, IDC_BTN_MAIN_OCAP, m_btnMainOCAP);
 }
 
 BEGIN_MESSAGE_MAP(CCMAI2100Dlg, CDialogEx)
+	ON_BN_CLICKED(IDC_BTN_MAIN_OCAP, &CCMAI2100Dlg::OnBnClickedBtnMainOCAP)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_DESTROY()
@@ -118,6 +124,8 @@ BOOL CCMAI2100Dlg::OnInitDialog()
 	g_dlgAlarm.Create(CAlarmDlg::IDD, this);
 	g_dlgNoWork.Create(CNoWorkDlg::IDD, this);
 	g_dlgDownReport.Create(CDownReportDlg::IDD, this);
+	g_dlgOCAP_FAI.Create(OCAPFAI::IDD, this);
+	g_dlgOCAP_Cosmetic.Create(OCAPCosmetic::IDD, this);
 
 	g_objLogFile.Save_HandlerLog("[Main Dialog] Program Start");
 
@@ -192,6 +200,8 @@ void CCMAI2100Dlg::OnDestroy()
 	g_dlgOperator.DestroyWindow();
 	g_dlgNoWork.DestroyWindow();
 	g_dlgDownReport.DestroyWindow();
+	g_dlgOCAP_FAI.DestroyWindow();
+	g_dlgOCAP_Cosmetic.DestroyWindow();
 
 	g_objBarcodeLot.DestroyWindow();
 	g_objInspector.DestroyWindow();
@@ -219,6 +229,10 @@ void CCMAI2100Dlg::OnShowWindow(BOOL bShow, UINT nStatus)
 	g_objDataManager.Read_MoveData();
 	g_objDataManager.Read_IdleData();
 	g_objDataManager.Read_RosData();
+	g_objDataManager.Reset_OCAPData_FAI();
+	g_objDataManager.Reset_OCAPData_Cosmetic();
+	if (!g_objDataManager.Read_OCAPData_FAI() || !g_objDataManager.Read_OCAPData_Cosmetic())
+		g_objCommon.Show_MsgBox(1, "OCAP_Data.ini 파일을 확인해 주세요.");
 
 	if (!g_objAJinAXL.Initialize()) { Exit_System(EXIT_SYSTEM_AJIN); return; }
 
@@ -283,6 +297,8 @@ void CCMAI2100Dlg::OnTimer(UINT_PTR nIDEvent)
 {
 	switch (nIDEvent) {
 	case TIMER_DATE_TIME:
+		OCAP_ProcessLots();
+		OCAP_ShowNextAlarm();
 		Display_DateTime();
 		g_objCommon.Check_InsideLamp();
 		g_objCommon.Check_MainDoor();
@@ -447,6 +463,7 @@ void CCMAI2100Dlg::Initial_Controls()
 	m_rdoMainSetup.Init_Ctrl("Segoe UI", 14, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
 	m_rdoMainProhibit.Init_Ctrl("Segoe UI", 14, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
 	m_btnMainMonitor.Init_Ctrl("Segoe UI", 14, TRUE, RGB(0x00, 0xA0, 0x00), COLOR_DEFAULT, 0, 0);
+	m_btnMainOCAP.Init_Ctrl("Segoe UI", 14, TRUE, RGB(0, 160, 0), COLOR_DEFAULT, 0, 0);
 	m_btnMainExit.Init_Ctrl("Segoe UI", 14, TRUE, RGB(0xFF, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
 }
 
@@ -465,6 +482,7 @@ void CCMAI2100Dlg::Hide_ModeWindows(int nMode)
 	m_rdoMainSetup.ShowWindow(nShow);
 	m_rdoMainProhibit.ShowWindow(nShow);
 	m_btnMainMonitor.ShowWindow(nShow);
+	m_btnMainOCAP.ShowWindow(nShow);
 
 	if (m_nMainMode == MODE_OPERATOR) g_dlgOperator.ShowWindow(SW_HIDE);
 	if (m_nMainMode == MODE_INITIAL) g_dlgInitial.ShowWindow(SW_HIDE);
@@ -1146,4 +1164,18 @@ int CCMAI2100Dlg::GetDirFilesNum(CString strDir)
     finder.Close();
  
     return count;
+}
+void CCMAI2100Dlg::OnBnClickedBtnMainOCAP()
+{
+	OCAPSelect dlg(this);
+	int nSelect = dlg.DoModal();
+	if (nSelect == IDC_BTN_OCAP_FAI) {
+		g_dlgOCAP_Cosmetic.ShowWindow(SW_HIDE);
+		g_dlgOCAP_FAI.ShowWindow(SW_SHOW);
+		g_dlgOCAP_FAI.SetForegroundWindow();
+	} else if (nSelect == IDC_BTN_OCAP_COSMETIC) {
+		g_dlgOCAP_FAI.ShowWindow(SW_HIDE);
+		g_dlgOCAP_Cosmetic.ShowWindow(SW_SHOW);
+		g_dlgOCAP_Cosmetic.SetForegroundWindow();
+	}
 }

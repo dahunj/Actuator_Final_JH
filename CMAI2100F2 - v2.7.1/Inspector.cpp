@@ -60,6 +60,18 @@ END_MESSAGE_MAP()
 
 void CInspector::Initialize()
 {
+#ifndef AJIN_BOARD_USE
+	BOOL bVisionPC1Opened = m_UdpVisionPC1.Open_Socket(21000, 21001, "127.0.0.1", this);
+	BOOL bVisionPC2Opened = m_UdpVisionPC2.Open_Socket(22000, 22001, "127.0.0.1", this);
+	BOOL bVisionPC3Opened = m_UdpVisionPC3.Open_Socket(23000, 23001, "127.0.0.1", this);
+	BOOL bVisionPC4Opened = m_UdpVisionPC4.Open_Socket(24000, 24001, "127.0.0.1", this);
+	BOOL bVisionPC5Opened = m_UdpVisionPC5.Open_Socket(25000, 25001, "127.0.0.1", this);
+	if (bVisionPC1Opened) Set_ConnectRequest(INSPECTOR_PC1);
+	if (bVisionPC2Opened) Set_ConnectRequest(INSPECTOR_PC2);
+	if (bVisionPC3Opened) Set_ConnectRequest(INSPECTOR_PC3);
+	if (bVisionPC4Opened) Set_ConnectRequest(INSPECTOR_PC4);
+	if (bVisionPC5Opened) Set_ConnectRequest(INSPECTOR_PC5);
+#else
 	BOOL bVisionPC1Opened = m_UdpVisionPC1.Open_Socket(UDP_PC1_LPORT, UDP_PC1_HPORT, UDP_PC1_HOST_IP, this);
 	BOOL bVisionPC2Opened = m_UdpVisionPC2.Open_Socket(UDP_PC2_LPORT, UDP_PC2_HPORT, UDP_PC2_HOST_IP, this);
 	BOOL bVisionPC3Opened = m_UdpVisionPC3.Open_Socket(UDP_PC3_LPORT, UDP_PC3_HPORT, UDP_PC3_HOST_IP, this);
@@ -70,6 +82,7 @@ void CInspector::Initialize()
 	if (bVisionPC3Opened) Set_ConnectRequest(INSPECTOR_PC3);
 	if (bVisionPC4Opened) Set_ConnectRequest(INSPECTOR_PC4);
 	if (bVisionPC5Opened) Set_ConnectRequest(INSPECTOR_PC5);
+#endif
 }
 
 void CInspector::Terminate()
@@ -112,11 +125,19 @@ LRESULT CInspector::OnUdpReceive(WPARAM wLocalPort, LPARAM lParam)
 	BYTE byRecv[1024] = { 0 };
 	CString strLog;
 
+#ifndef AJIN_BOARD_USE
+	if (nPort == 21001) { nInspector = INSPECTOR_PC1; nLen = m_UdpVisionPC1.Read_Socket(byRecv); }
+	if (nPort == 22001) { nInspector = INSPECTOR_PC2; nLen = m_UdpVisionPC2.Read_Socket(byRecv); }
+	if (nPort == 23001) { nInspector = INSPECTOR_PC3; nLen = m_UdpVisionPC3.Read_Socket(byRecv); }
+	if (nPort == 24001) { nInspector = INSPECTOR_PC4; nLen = m_UdpVisionPC4.Read_Socket(byRecv); }
+	if (nPort == 25001) { nInspector = INSPECTOR_PC5; nLen = m_UdpVisionPC5.Read_Socket(byRecv); }
+#else
 	if (nPort == UDP_PC1_HPORT) { nInspector = INSPECTOR_PC1; nLen = m_UdpVisionPC1.Read_Socket(byRecv); }
 	if (nPort == UDP_PC2_HPORT) { nInspector = INSPECTOR_PC2; nLen = m_UdpVisionPC2.Read_Socket(byRecv); }
 	if (nPort == UDP_PC3_HPORT) { nInspector = INSPECTOR_PC3; nLen = m_UdpVisionPC3.Read_Socket(byRecv); }
 	if (nPort == UDP_PC4_HPORT) { nInspector = INSPECTOR_PC4; nLen = m_UdpVisionPC4.Read_Socket(byRecv); }
 	if (nPort == UDP_PC5_HPORT) { nInspector = INSPECTOR_PC5; nLen = m_UdpVisionPC5.Read_Socket(byRecv); }
+#endif
 
 	if (nInspector == 0 || nLen < 1) {
 		strLog.Format("[H<-V%d] , Local Port (%d) Mismatch or Receive Data Zero (%d)", nInspector, nPort, nLen);
@@ -311,6 +332,13 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 
 	int nVNo = (sType == "B1" ? 1 : (sType == "AG" ? 2 : (sType == "T1" ? 3 : (sType == "TG" ? 4 : (sType == "T2" ? 5 : 0)))));
 
+	// 종료/재사용된 포트의 늦은 패킷과 동일 카메라 중복 응답을 제외한다.
+	if (sLotID != gLot.sLotID[nPortNo-1] || gLot.bOcapFinalized[nPortNo-1] ||
+		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] > 1 ||
+		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] > 1) {
+		CString sLog; sLog.Format("[OCAP] Ignore stale/duplicate COMPLETE Lot(%s) Port(%d) Tray(%d) CM(%d) Vision(%d)", sLotID, nPortNo, nTrayNo, nCMNo, nVNo);
+		g_objLogFile.Save_HandlerLog(sLog); return;
+	}
 	if (pEquipData->bUseNGSize) { if (sJudge == "N" || sJudge == "M" || sJudge == "X" || sJudge == "R") sJudge = "G"; }
 	if ((sType == "B1" || sType == "AG") && sNGCode == "MC") sNGCode = "MCBTM";
 
@@ -361,6 +389,10 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 		strLog.Format("[Get_InspectComplete] Inspection Complete Allready Error => LotID(%s) PortNo(%s) TrayNo(%s) CmNo(%d) Bar(%s) Judge(%d) NC(%s) ROS(%d)", sLotID, sPortNo, sTrayNo, nCMNo, gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1], gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], gLot.sNGCode_I[nPortNo-1][nTrayNo-1][nCMNo-1][0], nRosCnt);	g_objLogFile.Save_HandlerLog(strLog);
 		return;
 	}
+
+#ifndef AJIN_BOARD_USE
+	gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1] = "AAAAAAAA";
+#endif
 
 	//ROS Skip Check
 	if (!pEquipData->bUseNGSize) {

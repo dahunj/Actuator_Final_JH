@@ -136,6 +136,10 @@ typedef struct tag_ROS_DATA {
 class CDataManager
 {
 public:
+	void Reset_OCAPData_Cosmetic();
+	BOOL Read_OCAPData_Cosmetic();
+	void Reset_OCAPData_FAI();
+	BOOL Read_OCAPData_FAI();
 	CDataManager();
 	virtual ~CDataManager();
 

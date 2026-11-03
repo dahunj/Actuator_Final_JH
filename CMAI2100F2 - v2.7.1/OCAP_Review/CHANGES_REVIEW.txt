@@ -1,0 +1,685 @@
+검토용 UTF-8 비교본입니다. 자동 패치 적용용이 아닙니다.
+
+--- original/CMAI2100.rc
++++ OCAP/CMAI2100.rc
+@@ -126,9 +126,78 @@
+     CONTROL         "TEACH",IDC_RDO_MAIN_SETUP,"Button",BS_AUTORADIOBUTTON | BS_PUSHLIKE,335,569,100,40
+     CONTROL         "PM",IDC_RDO_MAIN_PROHIBIT,"Button",BS_AUTORADIOBUTTON | BS_PUSHLIKE,880,569,100,40
+     PUSHBUTTON      "LOG",IDC_BTN_MAIN_MONITOR,445,569,100,40,WS_GROUP
++    PUSHBUTTON      "OCAP",IDC_BTN_MAIN_OCAP,775,569,95,40,WS_GROUP
+     PUSHBUTTON      "Exit",IDC_BTN_MAIN_EXIT,990,569,100,40
+     CTEXT           "Door Lock",IDC_STC_DOOR_LOCK,665,569,100,40,SS_CENTERIMAGE | WS_BORDER
+ END
++
++IDD_OCAP_DLG DIALOGEX 0, 0, 1095, 500
++STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
++CAPTION "OCAP FAI Data"
++FONT 9, "MS Shell Dlg", 400, 0, 0x0
++BEGIN
++    DEFPUSHBUTTON   "저장",IDOK,850,26,99,34
++    PUSHBUTTON      "Close",IDCANCEL,973,26,99,34
++    GROUPBOX        "Common Option",IDC_GROUP_0,8,8,824,67,WS_GROUP
++    GROUPBOX        "",IDC_GROUP_1,8,75,1081,425,WS_GROUP
++    PUSHBUTTON      "OCAP DATA",IDC_GRD_OCAP_DATA,13,83,1071,409
++    LTEXT           " Lot당 모듈 최소 수량 :",IDC_LABEL_2,610,29,144,15,SS_CENTERIMAGE
++    LTEXT           " 조건 1 :",IDC_LABEL_0,39,30,60,12,SS_CENTERIMAGE
++    CTEXT           "기준 불량 율 (%)",IDC_LABEL_1,217,15,91,15,SS_CENTERIMAGE
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_0,111,31,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0.00",IDC_STC_OCAP_VALUE_1,217,30,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_2,771,29,47,15,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_3,111,44,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_4,217,44,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_5,111,57,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_6,217,57,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "Lot 연속 수량",IDC_LABEL_3,111,15,91,15,SS_CENTERIMAGE
++    LTEXT           " 조건 2 :",IDC_LABEL_4,39,44,60,12,SS_CENTERIMAGE
++    LTEXT           " 조건 3 :",IDC_LABEL_5,39,57,60,12,SS_CENTERIMAGE
++    LTEXT           " 측정 Error  :",IDC_LABEL_6,329,30,60,12,SS_CENTERIMAGE
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_7,401,31,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0.00",IDC_STC_OCAP_VALUE_8,507,31,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++END
++
++IDD_OCAP_COSMETIC_DLG DIALOGEX 0, 0, 1095, 500
++STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
++CAPTION "OCAP Cosmetic Data"
++FONT 9, "MS Shell Dlg", 400, 0, 0x0
++BEGIN
++    DEFPUSHBUTTON   "저장",IDOK,850,26,99,34
++    PUSHBUTTON      "Close",IDCANCEL,973,26,99,34
++    GROUPBOX        "Common Option",IDC_GROUP_0,8,8,824,67,WS_GROUP
++    GROUPBOX        "",IDC_GROUP_1,8,75,1081,425,WS_GROUP
++    PUSHBUTTON      "OCAP DATA",IDC_GRD_OCAP_DATA,13,83,1071,409
++    LTEXT           " Lot당 모듈 최소 수량 :",IDC_LABEL_2,610,29,144,15,SS_CENTERIMAGE
++    LTEXT           " 조건 1 :",IDC_LABEL_0,39,30,60,12,SS_CENTERIMAGE
++    CTEXT           "기준 불량 율 (%)",IDC_LABEL_1,217,15,91,15,SS_CENTERIMAGE
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_0,111,31,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0.00",IDC_STC_OCAP_VALUE_1,217,30,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_2,771,29,47,15,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_3,111,44,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_4,217,44,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_5,111,57,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_6,217,57,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "Lot 연속 수량",IDC_LABEL_3,111,15,91,15,SS_CENTERIMAGE
++    LTEXT           " 조건 2 :",IDC_LABEL_4,39,44,60,12,SS_CENTERIMAGE
++    LTEXT           " 조건 3 :",IDC_LABEL_5,39,57,60,12,SS_CENTERIMAGE
++    LTEXT           " 외관 Error :",IDC_LABEL_6,329,30,60,12,SS_CENTERIMAGE
++    CTEXT           "##0",IDC_STC_OCAP_VALUE_7,401,31,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++    CTEXT           "##0.00",IDC_STC_OCAP_VALUE_8,507,31,91,12,SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
++END
++
++IDD_OCAP_SELECT_DLG DIALOGEX 0, 0, 420, 160
++STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
++CAPTION "OCAP 선택"
++FONT 9, "MS Shell Dlg", 400, 0, 0x0
++BEGIN
++    CTEXT           "설정할 OCAP 항목을 선택하세요.",IDC_LABEL_0,15,12,390,28,SS_CENTERIMAGE
++    PUSHBUTTON      "FAI (치수 불량)",IDC_BTN_OCAP_FAI,15,52,188,60
++    PUSHBUTTON      "Cosmetic (외관 불량)",IDC_BTN_OCAP_COSMETIC,217,52,188,60
++    PUSHBUTTON      "닫기",IDCANCEL,305,126,100,26
++END
++
+ 
+ IDD_SPLASH_DLG DIALOGEX 0, 0, 1097, 617
+ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_BORDER | WS_SYSMENU
+
+--- original/CMAI2100.vcxproj
++++ OCAP/CMAI2100.vcxproj
+@@ -278,4 +278,19 @@
+       <UserProperties RESOURCE_FILE="CMAI2100.rc" />
+     </VisualStudio>
+   </ProjectExtensions>
++
++  <ItemGroup>
++    <ClCompile Include="OCAPFAI.cpp" />
++    <ClCompile Include="OCAPCosmetic.cpp" />
++    <ClCompile Include="OCAPSelect.cpp" />
++    <ClCompile Include="OCAPManager.cpp" />
++  </ItemGroup>
++
++  <ItemGroup>
++    <ClInclude Include="OCAPFAI.h" />
++    <ClInclude Include="OCAPCosmetic.h" />
++    <ClInclude Include="OCAPSelect.h" />
++    <ClInclude Include="OCAPManager.h" />
++    <ClInclude Include="OCAPRules.h" />
++  </ItemGroup>
+ </Project>
+--- original/CMAI2100.vcxproj.filters
++++ OCAP/CMAI2100.vcxproj.filters
+@@ -495,4 +495,19 @@
+       <Filter>리소스 파일</Filter>
+     </ResourceCompile>
+   </ItemGroup>
++
++  <ItemGroup>
++    <ClCompile Include="OCAPFAI.cpp"><Filter>소스 파일</Filter></ClCompile>
++    <ClCompile Include="OCAPCosmetic.cpp"><Filter>소스 파일</Filter></ClCompile>
++    <ClCompile Include="OCAPSelect.cpp"><Filter>소스 파일</Filter></ClCompile>
++    <ClCompile Include="OCAPManager.cpp"><Filter>소스 파일</Filter></ClCompile>
++  </ItemGroup>
++
++  <ItemGroup>
++    <ClInclude Include="OCAPFAI.h"><Filter>헤더 파일</Filter></ClInclude>
++    <ClInclude Include="OCAPCosmetic.h"><Filter>헤더 파일</Filter></ClInclude>
++    <ClInclude Include="OCAPSelect.h"><Filter>헤더 파일</Filter></ClInclude>
++    <ClInclude Include="OCAPManager.h"><Filter>헤더 파일</Filter></ClInclude>
++    <ClInclude Include="OCAPRules.h"><Filter>헤더 파일</Filter></ClInclude>
++  </ItemGroup>
+ </Project>
+--- original/CMAI2100Dlg.cpp
++++ OCAP/CMAI2100Dlg.cpp
+@@ -26,6 +26,10 @@
+ #include "SequenceMain.h"
+ #include "NoWorkDlg.h"
+ #include "DownReportDlg.h"
++#include "OCAPFAI.h"
++#include "OCAPCosmetic.h"
++#include "OCAPSelect.h"
++#include "OCAPManager.h"
+ 
+ #ifdef _DEBUG
+ #define new DEBUG_NEW
+@@ -61,9 +65,11 @@
+ 	DDX_Control(pDX, IDC_RDO_MAIN_PROHIBIT, m_rdoMainProhibit);
+ 	DDX_Control(pDX, IDC_BTN_MAIN_MONITOR, m_btnMainMonitor);
+ 	DDX_Control(pDX, IDC_BTN_MAIN_EXIT, m_btnMainExit);
++	DDX_Control(pDX, IDC_BTN_MAIN_OCAP, m_btnMainOCAP);
+ }
+ 
+ BEGIN_MESSAGE_MAP(CCMAI2100Dlg, CDialogEx)
++	ON_BN_CLICKED(IDC_BTN_MAIN_OCAP, &CCMAI2100Dlg::OnBnClickedBtnMainOCAP)
+ 	ON_WM_PAINT()
+ 	ON_WM_QUERYDRAGICON()
+ 	ON_WM_DESTROY()
+@@ -118,6 +124,8 @@
+ 	g_dlgAlarm.Create(CAlarmDlg::IDD, this);
+ 	g_dlgNoWork.Create(CNoWorkDlg::IDD, this);
+ 	g_dlgDownReport.Create(CDownReportDlg::IDD, this);
++	g_dlgOCAP_FAI.Create(OCAPFAI::IDD, this);
++	g_dlgOCAP_Cosmetic.Create(OCAPCosmetic::IDD, this);
+ 
+ 	g_objLogFile.Save_HandlerLog("[Main Dialog] Program Start");
+ 
+@@ -192,6 +200,8 @@
+ 	g_dlgOperator.DestroyWindow();
+ 	g_dlgNoWork.DestroyWindow();
+ 	g_dlgDownReport.DestroyWindow();
++	g_dlgOCAP_FAI.DestroyWindow();
++	g_dlgOCAP_Cosmetic.DestroyWindow();
+ 
+ 	g_objBarcodeLot.DestroyWindow();
+ 	g_objInspector.DestroyWindow();
+@@ -219,6 +229,10 @@
+ 	g_objDataManager.Read_MoveData();
+ 	g_objDataManager.Read_IdleData();
+ 	g_objDataManager.Read_RosData();
++	g_objDataManager.Reset_OCAPData_FAI();
++	g_objDataManager.Reset_OCAPData_Cosmetic();
++	if (!g_objDataManager.Read_OCAPData_FAI() || !g_objDataManager.Read_OCAPData_Cosmetic())
++		g_objCommon.Show_MsgBox(1, "OCAP_Data.ini 파일을 확인해 주세요.");
+ 
+ 	if (!g_objAJinAXL.Initialize()) { Exit_System(EXIT_SYSTEM_AJIN); return; }
+ 
+@@ -283,6 +297,8 @@
+ {
+ 	switch (nIDEvent) {
+ 	case TIMER_DATE_TIME:
++		OCAP_ProcessLots();
++		OCAP_ShowNextAlarm();
+ 		Display_DateTime();
+ 		g_objCommon.Check_InsideLamp();
+ 		g_objCommon.Check_MainDoor();
+@@ -447,6 +463,7 @@
+ 	m_rdoMainSetup.Init_Ctrl("Segoe UI", 14, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
+ 	m_rdoMainProhibit.Init_Ctrl("Segoe UI", 14, TRUE, COLOR_DEFAULT, COLOR_DEFAULT, 0, 0);
+ 	m_btnMainMonitor.Init_Ctrl("Segoe UI", 14, TRUE, RGB(0x00, 0xA0, 0x00), COLOR_DEFAULT, 0, 0);
++	m_btnMainOCAP.Init_Ctrl("Segoe UI", 14, TRUE, RGB(0, 160, 0), COLOR_DEFAULT, 0, 0);
+ 	m_btnMainExit.Init_Ctrl("Segoe UI", 14, TRUE, RGB(0xFF, 0x00, 0x00), COLOR_DEFAULT, 0, 0);
+ }
+ 
+@@ -465,6 +482,7 @@
+ 	m_rdoMainSetup.ShowWindow(nShow);
+ 	m_rdoMainProhibit.ShowWindow(nShow);
+ 	m_btnMainMonitor.ShowWindow(nShow);
++	m_btnMainOCAP.ShowWindow(nShow);
+ 
+ 	if (m_nMainMode == MODE_OPERATOR) g_dlgOperator.ShowWindow(SW_HIDE);
+ 	if (m_nMainMode == MODE_INITIAL) g_dlgInitial.ShowWindow(SW_HIDE);
+@@ -1146,4 +1164,18 @@
+     finder.Close();
+  
+     return count;
+-}+}
++void CCMAI2100Dlg::OnBnClickedBtnMainOCAP()
++{
++	OCAPSelect dlg(this);
++	int nSelect = dlg.DoModal();
++	if (nSelect == IDC_BTN_OCAP_FAI) {
++		g_dlgOCAP_Cosmetic.ShowWindow(SW_HIDE);
++		g_dlgOCAP_FAI.ShowWindow(SW_SHOW);
++		g_dlgOCAP_FAI.SetForegroundWindow();
++	} else if (nSelect == IDC_BTN_OCAP_COSMETIC) {
++		g_dlgOCAP_FAI.ShowWindow(SW_HIDE);
++		g_dlgOCAP_Cosmetic.ShowWindow(SW_SHOW);
++		g_dlgOCAP_Cosmetic.SetForegroundWindow();
++	}
++}
+
+--- original/CMAI2100Dlg.h
++++ OCAP/CMAI2100Dlg.h
+@@ -57,6 +57,8 @@
+ 	CRadioCS	m_rdoMainProhibit;
+ 	CButtonCS	m_btnMainMonitor;
+ 	CButtonCS	m_btnMainExit;
++	CButtonCS	m_btnMainOCAP;
++	afx_msg void OnBnClickedBtnMainOCAP();
+ 	CStaticCS	m_stcDoorLock;
+ 
+ 	protected:
+
+--- original/Common.cpp
++++ OCAP/Common.cpp
+@@ -1122,6 +1122,7 @@
+ 	gLot.nErrorCount[nNo] = gLot.dwErrorTime[nNo] = gLot.dwStopTime[nNo] = gMes.nLotStatus[nNo] = 0;
+ 	gLot.sLotID[nNo] = gLot.sLLStartTime[nNo] = gLot.sLLEndTime[nNo] = "";
+ 	gLot.bEmptyTray[nNo] = gLot.bEmptyNGTray[nNo] = FALSE;
++	gLot.bOcapFinalized[nNo] = FALSE;
+ 
+ 	for (int i = 0; i < 10; i++) {
+ 		for (int j = 0; j < 40; j++) {
+
+--- original/DataManager.cpp
++++ OCAP/DataManager.cpp
+@@ -670,3 +670,103 @@
+ }
+ 
+ ///////////////////////////////////////////////////////////////////////////////
++
++
++void CDataManager::Reset_OCAPData_FAI()
++{
++	gCap_FAI.nPendingAlarm_FAI = 0;
++	gCap_FAI.sPendingDefect_FAI = "";
++	gCap_FAI.nLotCycle_FAI = 0;
++	for(int i=0; i<50; i++) {
++		gCap_FAI.sDate_FAI[i] = gCap_FAI.sTime_FAI[i] = gCap_FAI.sLotID_FAI[i] = "";
++		gCap_FAI.nTotCount_FAI[i] = gCap_FAI.nGoodCount_FAI[i] = gCap_FAI.nROSNGCount_FAI[i] = gCap_FAI.nROSRfCount_FAI[i] = gCap_FAI.nBCRCount_FAI[i] = gCap_FAI.nMESCount_FAI[i] = gCap_FAI.nMCCount_FAI[i] = 0;
++		for(int j=0; j<100; j ++) {
++			gCap_FAI.nCount_FAI[i][j] = gCap_FAI.nFCount_FAI[i][j] = 0;
++		}
++	}
++	for(int j=0; j<100; j ++) {
++		gCap_FAI.sFAIName_FAI[j] = gCap_FAI.sFAICode_FAI[j] = "";
++		gCap_FAI.nCodeLotCnt_FAI[j] = 0;
++		gCap_FAI.dCodeDefect_FAI[j] = -1.0;
++	}
++}
++
++BOOL CDataManager::Read_OCAPData_FAI()
++{
++	CString strFile = gsCurrentDir + "\\System\\OCAP_Data.ini";
++	::CreateDirectory(gsCurrentDir + "\\System", NULL);
++	CIniFileCS INI(strFile);
++	if (!INI.Check_File()) {
++		if (!::WritePrivateProfileString("OPTION-FAI", "LOT_MIN_COUNT", "1", strFile)) return FALSE;
++	}
++
++	CString strKey;
++	for(int i=0; i<4; i++) {
++		strKey.Format("DEFECTP_%02d", i + 1);
++		gCap_FAI.dGiDefect_FAI[i] = INI.Get_Double("OPTION-FAI", strKey, 1.0);
++		strKey.Format("LOT_COUNT_%02d", i + 1);
++		gCap_FAI.nGiLotCnt_FAI[i]  = INI.Get_Integer("OPTION-FAI", strKey, 0);
++	}
++	gCap_FAI.nGiMinCnt_FAI	= INI.Get_Integer("OPTION-FAI", "LOT_MIN_COUNT", 1);
++
++	for (int i = 0; i < 100; i++) {
++		strKey.Format("%02d", i + 1);
++		gCap_FAI.sFAIName_FAI[i] = INI.Get_String("FAI-NAME", strKey, "");
++		gCap_FAI.sFAICode_FAI[i] = INI.Get_String("FAI-CODE", strKey, "");
++		gCap_FAI.nCodeLotCnt_FAI[i] = INI.Get_Integer("FAI-LOT-COUNT", strKey, -1);
++		gCap_FAI.dCodeDefect_FAI[i] = INI.Get_Double("FAI-DEFECTP", strKey, -1.0);
++		if (gCap_FAI.dCodeDefect_FAI[i] != -1.0 && !(gCap_FAI.dCodeDefect_FAI[i] > 0.0 && gCap_FAI.dCodeDefect_FAI[i] <= 100.0)) gCap_FAI.dCodeDefect_FAI[i] = -1.0;
++		if (gCap_FAI.nCodeLotCnt_FAI[i] < -1 || gCap_FAI.nCodeLotCnt_FAI[i] > 40) gCap_FAI.nCodeLotCnt_FAI[i] = 0;
++	}
++	return TRUE;
++}
++
++
++void CDataManager::Reset_OCAPData_Cosmetic()
++{
++	gCap_Cosmetic.nPendingAlarm_Cosmetic = 0;
++	gCap_Cosmetic.sPendingDefect_Cosmetic = "";
++	gCap_Cosmetic.nLotCycle_Cosmetic = 0;
++	for(int i=0; i<50; i++) {
++		gCap_Cosmetic.sDate_Cosmetic[i] = gCap_Cosmetic.sTime_Cosmetic[i] = gCap_Cosmetic.sLotID_Cosmetic[i] = "";
++		gCap_Cosmetic.nTotCount_Cosmetic[i] = gCap_Cosmetic.nGoodCount_Cosmetic[i] = gCap_Cosmetic.nROSNGCount_Cosmetic[i] = gCap_Cosmetic.nROSRfCount_Cosmetic[i] = gCap_Cosmetic.nBCRCount_Cosmetic[i] = gCap_Cosmetic.nMESCount_Cosmetic[i] = gCap_Cosmetic.nMCCount_Cosmetic[i] = 0;
++		for(int j=0; j<100; j ++) {
++			gCap_Cosmetic.nCount_Cosmetic[i][j] = gCap_Cosmetic.nFCount_Cosmetic[i][j] = 0;
++		}
++	}
++	for(int j=0; j<100; j ++) {
++		gCap_Cosmetic.sCosmeticName_Cosmetic[j] = gCap_Cosmetic.sCosmeticCode_Cosmetic[j] = "";
++		gCap_Cosmetic.nCodeLotCnt_Cosmetic[j] = 0;
++		gCap_Cosmetic.dCodeDefect_Cosmetic[j] = -1.0;
++	}
++}
++
++BOOL CDataManager::Read_OCAPData_Cosmetic()
++{
++	CString strFile = gsCurrentDir + "\\System\\OCAP_Data.ini";
++	::CreateDirectory(gsCurrentDir + "\\System", NULL);
++	CIniFileCS INI(strFile);
++	if (!INI.Check_File()) {
++		if (!::WritePrivateProfileString("OPTION-COSMETIC", "LOT_MIN_COUNT", "1", strFile)) return FALSE;
++	}
++
++	CString strKey;
++	for(int i=0; i<4; i++) {
++		strKey.Format("DEFECTP_%02d", i + 1);
++		gCap_Cosmetic.dGiDefect_Cosmetic[i] = INI.Get_Double("OPTION-COSMETIC", strKey, 1.0);
++		strKey.Format("LOT_COUNT_%02d", i + 1);
++		gCap_Cosmetic.nGiLotCnt_Cosmetic[i]  = INI.Get_Integer("OPTION-COSMETIC", strKey, 0);
++	}
++	gCap_Cosmetic.nGiMinCnt_Cosmetic	= INI.Get_Integer("OPTION-COSMETIC", "LOT_MIN_COUNT", 1);
++
++	for (int i = 0; i < 100; i++) {
++		strKey.Format("%02d", i + 1);
++		gCap_Cosmetic.sCosmeticName_Cosmetic[i] = INI.Get_String("COSMETIC-NAME", strKey, "");
++		gCap_Cosmetic.sCosmeticCode_Cosmetic[i] = INI.Get_String("COSMETIC-CODE", strKey, "");
++		gCap_Cosmetic.nCodeLotCnt_Cosmetic[i] = INI.Get_Integer("COSMETIC-LOT-COUNT", strKey, -1);
++		gCap_Cosmetic.dCodeDefect_Cosmetic[i] = INI.Get_Double("COSMETIC-DEFECTP", strKey, -1.0);
++		if (gCap_Cosmetic.dCodeDefect_Cosmetic[i] != -1.0 && !(gCap_Cosmetic.dCodeDefect_Cosmetic[i] > 0.0 && gCap_Cosmetic.dCodeDefect_Cosmetic[i] <= 100.0)) gCap_Cosmetic.dCodeDefect_Cosmetic[i] = -1.0;
++		if (gCap_Cosmetic.nCodeLotCnt_Cosmetic[i] < -1 || gCap_Cosmetic.nCodeLotCnt_Cosmetic[i] > 40) gCap_Cosmetic.nCodeLotCnt_Cosmetic[i] = 0;
++	}
++	return TRUE;
++}
+
+--- original/DataManager.h
++++ OCAP/DataManager.h
+@@ -136,6 +136,10 @@
+ class CDataManager
+ {
+ public:
++	void Reset_OCAPData_Cosmetic();
++	BOOL Read_OCAPData_Cosmetic();
++	void Reset_OCAPData_FAI();
++	BOOL Read_OCAPData_FAI();
+ 	CDataManager();
+ 	virtual ~CDataManager();
+ 
+
+--- original/ErrorDlg.cpp
++++ OCAP/ErrorDlg.cpp
+@@ -1,6 +1,7 @@
+ // ErrorDlg.cpp : 구현 파일입니다.
+ //
+ #include "stdafx.h"
++#include "OCAPManager.h"
+ #include "CMAI2100.h"
+ #include "ErrorDlg.h"
+ #include "afxdialogex.h"
+@@ -130,12 +131,14 @@
+ 		}
+ 
+ 		strErrMsg = INI.Get_String("ERROR", strErrNo, "");
++		if (m_nErrNo >= 9181 && m_nErrNo <= 9188) strErrMsg = "OCAP - 연속 Lot 불량률 이상";
+ 
+ 		if (m_nErrNo <= 20) pMainDlg->Set_MainState(STATE_EMER);
+ 		else				pMainDlg->Set_MainState(STATE_ALARM);
+ 		if (m_nErrNo >= 1 && m_nErrNo <= 10) g_objSequenceInit.Set_InitComplete(FALSE);	// 초기화 필요
+ 
+ 		strErrPick = strNo = strCMNo = "";
++		if (m_nErrNo >= 9181 && m_nErrNo <= 9188) strErrPick = OCAP_GetAlarmMessage();
+ 		if (m_nErrNo >= 5 && m_nErrNo <= 10) g_objCommon.Locking_MainDoor(FALSE);
+ 		if (m_nErrNo == 4006 || m_nErrNo == 4506) strErrPick.Format(" #==> Recipe[%s]", gData.sReadyRecipe);
+ 		if (m_nErrNo == 4019 || m_nErrNo == 4519) {
+@@ -793,8 +796,9 @@
+ 	if (nErrNo > 8400 && nErrNo < 8600) { strLotId = gData.sLotID_GoodTray[0];		if (strLotId == "") strLotId = gData.sLotID_GoodTray[2]; }
+ 	if (nErrNo > 8600 && nErrNo < 8800) { strLotId = gData.sLotID_GoodTray[1];		if (strLotId == "") strLotId = gData.sLotID_GoodTray[2]; }
+ 	if (nErrNo == 9180 || (nErrNo > 9200 && nErrNo < 9210)) strLotId = gAlm.sAlmLotID[0];
+-
+-	if (gLot.nJobStatus == 0) { gAlm.sLotID = m_strLotID = ""; return; }
++	if (nErrNo >= 9181 && nErrNo <= 9188) strLotId = OCAP_GetAlarmLotID();
++
++	if (gLot.nJobStatus == 0 && !(nErrNo >= 9181 && nErrNo <= 9188)) { gAlm.sLotID = m_strLotID = ""; return; }
+ 
+ 	if (strLotId == "") strLotId = gData.sLotID_Start;
+ 	if (strLotId == "") {
+
+--- original/Inspector.cpp
++++ OCAP/Inspector.cpp
+@@ -311,6 +311,13 @@
+ 
+ 	int nVNo = (sType == "B1" ? 1 : (sType == "AG" ? 2 : (sType == "T1" ? 3 : (sType == "TG" ? 4 : (sType == "T2" ? 5 : 0)))));
+ 
++	// 종료/재사용된 포트의 늦은 패킷과 동일 카메라 중복 응답을 제외한다.
++	if (sLotID != gLot.sLotID[nPortNo-1] || gLot.bOcapFinalized[nPortNo-1] ||
++		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] > 1 ||
++		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] > 1) {
++		CString sLog; sLog.Format("[OCAP] Ignore stale/duplicate COMPLETE Lot(%s) Port(%d) Tray(%d) CM(%d) Vision(%d)", sLotID, nPortNo, nTrayNo, nCMNo, nVNo);
++		g_objLogFile.Save_HandlerLog(sLog); return;
++	}
+ 	if (pEquipData->bUseNGSize) { if (sJudge == "N" || sJudge == "M" || sJudge == "X" || sJudge == "R") sJudge = "G"; }
+ 	if ((sType == "B1" || sType == "AG") && sNGCode == "MC") sNGCode = "MCBTM";
+ 
+
+--- original/LogFile.cpp
++++ OCAP/LogFile.cpp
+@@ -1732,3 +1732,77 @@
+ 		}
+ 	}
+ }
++
++
++void CLogFile::Save_OCAPDataLog_FAI(int nIdx)
++{
++	if (nIdx < 0 || nIdx >= 50) return;
++	CString strPath = gsCurrentDir + "\\LOG\\OCAPData_FAI";
++	Create_Folder(strPath);
++	SYSTEMTIME time; GetLocalTime(&time);
++	DWORD dwCodeHash = 2166136261UL;
++	CString sTitle = "Time,LotID,Total,Good,ROS_NG,ROS_Repair,BCR,MES,MC,";
++	for (int i=0; i<100; i++) {
++		CString sCode = gCap_FAI.sFAICode_FAI[i] + "|" + gCap_FAI.sFAIName_FAI[i];
++		for (int j=0; j<sCode.GetLength(); j++) dwCodeHash = (dwCodeHash ^ (BYTE)sCode[j]) * 16777619UL;
++		sCode.Replace("\"", "\"\"");
++		CString s; s.Format("\"%03d-%s Count\",\"%03d Rate\",\"%03d ERR Count\",\"%03d ERR Rate\",", i+1, sCode, i+1, i+1, i+1); sTitle += s;
++	}
++	sTitle += "\r\n";
++	CString strFile, strSave, sLot = gCap_FAI.sLotID_FAI[nIdx]; sLot.Replace("\"", "\"\"");
++	strFile.Format("%s\\%04d%02d%02d_OCAPFAI_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
++	strSave.Format("%02d:%02d:%02d,\"%s\",%d,%d,%d,%d,%d,%d,%d,", time.wHour, time.wMinute, time.wSecond, sLot,
++		gCap_FAI.nTotCount_FAI[nIdx], gCap_FAI.nGoodCount_FAI[nIdx], gCap_FAI.nROSNGCount_FAI[nIdx], gCap_FAI.nROSRfCount_FAI[nIdx],
++		gCap_FAI.nBCRCount_FAI[nIdx], gCap_FAI.nMESCount_FAI[nIdx], gCap_FAI.nMCCount_FAI[nIdx]);
++	for (int i=0; i<100; i++) {
++		CString s; double dTotal = gCap_FAI.nTotCount_FAI[nIdx];
++		s.Format("%d,%0.3lf,%d,%0.3lf,", gCap_FAI.nCount_FAI[nIdx][i], dTotal > 0 ? gCap_FAI.nCount_FAI[nIdx][i]*100.0/dTotal : 0.0,
++			gCap_FAI.nFCount_FAI[nIdx][i], dTotal > 0 ? gCap_FAI.nFCount_FAI[nIdx][i]*100.0/dTotal : 0.0); strSave += s;
++	}
++	strSave += "\r\n";
++	CFile file;
++	if (!file.Open(strFile, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite | CFile::shareDenyWrite)) {
++		g_objLogFile.Save_HandlerLog("[OCAP FAI] CSV open failed: " + strFile); return;
++	}
++	try {
++		file.SeekToEnd(); if (file.GetLength() == 0) file.Write(sTitle, sTitle.GetLength());
++		file.Write(strSave, strSave.GetLength()); file.Close();
++	} catch (CFileException *pEx) { pEx->Delete(); file.Abort(); g_objLogFile.Save_HandlerLog("[OCAP FAI] CSV write failed: " + strFile); }
++}
++
++
++void CLogFile::Save_OCAPDataLog_Cosmetic(int nIdx)
++{
++	if (nIdx < 0 || nIdx >= 50) return;
++	CString strPath = gsCurrentDir + "\\LOG\\OCAPData_Cosmetic";
++	Create_Folder(strPath);
++	SYSTEMTIME time; GetLocalTime(&time);
++	DWORD dwCodeHash = 2166136261UL;
++	CString sTitle = "Time,LotID,Total,Good,ROS_NG,ROS_Repair,BCR,MES,MC,";
++	for (int i=0; i<100; i++) {
++		CString sCode = gCap_Cosmetic.sCosmeticCode_Cosmetic[i] + "|" + gCap_Cosmetic.sCosmeticName_Cosmetic[i];
++		for (int j=0; j<sCode.GetLength(); j++) dwCodeHash = (dwCodeHash ^ (BYTE)sCode[j]) * 16777619UL;
++		sCode.Replace("\"", "\"\"");
++		CString s; s.Format("\"%03d-%s Count\",\"%03d Rate\",\"%03d ERR Count\",\"%03d ERR Rate\",", i+1, sCode, i+1, i+1, i+1); sTitle += s;
++	}
++	sTitle += "\r\n";
++	CString strFile, strSave, sLot = gCap_Cosmetic.sLotID_Cosmetic[nIdx]; sLot.Replace("\"", "\"\"");
++	strFile.Format("%s\\%04d%02d%02d_OCAPCosmetic_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
++	strSave.Format("%02d:%02d:%02d,\"%s\",%d,%d,%d,%d,%d,%d,%d,", time.wHour, time.wMinute, time.wSecond, sLot,
++		gCap_Cosmetic.nTotCount_Cosmetic[nIdx], gCap_Cosmetic.nGoodCount_Cosmetic[nIdx], gCap_Cosmetic.nROSNGCount_Cosmetic[nIdx], gCap_Cosmetic.nROSRfCount_Cosmetic[nIdx],
++		gCap_Cosmetic.nBCRCount_Cosmetic[nIdx], gCap_Cosmetic.nMESCount_Cosmetic[nIdx], gCap_Cosmetic.nMCCount_Cosmetic[nIdx]);
++	for (int i=0; i<100; i++) {
++		CString s; double dTotal = gCap_Cosmetic.nTotCount_Cosmetic[nIdx];
++		s.Format("%d,%0.3lf,%d,%0.3lf,", gCap_Cosmetic.nCount_Cosmetic[nIdx][i], dTotal > 0 ? gCap_Cosmetic.nCount_Cosmetic[nIdx][i]*100.0/dTotal : 0.0,
++			gCap_Cosmetic.nFCount_Cosmetic[nIdx][i], dTotal > 0 ? gCap_Cosmetic.nFCount_Cosmetic[nIdx][i]*100.0/dTotal : 0.0); strSave += s;
++	}
++	strSave += "\r\n";
++	CFile file;
++	if (!file.Open(strFile, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite | CFile::shareDenyWrite)) {
++		g_objLogFile.Save_HandlerLog("[OCAP Cosmetic] CSV open failed: " + strFile); return;
++	}
++	try {
++		file.SeekToEnd(); if (file.GetLength() == 0) file.Write(sTitle, sTitle.GetLength());
++		file.Write(strSave, strSave.GetLength()); file.Close();
++	} catch (CFileException *pEx) { pEx->Delete(); file.Abort(); g_objLogFile.Save_HandlerLog("[OCAP Cosmetic] CSV write failed: " + strFile); }
++}
+
+--- original/LogFile.h
++++ OCAP/LogFile.h
+@@ -5,6 +5,8 @@
+ class CLogFile  
+ {
+ public:
++	void Save_OCAPDataLog_Cosmetic(int nIdx);
++	void Save_OCAPDataLog_FAI(int nIdx);
+ 	CLogFile();
+ 	virtual ~CLogFile();
+ 
+
+--- original/SequenceMain.cpp
++++ OCAP/SequenceMain.cpp
+@@ -1,6 +1,7 @@
+ // SequenceMain.cpp : 구현 파일
+ //
+ #include "stdafx.h"
++#include "OCAPManager.h"
+ #include "CMAI2100.h"
+ #include "SequenceMain.h"
+ #include "LogFile.h"
+@@ -441,6 +442,7 @@
+ 		gLot.nErrorCount[i] = gLot.dwErrorTime[i] = gLot.dwStopTime[i] = 0;
+ 		gLot.sLotID[i] = gLot.sLLStartTime[i] = gLot.sLLEndTime[i] = "";
+ 		gLot.bEmptyTray[i] = gLot.bEmptyNGTray[i] = FALSE;
++		gLot.bOcapFinalized[i] = FALSE;
+ 		for (int j = 0; j < 3; j++) gLot.nTrayPutCnt[i][j] = 0;
+ 	}
+ 
+@@ -1541,6 +1543,7 @@
+ 	gLot.nErrorCount[nNo] = gLot.dwErrorTime[nNo] = gLot.dwStopTime[nNo] = gLot.dwLLLotEnd[nNo] = 0;
+ 	gLot.dLLTackTime[nNo] = 0.0;
+ 	gLot.nRunPortNo = nPortNo;
++	gLot.bOcapFinalized[nNo] = FALSE;
+ 
+ 	g_objDispatcher.Set_LotStart(nPortNo);
+ 	gData.sLotID_Start = gLot.sLotID[nNo];
+@@ -1562,6 +1565,10 @@
+ 	if (nPortNo < 1 || nPortNo > 6) return;
+ 
+ 	int nNo = nPortNo - 1;
++	if (sLotID.IsEmpty() || sLotID != gLot.sLotID[nNo] || gLot.nLotStatus[nNo] == 3) return;
++	// UI의 UM_LOT_END_MSG 처리에서 포트 Data가 지워지기 전에 복사한다.
++	OCAP_QueueLot(nPortNo);
++
+ 	gLot.sRstLotID[nNo]     = gLot.sLotID[nNo];
+ 	gLot.nRstCmCount[nNo]   = gLot.nCmCount[nNo];
+ 	gLot.nRstGoodCount[nNo] = gLot.nGoodCount[nNo];
+@@ -1579,7 +1586,7 @@
+ 
+ 	DWORD dwTime = gLot.dwLLLotEnd[nNo] - gLot.dwLLLotStart[nNo];
+ 	DWORD dwTime2 = gLot.dwLLLotEnd[nNo] - gLot.dwLotStart[nNo];
+-	gLot.dLLTackTime[nNo] = dwTime / 1000.0 / gLot.nRstCmCount[nNo];
++	gLot.dLLTackTime[nNo] = gLot.nRstCmCount[nNo] > 0 ? dwTime / 1000.0 / gLot.nRstCmCount[nNo] : 0.0;
+ 	Set_NextLot(gLot.sLotID[nNo], gLot.dwLLLotEnd[nNo]);
+ 
+ 	CString sLog;
+
+--- original/resource.h
++++ OCAP/resource.h
+@@ -2853,3 +2853,20 @@
+ #define _APS_NEXT_SYMED_VALUE           240
+ #endif
+ #endif
++
++#define IDD_OCAP_DLG                        57000
++#define IDD_OCAP_COSMETIC_DLG               57001
++#define IDD_OCAP_SELECT_DLG                 57002
++#define IDC_BTN_MAIN_OCAP                   57003
++#define IDC_BTN_OCAP_FAI                    57004
++#define IDC_BTN_OCAP_COSMETIC               57005
++#define IDC_GRD_OCAP_DATA                   57006
++#define IDC_STC_OCAP_VALUE_0                57007
++#define IDC_STC_OCAP_VALUE_1                57008
++#define IDC_STC_OCAP_VALUE_2                57009
++#define IDC_STC_OCAP_VALUE_3                57010
++#define IDC_STC_OCAP_VALUE_4                57011
++#define IDC_STC_OCAP_VALUE_5                57012
++#define IDC_STC_OCAP_VALUE_6                57013
++#define IDC_STC_OCAP_VALUE_7                57014
++#define IDC_STC_OCAP_VALUE_8                57015
+
+--- original/stdafx.cpp
++++ OCAP/stdafx.cpp
+@@ -11,4 +11,6 @@
+ GLOVAL_LOT			gLot;
+ GLOVAL_ALM			gAlm;
+ GLOVAL_MES			gMes;
+-GLOVAL_DOWN			gDown;+GLOVAL_DOWN			gDown;
++GLOVAL_OCAP_FAI gCap_FAI;
++GLOVAL_OCAP_Cosmetic gCap_Cosmetic;
+
+--- original/stdafx.h
++++ OCAP/stdafx.h
+@@ -319,6 +319,7 @@
+ 	CString	sJobStartTime[10];
+ 	CString	sJobEndTime[10];
+ 	double	dJobTack[10];
++	BOOL bOcapFinalized[6];	// Lot 종료 스냅샷 중복 등록 방지
+ } GLOVAL_LOT;
+ 
+ typedef struct {
+@@ -447,4 +448,73 @@
+ 		Engineer = 5,
+ 		Admini = 6,
+ 	};
+-};+};
++
++typedef struct {
++	int			nLotCycle_FAI;
++	CString		sDate_FAI[50];			//날자(07/31)
++	CString		sTime_FAI[50];			//시간(07:31)
++	CString		sLotID_FAI[50];			//완료 Lot
++	int			nTotCount_FAI[50];		//투입-Module수
++	int			nGoodCount_FAI[50];		//양품수
++	int			nROSNGCount_FAI[50];	//ROS-NG수
++	int			nROSRfCount_FAI[50];	//ROS-Repaier수
++	int			nBCRCount_FAI[50];		//Barcode[NG수
++	int			nMESCount_FAI[50];		//MES[NG수
++	int			nMCCount_FAI[50];		//MC[NG수
++	int			nCount_FAI[50][100];		//Lot,FAI별 발생수
++	int			nFCount_FAI[50][100];	//Lot,FAI별 발생수
++
++	CString		sFAIName_FAI[100];		//FAI이름-Display
++	CString		sFAICode_FAI[100];		//FAI-NG-Code
++	double		dGiDefect_FAI[4];		//불량율%
++	int			nGiLotCnt_FAI[4];		//Lot수량(알람발생MZ대상수)
++	double		dCodeDefect_FAI[100];	//코드별 기준 불량율(-1:공통조건, 0초과~100%)
++	int			nCodeLotCnt_FAI[100];	//코드별 연속 MZ수(-1:공통조건, 0:사용안함, 1~40:개별조건)
++	int			nGiMinCnt_FAI;			//Lot당최소 Module수량(이하면 알람발생 제외처리)
++
++	CString		sAlmLotID_FAI[100];
++	CString		sAlmFAIName_FAI[100];
++	double		dAlmDefect_FAI[100];
++	double		dAlmThreshold_FAI[100];
++	int			nAlmCount_FAI[100];
++	int			nAlmIdx_FAI;
++	int			nPendingAlarm_FAI;
++	CString		sPendingDefect_FAI;
++} GLOVAL_OCAP_FAI;
++
++typedef struct {
++	int			nLotCycle_Cosmetic;
++	CString		sDate_Cosmetic[50];			//날자(07/31)
++	CString		sTime_Cosmetic[50];			//시간(07:31)
++	CString		sLotID_Cosmetic[50];			//완료 Lot
++	int			nTotCount_Cosmetic[50];		//투입-Module수
++	int			nGoodCount_Cosmetic[50];		//양품수
++	int			nROSNGCount_Cosmetic[50];	//ROS-NG수
++	int			nROSRfCount_Cosmetic[50];	//ROS-Repaier수
++	int			nBCRCount_Cosmetic[50];		//Barcode[NG수
++	int			nMESCount_Cosmetic[50];		//MES[NG수
++	int			nMCCount_Cosmetic[50];		//MC[NG수
++	int			nCount_Cosmetic[50][100];		//Lot,Cosmetic별 발생수
++	int			nFCount_Cosmetic[50][100];	//Lot,Cosmetic별 발생수
++
++	CString		sCosmeticName_Cosmetic[100];		//Cosmetic이름-Display
++	CString		sCosmeticCode_Cosmetic[100];		//Cosmetic-NG-Code
++	double		dGiDefect_Cosmetic[4];		//불량율%
++	int			nGiLotCnt_Cosmetic[4];		//Lot수량(알람발생MZ대상수)
++	double		dCodeDefect_Cosmetic[100];	//코드별 기준 불량율(-1:공통조건, 0초과~100%)
++	int			nCodeLotCnt_Cosmetic[100];	//코드별 연속 MZ수(-1:공통조건, 0:사용안함, 1~40:개별조건)
++	int			nGiMinCnt_Cosmetic;			//Lot당최소 Module수량(이하면 알람발생 제외처리)
++
++	CString		sAlmLotID_Cosmetic[100];
++	CString		sAlmCosmeticName_Cosmetic[100];
++	double		dAlmDefect_Cosmetic[100];
++	double		dAlmThreshold_Cosmetic[100];
++	int			nAlmCount_Cosmetic[100];
++	int			nAlmIdx_Cosmetic;
++	int			nPendingAlarm_Cosmetic;
++	CString		sPendingDefect_Cosmetic;
++} GLOVAL_OCAP_Cosmetic;
++
++extern GLOVAL_OCAP_FAI gCap_FAI;
++extern GLOVAL_OCAP_Cosmetic gCap_Cosmetic;
+

@@ -1,6 +1,7 @@
 // SequenceMain.cpp : 구현 파일
 //
 #include "stdafx.h"
+#include "OCAPManager.h"
 #include "CMAI2100.h"
 #include "SequenceMain.h"
 #include "LogFile.h"
@@ -441,6 +442,7 @@ void CSequenceMain::Set_ClearRunData(int nType)
 		gLot.nErrorCount[i] = gLot.dwErrorTime[i] = gLot.dwStopTime[i] = 0;
 		gLot.sLotID[i] = gLot.sLLStartTime[i] = gLot.sLLEndTime[i] = "";
 		gLot.bEmptyTray[i] = gLot.bEmptyNGTray[i] = FALSE;
+		gLot.bOcapFinalized[i] = FALSE;
 		for (int j = 0; j < 3; j++) gLot.nTrayPutCnt[i][j] = 0;
 	}
 
@@ -1541,6 +1543,7 @@ BOOL CSequenceMain::Set_LotStart(CString sLotID, int nPortNo)
 	gLot.nErrorCount[nNo] = gLot.dwErrorTime[nNo] = gLot.dwStopTime[nNo] = gLot.dwLLLotEnd[nNo] = 0;
 	gLot.dLLTackTime[nNo] = 0.0;
 	gLot.nRunPortNo = nPortNo;
+	gLot.bOcapFinalized[nNo] = FALSE;
 
 	g_objDispatcher.Set_LotStart(nPortNo);
 	gData.sLotID_Start = gLot.sLotID[nNo];
@@ -1562,6 +1565,10 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo)
 	if (nPortNo < 1 || nPortNo > 6) return;
 
 	int nNo = nPortNo - 1;
+	if (sLotID.IsEmpty() || sLotID != gLot.sLotID[nNo] || gLot.nLotStatus[nNo] == 3) return;
+	// UI의 UM_LOT_END_MSG 처리에서 포트 Data가 지워지기 전에 복사한다.
+	OCAP_QueueLot(nPortNo);
+
 	gLot.sRstLotID[nNo]     = gLot.sLotID[nNo];
 	gLot.nRstCmCount[nNo]   = gLot.nCmCount[nNo];
 	gLot.nRstGoodCount[nNo] = gLot.nGoodCount[nNo];
@@ -1579,7 +1586,7 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo)
 
 	DWORD dwTime = gLot.dwLLLotEnd[nNo] - gLot.dwLLLotStart[nNo];
 	DWORD dwTime2 = gLot.dwLLLotEnd[nNo] - gLot.dwLotStart[nNo];
-	gLot.dLLTackTime[nNo] = dwTime / 1000.0 / gLot.nRstCmCount[nNo];
+	gLot.dLLTackTime[nNo] = gLot.nRstCmCount[nNo] > 0 ? dwTime / 1000.0 / gLot.nRstCmCount[nNo] : 0.0;
 	Set_NextLot(gLot.sLotID[nNo], gLot.dwLLLotEnd[nNo]);
 
 	CString sLog;
@@ -4342,7 +4349,7 @@ BOOL CSequenceMain::Run_LoadStage1()
 			gData.sReadyRecipe = gLot.sRecipeName[nPortNo1];
 			g_objInspector.Set_LotReadyFalse();
 			g_objInspector.Set_LotStart(INSPECTOR_ALL, gLot.sLotID[nPortNo1], nPortNo1+1, gLot.nTrayCount[nPortNo1]-1, gLot.nCmCount[nPortNo1], gLot.sRecipeName[nPortNo1], m_pEquipData->sPROG_VER, m_pEquipData->sPARA_VER);
-			m_nLoadStage1Case++; m_tLoadStage1Loop.Set_LoopTime(180000);
+			m_nLoadStage1Case++; m_tLoadStage1Loop.Set_LoopTime(30000);
 		} else {
 			m_nLoadStage1Case = 10; m_tLoadStage1Loop.Set_LoopTime(5000);
 		}

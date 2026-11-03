@@ -278,4 +278,19 @@
       <UserProperties RESOURCE_FILE="CMAI2100.rc" />
     </VisualStudio>
   </ProjectExtensions>
+
+  <ItemGroup>
+    <ClCompile Include="OCAPFAI.cpp" />
+    <ClCompile Include="OCAPCosmetic.cpp" />
+    <ClCompile Include="OCAPSelect.cpp" />
+    <ClCompile Include="OCAPManager.cpp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="OCAPFAI.h" />
+    <ClInclude Include="OCAPCosmetic.h" />
+    <ClInclude Include="OCAPSelect.h" />
+    <ClInclude Include="OCAPManager.h" />
+    <ClInclude Include="OCAPRules.h" />
+  </ItemGroup>
 </Project>

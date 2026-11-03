@@ -1,0 +1,84 @@
+#pragma once
+#include "OCAPManager.h"
+
+// OCAPCosmetic 대화 상자입니다.
+
+class OCAPCosmetic : public CDialogEx
+{
+	DECLARE_DYNAMIC(OCAPCosmetic)
+
+public:
+	OCAPCosmetic(CWnd* pParent = NULL);   // 표준 생성자입니다.
+	virtual ~OCAPCosmetic();
+
+// 대화 상자 데이터입니다.
+	enum { IDD = IDD_OCAP_COSMETIC_DLG };
+	CGroupCS		m_Group_Cosmetic[2];
+	CLabelCS		m_Label_Cosmetic[7];
+	CStaticCS		m_stcOption_Cosmetic[9];
+	CGridCS			m_grdData_Cosmetic;
+
+	CButtonCS m_btnSave_Cosmetic;
+	CButtonCS m_btnClose_Cosmetic;
+
+	CLabelCS m_stcCodeTitle_Cosmetic[10];
+	CLabelCS m_stcCodeNo_Cosmetic[20];
+	CEditCS m_edtCode_Cosmetic[20];
+	CEditCS m_edtName_Cosmetic[20];
+	CEditCS m_edtLotCnt_Cosmetic[20];
+	CEditCS m_edtDefect_Cosmetic[20];
+	CButtonCS m_btnCode_Cosmetic[4];
+	CLabelCS m_stcCodeInfo_Cosmetic;
+	CStatic m_stcCodeLine_Cosmetic;
+
+protected:
+	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
+
+	DECLARE_MESSAGE_MAP()
+	virtual BOOL OnInitDialog();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnBnClickedCancel();
+	afx_msg void OnClose();
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnStcOptionClick(UINT nID);
+
+private:
+	
+	BOOL m_bError_Cosmetic;
+	BOOL m_bSetting_Cosmetic;
+	int m_nCodePage_Cosmetic;
+	CString m_sCode_Cosmetic[100];
+	CString m_sName_Cosmetic[100];
+	int m_nLotCnt_Cosmetic[100];
+	double m_dDefect_Cosmetic[100];
+	
+
+	void Initial_CodeControls_Cosmetic();
+	void Display_CodePage_Cosmetic();
+	void Show_CodeControls_Cosmetic();
+	BOOL Read_CodePage_Cosmetic();
+	BOOL Check_CodeData_Cosmetic();
+	void Load_CodeData_Cosmetic();
+	afx_msg void OnCodeButton(UINT nID);
+
+
+	void Initial_NameGrid_Cosmetic(CGridCS *pGrid, int nRows, int nCols);
+	void Initial_DataGrid_Cosmetic(CGridCS *pGrid, int nRows, int nCols);
+
+	void Initial_Controls_Cosmetic();
+	void Display_Option_Cosmetic();
+	void Display_Grid_Cosmetic(int nDp, int nIndex);
+
+public:
+	void Display_Status_Cosmetic();
+	void Set_AddLotData_Cosmetic(const OCAP_LOT_DATA& data);
+	void Set_AddDEFECT_Cosmetic(CString sLotid, CString sCode);
+	void Check_DEFECT_Cosmetic(int nNo);
+	void Check_DEFECTF_Cosmetic(int nNo);
+	void AddTrayToLot_Cosmetic(const OCAP_LOT_DATA& data, int nIndex);
+	void AddLotOut_Cosmetic(CString sLotid, const SYSTEMTIME& time);
+	void DelLotData_Cosmetic(int nLotNo);
+};
+
+extern OCAPCosmetic g_dlgOCAP_Cosmetic;
