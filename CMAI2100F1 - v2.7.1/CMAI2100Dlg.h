@@ -57,6 +57,8 @@ public:
 	CRadioCS	m_rdoMainProhibit;
 	CButtonCS	m_btnMainMonitor;
 	CButtonCS	m_btnMainExit;
+	CButtonCS	m_btnMainOCAP;
+	afx_msg void OnBnClickedBtnMainOCAP();
 	CStaticCS	m_stcDoorLock;
 
 	protected:

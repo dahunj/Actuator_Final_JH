@@ -1,6 +1,7 @@
 // SequenceMain.cpp : 구현 파일
 //
 #include "stdafx.h"
+#include "OCAPManager.h"
 #include "CMAI2100.h"
 #include "SequenceMain.h"
 #include "LogFile.h"
@@ -439,6 +440,7 @@ void CSequenceMain::Set_ClearRunData(int nType)
 		gLot.nErrorCount[i] = gLot.dwErrorTime[i] = gLot.dwStopTime[i] = 0;
 		gLot.sLotID[i] = gLot.sLLStartTime[i] = gLot.sLLEndTime[i] = "";
 		gLot.bEmptyTray[i] = gLot.bEmptyNGTray[i] = FALSE;
+		gLot.bOcapFinalized[i] = FALSE;
 		for (int j = 0; j < 3; j++) gLot.nTrayPutCnt[i][j] = 0;
 	}
 
@@ -1539,6 +1541,7 @@ BOOL CSequenceMain::Set_LotStart(CString sLotID, int nPortNo)
 	gLot.nErrorCount[nNo] = gLot.dwErrorTime[nNo] = gLot.dwStopTime[nNo] = gLot.dwLLLotEnd[nNo] = 0;
 	gLot.dLLTackTime[nNo] = 0.0;
 	gLot.nRunPortNo = nPortNo;
+	gLot.bOcapFinalized[nNo] = FALSE;
 
 	g_objDispatcher.Set_LotStart(nPortNo);
 	gData.sLotID_Start = gLot.sLotID[nNo];
@@ -1553,6 +1556,10 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo)
 	if (nPortNo < 1 || nPortNo > 6) return;
 
 	int nNo = nPortNo - 1;
+	// OCAP 등록 조건만 검사하고 기존 F1 Lot 종료 처리는 그대로 진행한다.
+	if (!sLotID.IsEmpty() && sLotID == gLot.sLotID[nNo] && gLot.nLotStatus[nNo] != 3)
+		OCAP_QueueLot(nPortNo);
+
 	gLot.sRstLotID[nNo]     = gLot.sLotID[nNo];
 	gLot.nRstCmCount[nNo]   = gLot.nCmCount[nNo];
 	gLot.nRstGoodCount[nNo] = gLot.nGoodCount[nNo];

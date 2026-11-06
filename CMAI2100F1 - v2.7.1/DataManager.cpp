@@ -655,3 +655,103 @@ void CDataManager::Save_RosData()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+
+void CDataManager::Reset_OCAPData_FAI()
+{
+	gCap_FAI.nPendingAlarm_FAI = 0;
+	gCap_FAI.sPendingDefect_FAI = "";
+	gCap_FAI.nLotCycle_FAI = 0;
+	for(int i=0; i<50; i++) {
+		gCap_FAI.sDate_FAI[i] = gCap_FAI.sTime_FAI[i] = gCap_FAI.sLotID_FAI[i] = "";
+		gCap_FAI.nTotCount_FAI[i] = gCap_FAI.nGoodCount_FAI[i] = gCap_FAI.nROSNGCount_FAI[i] = gCap_FAI.nROSRfCount_FAI[i] = gCap_FAI.nBCRCount_FAI[i] = gCap_FAI.nMESCount_FAI[i] = gCap_FAI.nMCCount_FAI[i] = 0;
+		for(int j=0; j<100; j ++) {
+			gCap_FAI.nCount_FAI[i][j] = gCap_FAI.nFCount_FAI[i][j] = 0;
+		}
+	}
+	for(int j=0; j<100; j ++) {
+		gCap_FAI.sFAIName_FAI[j] = gCap_FAI.sFAICode_FAI[j] = "";
+		gCap_FAI.nCodeLotCnt_FAI[j] = 0;
+		gCap_FAI.dCodeDefect_FAI[j] = -1.0;
+	}
+}
+
+BOOL CDataManager::Read_OCAPData_FAI()
+{
+	CString strFile = gsCurrentDir + "\\System\\OCAP_Data.ini";
+	::CreateDirectory(gsCurrentDir + "\\System", NULL);
+	CIniFileCS INI(strFile);
+	if (!INI.Check_File()) {
+		if (!::WritePrivateProfileString("OPTION-FAI", "LOT_MIN_COUNT", "1", strFile)) return FALSE;
+	}
+
+	CString strKey;
+	for(int i=0; i<4; i++) {
+		strKey.Format("DEFECTP_%02d", i + 1);
+		gCap_FAI.dGiDefect_FAI[i] = INI.Get_Double("OPTION-FAI", strKey, 1.0);
+		strKey.Format("LOT_COUNT_%02d", i + 1);
+		gCap_FAI.nGiLotCnt_FAI[i]  = INI.Get_Integer("OPTION-FAI", strKey, 0);
+	}
+	gCap_FAI.nGiMinCnt_FAI	= INI.Get_Integer("OPTION-FAI", "LOT_MIN_COUNT", 1);
+
+	for (int i = 0; i < 100; i++) {
+		strKey.Format("%02d", i + 1);
+		gCap_FAI.sFAIName_FAI[i] = INI.Get_String("FAI-NAME", strKey, "");
+		gCap_FAI.sFAICode_FAI[i] = INI.Get_String("FAI-CODE", strKey, "");
+		gCap_FAI.nCodeLotCnt_FAI[i] = INI.Get_Integer("FAI-LOT-COUNT", strKey, -1);
+		gCap_FAI.dCodeDefect_FAI[i] = INI.Get_Double("FAI-DEFECTP", strKey, -1.0);
+		if (gCap_FAI.dCodeDefect_FAI[i] != -1.0 && !(gCap_FAI.dCodeDefect_FAI[i] > 0.0 && gCap_FAI.dCodeDefect_FAI[i] <= 100.0)) gCap_FAI.dCodeDefect_FAI[i] = -1.0;
+		if (gCap_FAI.nCodeLotCnt_FAI[i] < -1 || gCap_FAI.nCodeLotCnt_FAI[i] > 40) gCap_FAI.nCodeLotCnt_FAI[i] = 0;
+	}
+	return TRUE;
+}
+
+
+void CDataManager::Reset_OCAPData_Cosmetic()
+{
+	gCap_Cosmetic.nPendingAlarm_Cosmetic = 0;
+	gCap_Cosmetic.sPendingDefect_Cosmetic = "";
+	gCap_Cosmetic.nLotCycle_Cosmetic = 0;
+	for(int i=0; i<50; i++) {
+		gCap_Cosmetic.sDate_Cosmetic[i] = gCap_Cosmetic.sTime_Cosmetic[i] = gCap_Cosmetic.sLotID_Cosmetic[i] = "";
+		gCap_Cosmetic.nTotCount_Cosmetic[i] = gCap_Cosmetic.nGoodCount_Cosmetic[i] = gCap_Cosmetic.nROSNGCount_Cosmetic[i] = gCap_Cosmetic.nROSRfCount_Cosmetic[i] = gCap_Cosmetic.nBCRCount_Cosmetic[i] = gCap_Cosmetic.nMESCount_Cosmetic[i] = gCap_Cosmetic.nMCCount_Cosmetic[i] = 0;
+		for(int j=0; j<100; j ++) {
+			gCap_Cosmetic.nCount_Cosmetic[i][j] = gCap_Cosmetic.nFCount_Cosmetic[i][j] = 0;
+		}
+	}
+	for(int j=0; j<100; j ++) {
+		gCap_Cosmetic.sCosmeticName_Cosmetic[j] = gCap_Cosmetic.sCosmeticCode_Cosmetic[j] = "";
+		gCap_Cosmetic.nCodeLotCnt_Cosmetic[j] = 0;
+		gCap_Cosmetic.dCodeDefect_Cosmetic[j] = -1.0;
+	}
+}
+
+BOOL CDataManager::Read_OCAPData_Cosmetic()
+{
+	CString strFile = gsCurrentDir + "\\System\\OCAP_Data.ini";
+	::CreateDirectory(gsCurrentDir + "\\System", NULL);
+	CIniFileCS INI(strFile);
+	if (!INI.Check_File()) {
+		if (!::WritePrivateProfileString("OPTION-COSMETIC", "LOT_MIN_COUNT", "1", strFile)) return FALSE;
+	}
+
+	CString strKey;
+	for(int i=0; i<4; i++) {
+		strKey.Format("DEFECTP_%02d", i + 1);
+		gCap_Cosmetic.dGiDefect_Cosmetic[i] = INI.Get_Double("OPTION-COSMETIC", strKey, 1.0);
+		strKey.Format("LOT_COUNT_%02d", i + 1);
+		gCap_Cosmetic.nGiLotCnt_Cosmetic[i]  = INI.Get_Integer("OPTION-COSMETIC", strKey, 0);
+	}
+	gCap_Cosmetic.nGiMinCnt_Cosmetic	= INI.Get_Integer("OPTION-COSMETIC", "LOT_MIN_COUNT", 1);
+
+	for (int i = 0; i < 100; i++) {
+		strKey.Format("%02d", i + 1);
+		gCap_Cosmetic.sCosmeticName_Cosmetic[i] = INI.Get_String("COSMETIC-NAME", strKey, "");
+		gCap_Cosmetic.sCosmeticCode_Cosmetic[i] = INI.Get_String("COSMETIC-CODE", strKey, "");
+		gCap_Cosmetic.nCodeLotCnt_Cosmetic[i] = INI.Get_Integer("COSMETIC-LOT-COUNT", strKey, -1);
+		gCap_Cosmetic.dCodeDefect_Cosmetic[i] = INI.Get_Double("COSMETIC-DEFECTP", strKey, -1.0);
+		if (gCap_Cosmetic.dCodeDefect_Cosmetic[i] != -1.0 && !(gCap_Cosmetic.dCodeDefect_Cosmetic[i] > 0.0 && gCap_Cosmetic.dCodeDefect_Cosmetic[i] <= 100.0)) gCap_Cosmetic.dCodeDefect_Cosmetic[i] = -1.0;
+		if (gCap_Cosmetic.nCodeLotCnt_Cosmetic[i] < -1 || gCap_Cosmetic.nCodeLotCnt_Cosmetic[i] > 40) gCap_Cosmetic.nCodeLotCnt_Cosmetic[i] = 0;
+	}
+	return TRUE;
+}

@@ -1013,3 +1013,77 @@ void CLogFile::Save_NGLotLog(CString sLog)
 		}
 	}
 }
+
+
+void CLogFile::Save_OCAPDataLog_FAI(int nIdx)
+{
+	if (nIdx < 0 || nIdx >= 50) return;
+	CString strPath = gsCurrentDir + "\\LOG\\OCAPData_FAI";
+	Create_Folder(strPath);
+	SYSTEMTIME time; GetLocalTime(&time);
+	DWORD dwCodeHash = 2166136261UL;
+	CString sTitle = "Time,LotID,Total,Good,ROS_NG,ROS_Repair,BCR,MES,MC,";
+	for (int i=0; i<100; i++) {
+		CString sCode = gCap_FAI.sFAICode_FAI[i] + "|" + gCap_FAI.sFAIName_FAI[i];
+		for (int j=0; j<sCode.GetLength(); j++) dwCodeHash = (dwCodeHash ^ (BYTE)sCode[j]) * 16777619UL;
+		sCode.Replace("\"", "\"\"");
+		CString s; s.Format("\"%03d-%s Count\",\"%03d Rate\",\"%03d ERR Count\",\"%03d ERR Rate\",", i+1, sCode, i+1, i+1, i+1); sTitle += s;
+	}
+	sTitle += "\r\n";
+	CString strFile, strSave, sLot = gCap_FAI.sLotID_FAI[nIdx]; sLot.Replace("\"", "\"\"");
+	strFile.Format("%s\\%04d%02d%02d_OCAPFAI_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
+	strSave.Format("%02d:%02d:%02d,\"%s\",%d,%d,%d,%d,%d,%d,%d,", time.wHour, time.wMinute, time.wSecond, sLot,
+		gCap_FAI.nTotCount_FAI[nIdx], gCap_FAI.nGoodCount_FAI[nIdx], gCap_FAI.nROSNGCount_FAI[nIdx], gCap_FAI.nROSRfCount_FAI[nIdx],
+		gCap_FAI.nBCRCount_FAI[nIdx], gCap_FAI.nMESCount_FAI[nIdx], gCap_FAI.nMCCount_FAI[nIdx]);
+	for (int i=0; i<100; i++) {
+		CString s; double dTotal = gCap_FAI.nTotCount_FAI[nIdx];
+		s.Format("%d,%0.3lf,%d,%0.3lf,", gCap_FAI.nCount_FAI[nIdx][i], dTotal > 0 ? gCap_FAI.nCount_FAI[nIdx][i]*100.0/dTotal : 0.0,
+			gCap_FAI.nFCount_FAI[nIdx][i], dTotal > 0 ? gCap_FAI.nFCount_FAI[nIdx][i]*100.0/dTotal : 0.0); strSave += s;
+	}
+	strSave += "\r\n";
+	CFile file;
+	if (!file.Open(strFile, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite | CFile::shareDenyWrite)) {
+		g_objLogFile.Save_HandlerLog("[OCAP FAI] CSV open failed: " + strFile); return;
+	}
+	try {
+		file.SeekToEnd(); if (file.GetLength() == 0) file.Write(sTitle, sTitle.GetLength());
+		file.Write(strSave, strSave.GetLength()); file.Close();
+	} catch (CFileException *pEx) { pEx->Delete(); file.Abort(); g_objLogFile.Save_HandlerLog("[OCAP FAI] CSV write failed: " + strFile); }
+}
+
+
+void CLogFile::Save_OCAPDataLog_Cosmetic(int nIdx)
+{
+	if (nIdx < 0 || nIdx >= 50) return;
+	CString strPath = gsCurrentDir + "\\LOG\\OCAPData_Cosmetic";
+	Create_Folder(strPath);
+	SYSTEMTIME time; GetLocalTime(&time);
+	DWORD dwCodeHash = 2166136261UL;
+	CString sTitle = "Time,LotID,Total,Good,ROS_NG,ROS_Repair,BCR,MES,MC,";
+	for (int i=0; i<100; i++) {
+		CString sCode = gCap_Cosmetic.sCosmeticCode_Cosmetic[i] + "|" + gCap_Cosmetic.sCosmeticName_Cosmetic[i];
+		for (int j=0; j<sCode.GetLength(); j++) dwCodeHash = (dwCodeHash ^ (BYTE)sCode[j]) * 16777619UL;
+		sCode.Replace("\"", "\"\"");
+		CString s; s.Format("\"%03d-%s Count\",\"%03d Rate\",\"%03d ERR Count\",\"%03d ERR Rate\",", i+1, sCode, i+1, i+1, i+1); sTitle += s;
+	}
+	sTitle += "\r\n";
+	CString strFile, strSave, sLot = gCap_Cosmetic.sLotID_Cosmetic[nIdx]; sLot.Replace("\"", "\"\"");
+	strFile.Format("%s\\%04d%02d%02d_OCAPCosmetic_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
+	strSave.Format("%02d:%02d:%02d,\"%s\",%d,%d,%d,%d,%d,%d,%d,", time.wHour, time.wMinute, time.wSecond, sLot,
+		gCap_Cosmetic.nTotCount_Cosmetic[nIdx], gCap_Cosmetic.nGoodCount_Cosmetic[nIdx], gCap_Cosmetic.nROSNGCount_Cosmetic[nIdx], gCap_Cosmetic.nROSRfCount_Cosmetic[nIdx],
+		gCap_Cosmetic.nBCRCount_Cosmetic[nIdx], gCap_Cosmetic.nMESCount_Cosmetic[nIdx], gCap_Cosmetic.nMCCount_Cosmetic[nIdx]);
+	for (int i=0; i<100; i++) {
+		CString s; double dTotal = gCap_Cosmetic.nTotCount_Cosmetic[nIdx];
+		s.Format("%d,%0.3lf,%d,%0.3lf,", gCap_Cosmetic.nCount_Cosmetic[nIdx][i], dTotal > 0 ? gCap_Cosmetic.nCount_Cosmetic[nIdx][i]*100.0/dTotal : 0.0,
+			gCap_Cosmetic.nFCount_Cosmetic[nIdx][i], dTotal > 0 ? gCap_Cosmetic.nFCount_Cosmetic[nIdx][i]*100.0/dTotal : 0.0); strSave += s;
+	}
+	strSave += "\r\n";
+	CFile file;
+	if (!file.Open(strFile, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite | CFile::shareDenyWrite)) {
+		g_objLogFile.Save_HandlerLog("[OCAP Cosmetic] CSV open failed: " + strFile); return;
+	}
+	try {
+		file.SeekToEnd(); if (file.GetLength() == 0) file.Write(sTitle, sTitle.GetLength());
+		file.Write(strSave, strSave.GetLength()); file.Close();
+	} catch (CFileException *pEx) { pEx->Delete(); file.Abort(); g_objLogFile.Save_HandlerLog("[OCAP Cosmetic] CSV write failed: " + strFile); }
+}

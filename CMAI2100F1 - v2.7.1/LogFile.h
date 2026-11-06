@@ -5,6 +5,8 @@
 class CLogFile  
 {
 public:
+	void Save_OCAPDataLog_Cosmetic(int nIdx);
+	void Save_OCAPDataLog_FAI(int nIdx);
 	CLogFile();
 	virtual ~CLogFile();
 

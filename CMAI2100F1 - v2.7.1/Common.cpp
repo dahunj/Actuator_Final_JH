@@ -1107,6 +1107,7 @@ void CCommon::Set_LotDataClear(int nPortNo)	//nPortNo:0~5;
 	gLot.nErrorCount[nNo] = gLot.dwErrorTime[nNo] = gLot.dwStopTime[nNo] = gMes.nLotStatus[nNo] = 0;
 	gLot.sLotID[nNo] = gLot.sLLStartTime[nNo] = gLot.sLLEndTime[nNo] = "";
 	gLot.bEmptyTray[nNo] = gLot.bEmptyNGTray[nNo] = FALSE;
+	gLot.bOcapFinalized[nNo] = FALSE;
 
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 40; j++) {

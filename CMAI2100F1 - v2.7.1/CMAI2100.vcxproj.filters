@@ -492,4 +492,20 @@
       <Filter>리소스 파일</Filter>
     </ResourceCompile>
   </ItemGroup>
+
+  <ItemGroup>
+    <ClCompile Include="OCAPFAI.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="OCAPCosmetic.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="OCAPSelect.cpp"><Filter>소스 파일</Filter></ClCompile>
+    <ClCompile Include="OCAPManager.cpp"><Filter>소스 파일</Filter></ClCompile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="OCAPFAI.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="OCAPHistory.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="OCAPCosmetic.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="OCAPSelect.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="OCAPManager.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="OCAPRules.h"><Filter>헤더 파일</Filter></ClInclude>
+  </ItemGroup>
 </Project>

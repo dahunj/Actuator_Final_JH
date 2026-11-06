@@ -1,0 +1,31 @@
+﻿CMAI2100F1 OCAP UI / 이력 조회 적용
+
+FAI / Cosmetic 공통:
+1. 안내문: 읽기 전용 멀티라인 컨트롤로 표시.
+2. 이력 보기: 재실행 후 기존 CSV를 불러오고 최신순 표시.
+3. 최근 3개월만 표시. 달력 기준 시작일 포함, 월말 보정.
+4. CSV/로그 원본 삭제 없음.
+5. 숨긴 이력 표가 SetRedraw(TRUE)로 다시 표시되는 겹침 방지.
+6. 불량률 기준에 따른 적색/청색/녹색 표시. 수량/불량률 두 칸 함께 적용.
+   현재 설정 기준으로 계산하며, 과거 실제 알람 발생 플래그는 CSV에 없음.
+7. 최소 모듈 수량 미달, 불량 수량 0, 개별 불량률 0은 흰색.
+
+F2와 동일한 OCAPHistory.h 조회/색상/숨김 코드 사용.
+F1의 기존 Lot 기반 CSV가 F2와 같은 형식이므로 동일한 매핑 사용.
+LOG\OCAPData_FAI / LOG\OCAPData_Cosmetic 폴더를 유지해야 과거 조회 가능.
+CSV에서 제거된 코드도 기록된 합계에는 포함. 상세 열은 현재 코드로 연결.
+
+변경 파일:
+OCAPFAI.cpp / OCAPFAI.h
+OCAPCosmetic.cpp / OCAPCosmetic.h
+OCAPHistory.h (신규)
+CMAI2100.vcxproj / CMAI2100.vcxproj.filters
+
+원본 비교: 각 다이얼로그의 Initial_CodeControls / Display_Status 함수만 수정.
+검사/집계/알람 판정 함수, OCAPManager, OCAPRules, Sequence,
+DataManager, LogFile 및 INI/리소스 원본은 변경하지 않았음.
+
+검증: 실제 공유 헤더에 MFC 대체 입출력을 연결한 독립 C++ 검증 통과.
+CSV 쉼표/따옴표, Lot ID, 코드 재배치, 합계, 50건 초과,
+3개월 날짜 경계, 색상, 숨김/표시, 만료 행 초기화, 원본 파일 유지 확인.
+VS2010/MFC 환경이 없어 Windows 빌드 및 실제 화면 확인은 미실시.

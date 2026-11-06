@@ -384,7 +384,7 @@ void CUdpManager::Set_InspectComplete(int nInspector, CString sGbn, CString sLot
 	{		
 		m_sCodeV[nPortNo - 1][nTNo - 1][nCNo - 1] = "FS-S-DRIVERICDA";
 	}	
-	strSendCmd.Format("INSPECT,COMPLETE,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", sGbn, sLotID, sPortNo, sTNo, sCNo, m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1], m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1],"", "", "", m_sCodeV[nPortNo - 1][nTNo - 1][nCNo - 1], "");
+	strSendCmd.Format("INSPECT,COMPLETE,%s,%s,%s,%s,%s,%s,%s,%s", sGbn, sLotID, sPortNo, sTNo, sCNo, m_sJudge[nPortNo - 1][nTNo - 1][nCNo - 1], m_sCode[nPortNo - 1][nTNo - 1][nCNo - 1],"");
 	Send_Command(nInspector, strSendCmd);
 }
 

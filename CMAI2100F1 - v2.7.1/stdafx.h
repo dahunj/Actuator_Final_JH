@@ -314,6 +314,7 @@ typedef struct {
 	CString	sJobStartTime[10];
 	CString	sJobEndTime[10];
 	double	dJobTack[10];
+	BOOL bOcapFinalized[6];	// Lot 종료 스냅샷 중복 등록 방지
 } GLOVAL_LOT;
 
 typedef struct {
@@ -443,3 +444,72 @@ struct eAccessMode
 		Admini = 6,
 	};
 };
+
+typedef struct {
+	int			nLotCycle_FAI;
+	CString		sDate_FAI[50];			//날자(07/31)
+	CString		sTime_FAI[50];			//시간(07:31)
+	CString		sLotID_FAI[50];			//완료 Lot
+	int			nTotCount_FAI[50];		//투입-Module수
+	int			nGoodCount_FAI[50];		//양품수
+	int			nROSNGCount_FAI[50];	//ROS-NG수
+	int			nROSRfCount_FAI[50];	//ROS-Repaier수
+	int			nBCRCount_FAI[50];		//Barcode[NG수
+	int			nMESCount_FAI[50];		//MES[NG수
+	int			nMCCount_FAI[50];		//MC[NG수
+	int			nCount_FAI[50][100];		//Lot,FAI별 발생수
+	int			nFCount_FAI[50][100];	//Lot,FAI별 발생수
+
+	CString		sFAIName_FAI[100];		//FAI이름-Display
+	CString		sFAICode_FAI[100];		//FAI-NG-Code
+	double		dGiDefect_FAI[4];		//불량율%
+	int			nGiLotCnt_FAI[4];		//Lot수량(알람발생MZ대상수)
+	double		dCodeDefect_FAI[100];	//코드별 기준 불량율(-1:공통조건, 0초과~100%)
+	int			nCodeLotCnt_FAI[100];	//코드별 연속 MZ수(-1:공통조건, 0:사용안함, 1~40:개별조건)
+	int			nGiMinCnt_FAI;			//Lot당최소 Module수량(이하면 알람발생 제외처리)
+
+	CString		sAlmLotID_FAI[100];
+	CString		sAlmFAIName_FAI[100];
+	double		dAlmDefect_FAI[100];
+	double		dAlmThreshold_FAI[100];
+	int			nAlmCount_FAI[100];
+	int			nAlmIdx_FAI;
+	int			nPendingAlarm_FAI;
+	CString		sPendingDefect_FAI;
+} GLOVAL_OCAP_FAI;
+
+typedef struct {
+	int			nLotCycle_Cosmetic;
+	CString		sDate_Cosmetic[50];			//날자(07/31)
+	CString		sTime_Cosmetic[50];			//시간(07:31)
+	CString		sLotID_Cosmetic[50];			//완료 Lot
+	int			nTotCount_Cosmetic[50];		//투입-Module수
+	int			nGoodCount_Cosmetic[50];		//양품수
+	int			nROSNGCount_Cosmetic[50];	//ROS-NG수
+	int			nROSRfCount_Cosmetic[50];	//ROS-Repaier수
+	int			nBCRCount_Cosmetic[50];		//Barcode[NG수
+	int			nMESCount_Cosmetic[50];		//MES[NG수
+	int			nMCCount_Cosmetic[50];		//MC[NG수
+	int			nCount_Cosmetic[50][100];		//Lot,Cosmetic별 발생수
+	int			nFCount_Cosmetic[50][100];	//Lot,Cosmetic별 발생수
+
+	CString		sCosmeticName_Cosmetic[100];		//Cosmetic이름-Display
+	CString		sCosmeticCode_Cosmetic[100];		//Cosmetic-NG-Code
+	double		dGiDefect_Cosmetic[4];		//불량율%
+	int			nGiLotCnt_Cosmetic[4];		//Lot수량(알람발생MZ대상수)
+	double		dCodeDefect_Cosmetic[100];	//코드별 기준 불량율(-1:공통조건, 0초과~100%)
+	int			nCodeLotCnt_Cosmetic[100];	//코드별 연속 MZ수(-1:공통조건, 0:사용안함, 1~40:개별조건)
+	int			nGiMinCnt_Cosmetic;			//Lot당최소 Module수량(이하면 알람발생 제외처리)
+
+	CString		sAlmLotID_Cosmetic[100];
+	CString		sAlmCosmeticName_Cosmetic[100];
+	double		dAlmDefect_Cosmetic[100];
+	double		dAlmThreshold_Cosmetic[100];
+	int			nAlmCount_Cosmetic[100];
+	int			nAlmIdx_Cosmetic;
+	int			nPendingAlarm_Cosmetic;
+	CString		sPendingDefect_Cosmetic;
+} GLOVAL_OCAP_Cosmetic;
+
+extern GLOVAL_OCAP_FAI gCap_FAI;
+extern GLOVAL_OCAP_Cosmetic gCap_Cosmetic;

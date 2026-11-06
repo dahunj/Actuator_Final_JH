@@ -12,3 +12,5 @@ GLOVAL_LOT			gLot;
 GLOVAL_ALM			gAlm;
 GLOVAL_MES			gMes;
 GLOVAL_DOWN			gDown;
+GLOVAL_OCAP_FAI gCap_FAI;
+GLOVAL_OCAP_Cosmetic gCap_Cosmetic;
