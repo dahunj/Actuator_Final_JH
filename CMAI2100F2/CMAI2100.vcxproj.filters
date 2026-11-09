@@ -505,6 +505,7 @@
 
   <ItemGroup>
     <ClInclude Include="OCAPFAI.h"><Filter>헤더 파일</Filter></ClInclude>
+    <ClInclude Include="OCAPHistory.h"><Filter>헤더 파일</Filter></ClInclude>
     <ClInclude Include="OCAPCosmetic.h"><Filter>헤더 파일</Filter></ClInclude>
     <ClInclude Include="OCAPSelect.h"><Filter>헤더 파일</Filter></ClInclude>
     <ClInclude Include="OCAPManager.h"><Filter>헤더 파일</Filter></ClInclude>

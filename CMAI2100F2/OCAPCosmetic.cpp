@@ -6,6 +6,7 @@
 #include "OCAPCosmetic.h"
 #include "Common.h"
 #include "LogFile.h"
+#include "OCAPHistory.h"
 #include "DataManager.h"
 #include "afxdialogex.h"
 #include <math.h>
@@ -348,13 +349,9 @@ void OCAPCosmetic::Initial_DataGrid_Cosmetic(CGridCS *pGrid, int nRows, int nCol
 
 void OCAPCosmetic::Display_Status_Cosmetic()
 {
-	if (gCap_Cosmetic.nLotCycle_Cosmetic < 0 || gCap_Cosmetic.nLotCycle_Cosmetic > 49) return;
-	int nIx = (gCap_Cosmetic.nLotCycle_Cosmetic + 49) % 50;
-	for (int i=0; i<50; i++) {
-		if (gCap_Cosmetic.sDate_Cosmetic[nIx].GetLength() < 1) break;
-		Display_Grid_Cosmetic(i + 1, nIx);
-		nIx = (nIx + 49) % 50;
-	}
+	if (m_bSetting_Cosmetic) return;
+	OCAPHistory_Display(&m_grdData_Cosmetic, gsCurrentDir + "\\LOG\\OCAPData_Cosmetic",
+		gCap_Cosmetic.sCosmeticCode_Cosmetic, "Cosmetic", gCap_Cosmetic.dCodeDefect_Cosmetic, gCap_Cosmetic.dGiDefect_Cosmetic, gCap_Cosmetic.nGiMinCnt_Cosmetic);
 }
 
 void OCAPCosmetic::Display_Grid_Cosmetic(int nDp, int nIx)
@@ -531,9 +528,9 @@ void OCAPCosmetic::AddLotOut_Cosmetic(CString sLotid, const SYSTEMTIME& time)
 
 	if (gCap_Cosmetic.nPendingAlarm_Cosmetic != 0) return;
 	m_bError_Cosmetic = FALSE;
-	Check_DEFECT_Cosmetic(3); if (m_bError_Cosmetic) return;
-	Check_DEFECT_Cosmetic(2); if (m_bError_Cosmetic) return;
 	Check_DEFECT_Cosmetic(1); if (m_bError_Cosmetic) return;
+	Check_DEFECT_Cosmetic(2); if (m_bError_Cosmetic) return;
+	Check_DEFECT_Cosmetic(3); if (m_bError_Cosmetic) return;
 	Check_DEFECTF_Cosmetic(4);
 }
 
@@ -701,7 +698,7 @@ void OCAPCosmetic::Initial_CodeControls_Cosmetic()
 		m_edtLotCnt_Cosmetic[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 128), RGB(255, 255, 224)); m_edtLotCnt_Cosmetic[i].LimitText(3);
 		m_edtDefect_Cosmetic[i].Init_Ctrl("바탕", 11, TRUE, RGB(0, 0, 128), RGB(255, 255, 224)); m_edtDefect_Cosmetic[i].LimitText(7);
 	}
-	m_stcCodeInfo_Cosmetic.Create("", WS_CHILD, OCAP_CodeRect(this, 25, 400, 1040, 46), this);
+	m_stcCodeInfo_Cosmetic.Create(WS_CHILD | ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL, OCAP_CodeRect(this, 25, 400, 1040, 46), this, 61200);
 	m_stcCodeInfo_Cosmetic.Init_Ctrl("바탕", 10, FALSE, RGB(0, 0, 0), COLOR_DEFAULT);
 	CString sButton[4] = { "이전 20개", "다음 20개", "이력 보기", "빈 코드로 이동" };
 	int nBtnX[4] = { 25, 135, 930, 700 };

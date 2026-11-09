@@ -28,7 +28,7 @@ public:
 	CEditCS m_edtLotCnt_FAI[20];
 	CEditCS m_edtDefect_FAI[20];
 	CButtonCS m_btnCode_FAI[4];
-	CLabelCS m_stcCodeInfo_FAI;
+	CEditCS m_stcCodeInfo_FAI;
 	CStatic m_stcCodeLine_FAI;
 
 protected:
