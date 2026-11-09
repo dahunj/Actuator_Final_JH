@@ -39,6 +39,7 @@ public:
 	CCheckCS	m_chkUseCMCheck;
 	CCheckCS	m_chkUseNGSort;
 	CCheckCS	m_chkUseNGSize;
+	CCheckCS    m_chkUseNtoNG;
 	CCheckCS	m_chkUseGoodSort;
 	CCheckCS	m_chkUseEleAlign;
 	CCheckCS	m_chkUseAirBlow;

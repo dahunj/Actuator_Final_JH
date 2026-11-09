@@ -32,6 +32,7 @@ typedef struct tag_EQUIP_DATA {
 	BOOL	bUseCMCheck;	// CM Check가 안되는 샘플이 있어 추가.
 	BOOL	bUseNGSort;
 	BOOL	bUseNGSize;
+	BOOL	bUseNtoNG;
 	BOOL	bUseGoodSort;
 	BOOL	bElevatorAlign;
 	BOOL	bUseInspectBlow;

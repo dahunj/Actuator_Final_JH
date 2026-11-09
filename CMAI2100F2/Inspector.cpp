@@ -322,6 +322,8 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (pEquipData->bUsePassGood) return;
 
+	CString sLog;
+
 	int	nPortNo = atoi(sPortNo);
 	int	nTrayNo = atoi(sTrayNo);
 	int	nCMNo   = atoi(sCMNo);
@@ -336,10 +338,40 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	if (sLotID != gLot.sLotID[nPortNo-1] || gLot.bOcapFinalized[nPortNo-1] ||
 		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] > 1 ||
 		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] > 1) {
-		CString sLog; sLog.Format("[OCAP] Ignore stale/duplicate COMPLETE Lot(%s) Port(%d) Tray(%d) CM(%d) Vision(%d)", sLotID, nPortNo, nTrayNo, nCMNo, nVNo);
+		 sLog.Format("[OCAP] Ignore stale/duplicate COMPLETE Lot(%s) Port(%d) Tray(%d) CM(%d) Vision(%d)", sLotID, nPortNo, nTrayNo, nCMNo, nVNo);
 		g_objLogFile.Save_HandlerLog(sLog); return;
 	}
-	if (pEquipData->bUseNGSize) { if (sJudge == "N" || sJudge == "M" || sJudge == "X" || sJudge == "R") sJudge = "G"; }
+
+	if (pEquipData->bUseNGSize && pEquipData->bUseNtoNG) 
+	{		
+		if (sJudge == "M" || sJudge == "X" || sJudge == "R") 
+		{	
+			sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
+			//StartLoggingThread(m_sLog);
+			sJudge = "G";
+		}
+	}
+	else if(pEquipData->bUseNtoNG && !pEquipData->bUseNGSize)
+	{
+
+		if ( sJudge == "M" || sJudge == "X" || sJudge == "R"
+			|| sJudge == "S" || sJudge == "T" || sJudge == "W") 
+		{
+			sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
+			//StartLoggingThread(m_sLog);
+			sJudge = "G"; 		
+		}			
+	}
+	else if(!pEquipData->bUseNtoNG && pEquipData->bUseNGSize)
+	{
+
+		if ( sJudge == "M" || sJudge == "X" || sJudge == "R" || sJudge == "N") 
+		{
+			sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
+			//StartLoggingThread(m_sLog);
+			sJudge = "G"; 		
+		}			
+	}
 	if ((sType == "B1" || sType == "AG") && sNGCode == "MC") sNGCode = "MCBTM";
 
 	if		(sJudge == "G") gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 2;	//Good
