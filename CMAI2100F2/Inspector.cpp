@@ -372,6 +372,10 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 			sJudge = "G"; 		
 		}			
 	}
+	else if(!pEquipData->bUseNtoNG && !pEquipData->bUseNGSize)
+	{
+		//PASS				
+	}
 	if ((sType == "B1" || sType == "AG") && sNGCode == "MC") sNGCode = "MCBTM";
 
 	if		(sJudge == "G") gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 2;	//Good
@@ -427,7 +431,7 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 #endif
 
 	//ROS Skip Check
-	if (!pEquipData->bUseNGSize) {
+	if (pEquipData->bUseNtoNG || (!pEquipData->bUseNtoNG && !pEquipData->bUseNGSize)) {
 		gAlm.sAlmLotID[0] = sLotID; gAlm.sAlmLotID[1] = sType;
 		//Barcdoe read fail(5) - ROS Skip
 		if (gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1] == "NOREAD" || gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1].GetLength() < 7) {
