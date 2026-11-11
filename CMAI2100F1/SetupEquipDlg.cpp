@@ -58,6 +58,7 @@ void CSetupEquipDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHK_USE_CM_CHECK, m_chkUseCMCheck);
 	DDX_Control(pDX, IDC_CHK_USE_TRAY_SORT, m_chkUseNGSort);
 	DDX_Control(pDX, IDC_CHK_USE_NG_SIZE,   m_chkUseNGSize);
+	DDX_Control(pDX, IDC_CHK_USE_N_TO_NG,   m_chkUseNtoNG);
 	DDX_Control(pDX, IDC_CHK_USE_GOOD_SORT, m_chkUseGoodSort);
 	DDX_Control(pDX, IDC_CHK_USE_INSPECT_ALARM,		m_chkUseAuotSkip);
 	DDX_Control(pDX, IDC_CHK_USE_PASS_GOOD,			m_chkUsePassGood);
@@ -383,6 +384,7 @@ void CSetupEquipDlg::Initial_Controls()
 	m_chkUseCMCheck.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
 	m_chkUseNGSort.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
 	m_chkUseNGSize.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
+	m_chkUseNtoNG.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
 	m_chkUseGoodSort.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
 	m_chkUseAuotSkip.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x90, 0x90, 0xF0), CCheckCS::emRed, 0);
 	m_chkUsePassGood.Init_Ctrl("¹ÙÅÁ", 11, TRUE, RGB(0x00, 0x00, 0x00), RGB(0x60, 0xF0, 0x80), CCheckCS::emRed, 0);
@@ -456,6 +458,7 @@ void CSetupEquipDlg::Display_EquipData()
 	m_chkUseCMCheck.SetCheck(pEquipData->bUseCMCheck);
 	m_chkUseNGSort.SetCheck(pEquipData->bUseNGSort);
 	m_chkUseNGSize.SetCheck(pEquipData->bUseNGSize);
+	m_chkUseNtoNG.SetCheck(pEquipData->bUseNtoNG);
 	m_chkUseGoodSort.SetCheck(pEquipData->bUseGoodSort);
 	m_chkUsePassGood.SetCheck(pEquipData->bUsePassGood);
 
@@ -568,6 +571,7 @@ void CSetupEquipDlg::Save_EquipData()
 	INI.Set_Bool("OPTION", "INSPECT_TAG", m_chkUseInspectTop1Angle.GetCheck());
 	INI.Set_Bool("OPTION", "CM_CHECK", m_chkUseCMCheck.GetCheck());
 	INI.Set_Bool("OPTION", "NG_SORT",  m_chkUseNGSort.GetCheck());
+	INI.Set_Bool("OPTION", "ONLY_N_TO_NG",  m_chkUseNtoNG.GetCheck());
 	INI.Set_Bool("OPTION", "NG_SIZE",  m_chkUseNGSize.GetCheck());
 	INI.Set_Bool("OPTION", "GOOD_SORT",m_chkUseGoodSort.GetCheck());
 	INI.Set_Bool("OPTION", "PASS_GOOD",  m_chkUsePassGood.GetCheck());
@@ -671,6 +675,7 @@ void CSetupEquipDlg::Save_ModelEquipData(CString sPath)
 	INI.Set_Bool("OPTION", "CM_CHECK", m_chkUseCMCheck.GetCheck());
 	INI.Set_Bool("OPTION", "NG_SORT",  m_chkUseNGSort.GetCheck());
 	INI.Set_Bool("OPTION", "NG_SIZE",  m_chkUseNGSize.GetCheck());
+	INI.Set_Bool("OPTION", "ONLY_N_TO_NG",  m_chkUseNtoNG.GetCheck());
 	INI.Set_Bool("OPTION", "GOOD_SORT",m_chkUseGoodSort.GetCheck());
 	INI.Set_Bool("OPTION", "PASS_GOOD",  m_chkUsePassGood.GetCheck());
 

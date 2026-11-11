@@ -309,7 +309,7 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 				{
 					if(g_objMesAgent.Is_Connected() && g_objMesAgent.Is_HostOnline())
 					{
-						CTime CurTime = CTime::GetCurrentTime(); 			           
+						CTime CurTime = CTime::GetCurrentTime(); 					
 						gDown.sDownEndTime.Format("%04d%02d%02d%02d%02d%02d", CurTime.GetYear(), CurTime.GetMonth(), CurTime.GetDay(), CurTime.GetHour(), CurTime.GetMinute(), CurTime.GetSecond());
 						g_objMesAgent.Set_DownActionReport("", "", gDown.sDownStartTime, gDown.sDownEndTime, gDown.nErrorNo , atoi(gAlm.sAlmCatMajor), gDown.strErrMsg);
 					}                    
@@ -343,8 +343,10 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 			}
 		}
 
-	} else if (m_rdoWorkStop.GetCheck()) {
-		if (m_bAutoRunning) {	// First AutoStop
+	} else if (m_rdoWorkStop.GetCheck()) 
+	{
+		if (m_bAutoRunning) // First AutoStop
+		{	
 			m_bAutoRunning = FALSE;
 
 			g_objSequenceMain.End_MainRunThread(3000);
@@ -361,7 +363,19 @@ void CWorkDlg::OnTimer(UINT_PTR nIDEvent)
 			pMainDlg->Save_EquipRunTime();
 			g_objCommon.Save_MotionPos();
 
-		} else {				// Stop
+			pMainDlg->Set_MainState(STATE_NONE);
+			dwStopSTime = GetTickCount();
+			g_objMesAgent.Set_EquipState(eEquipState::IDLE);	
+			g_objMesAgent.Set_UnitState(eEquipState::IDLE);
+
+			gLot.dwErrorStart = 0;
+			gLot.dwStopStart = 0;
+			gLot.dwStopStart = GetTickCount();
+
+
+		}
+		else // Stop
+		{				
 			int nState = pMainDlg->Get_MainState();
 			if (nState != STATE_ALARM && nState != STATE_EMER) g_objCommon.Check_MainEmgAir();
 		}
@@ -553,6 +567,7 @@ void CWorkDlg::OnBnClickedRdoSlectNo(UINT nID)
 
 void CWorkDlg::OnBnClickedRdoWorkStart()
 {
+
 	if(gLot.dwStopStart != 0)
 	{    
 		gLot.dwStopEnd = GetTickCount() - gLot.dwStopStart;

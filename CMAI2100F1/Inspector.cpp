@@ -138,6 +138,7 @@ LRESULT CInspector::OnUdpReceive(WPARAM wLocalPort, LPARAM lParam)
 	if (nPort == UDP_PC4_HPORT) { nInspector = INSPECTOR_PC4; nLen = m_UdpVisionPC4.Read_Socket(byRecv); }
 	if (nPort == UDP_PC5_HPORT) { nInspector = INSPECTOR_PC5; nLen = m_UdpVisionPC5.Read_Socket(byRecv); }
 #endif
+
 	if (nInspector == 0 || nLen < 1) {
 		strLog.Format("[H<-V%d] , Local Port (%d) Mismatch or Receive Data Zero (%d)", nInspector, nPort, nLen);
 		g_objLogFile.Save_InspectorLog(strLog);
@@ -321,6 +322,8 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (pEquipData->bUsePassGood) return;
 
+	CString sLog;
+
 	int	nPortNo = atoi(sPortNo);
 	int	nTrayNo = atoi(sTrayNo);
 	int	nCMNo   = atoi(sCMNo);
@@ -335,11 +338,44 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	if (sLotID != gLot.sLotID[nPortNo-1] || gLot.bOcapFinalized[nPortNo-1] ||
 		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] > 1 ||
 		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] > 1) {
-			CString sLog; sLog.Format("[OCAP] Ignore stale/duplicate COMPLETE Lot(%s) Port(%d) Tray(%d) CM(%d) Vision(%d)", sLotID, nPortNo, nTrayNo, nCMNo, nVNo);
-			g_objLogFile.Save_HandlerLog(sLog); return;
+		 sLog.Format("[OCAP] Ignore stale/duplicate COMPLETE Lot(%s) Port(%d) Tray(%d) CM(%d) Vision(%d)", sLotID, nPortNo, nTrayNo, nCMNo, nVNo);
+		g_objLogFile.Save_HandlerLog(sLog); return;
 	}
 
-	if (pEquipData->bUseNGSize) { if (sJudge == "N" || sJudge == "M" || sJudge == "X" || sJudge == "R") sJudge = "G"; }
+	if (pEquipData->bUseNGSize && pEquipData->bUseNtoNG) 
+	{		
+		if (sJudge == "M" || sJudge == "X" || sJudge == "R") 
+		{	
+			sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
+			//StartLoggingThread(m_sLog);
+			sJudge = "G";
+		}
+	}
+	else if(pEquipData->bUseNtoNG && !pEquipData->bUseNGSize)
+	{
+
+		if ( sJudge == "M" || sJudge == "X" || sJudge == "R"
+			|| sJudge == "S" || sJudge == "T" || sJudge == "W") 
+		{
+			sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
+			//StartLoggingThread(m_sLog);
+			sJudge = "G"; 		
+		}			
+	}
+	else if(!pEquipData->bUseNtoNG && pEquipData->bUseNGSize)
+	{
+
+		if ( sJudge == "M" || sJudge == "X" || sJudge == "R" || sJudge == "N") 
+		{
+			sLog.Format("[Overrided] Vision:%s, LotID:%s, PortNo:%s, TrayNo:%s, ModuleNo:%s, Overrided from %s to \"G\"", sType, sLotID, sPortNo, sTrayNo, sCMNo, sJudge);
+			//StartLoggingThread(m_sLog);
+			sJudge = "G"; 		
+		}			
+	}
+	else if(!pEquipData->bUseNtoNG && !pEquipData->bUseNGSize)
+	{
+		//PASS				
+	}
 	if ((sType == "B1" || sType == "AG") && sNGCode == "MC") sNGCode = "MCBTM";
 
 	if		(sJudge == "G") gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] = 2;	//Good
@@ -394,9 +430,8 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 	gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1] = "AAAAAAAA";
 #endif
 
-
 	//ROS Skip Check
-	if (!pEquipData->bUseNGSize) {
+	if (pEquipData->bUseNtoNG || (!pEquipData->bUseNtoNG && !pEquipData->bUseNGSize)) {
 		gAlm.sAlmLotID[0] = sLotID; gAlm.sAlmLotID[1] = sType;
 		//Barcdoe read fail(5) - ROS Skip
 		if (gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1] == "NOREAD" || gLot.sBarCode[nPortNo-1][nTrayNo-1][nCMNo-1].GetLength() < 7) {

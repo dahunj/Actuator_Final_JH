@@ -528,9 +528,9 @@ void OCAPCosmetic::AddLotOut_Cosmetic(CString sLotid, const SYSTEMTIME& time)
 
 	if (gCap_Cosmetic.nPendingAlarm_Cosmetic != 0) return;
 	m_bError_Cosmetic = FALSE;
-	Check_DEFECT_Cosmetic(3); if (m_bError_Cosmetic) return;
-	Check_DEFECT_Cosmetic(2); if (m_bError_Cosmetic) return;
 	Check_DEFECT_Cosmetic(1); if (m_bError_Cosmetic) return;
+	Check_DEFECT_Cosmetic(2); if (m_bError_Cosmetic) return;
+	Check_DEFECT_Cosmetic(3); if (m_bError_Cosmetic) return;
 	Check_DEFECTF_Cosmetic(4);
 }
 
