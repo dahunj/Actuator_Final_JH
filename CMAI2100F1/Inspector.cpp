@@ -336,8 +336,8 @@ void CInspector::Get_InspectComplete(int nInspector, CString sType, CString sLot
 
 	// 종료/재사용된 포트의 늦은 패킷과 동일 카메라 중복 응답을 제외한다.
 	if (sLotID != gLot.sLotID[nPortNo-1] || gLot.bOcapFinalized[nPortNo-1] ||
-		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] > 1 ||
-		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] > 1) {
+		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][0] > 2 ||
+		gLot.nJudge_I[nPortNo-1][nTrayNo-1][nCMNo-1][nVNo] > 2) {
 		 sLog.Format("[OCAP] Ignore stale/duplicate COMPLETE Lot(%s) Port(%d) Tray(%d) CM(%d) Vision(%d)", sLotID, nPortNo, nTrayNo, nCMNo, nVNo);
 		g_objLogFile.Save_HandlerLog(sLog); return;
 	}
