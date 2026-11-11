@@ -294,8 +294,8 @@ void OCAPFAI::Initial_NameGrid_FAI(CGridCS *pGrid, int nRows, int nCols)
 		for (int j=16; j<216; j++) {
 			if(i==0) {
 				pGrid->Set_ColWidth(j, lWidthName[nW]);
-				if (nW == 0) { CString str; str.Format("FAI-%03d", nName + 1); pGrid->Set_CellText(i, j, str); }
-				else		 pGrid->Set_CellText(i, j, gCap_FAI.sFAIName_FAI[nName]);
+				if (nW == 0) { pGrid->Set_CellText(i, j, gCap_FAI.sFAICode_FAI[nName]); }
+				else		 pGrid->Set_CellText(i, j, "Rate (%)");
 				nW++; if (nW == 2) { nW = 0; nName++; }
 				if (j>=16 && j<=29) pGrid->Set_CellBackClr(i, j, RGB(0xFF, 0xFF, 0xCC));
 				if (j>=30 && j<=45) pGrid->Set_CellBackClr(i, j, RGB(0x99, 0xFF, 0x99));
@@ -306,8 +306,8 @@ void OCAPFAI::Initial_NameGrid_FAI(CGridCS *pGrid, int nRows, int nCols)
 		for (int j=216; j<416; j++) {
 			if(i==0) {
 				pGrid->Set_ColWidth(j, lWidthName[nW]);
-				if (nW == 0) { CString str; str.Format("ERR-%03d", nName + 1); pGrid->Set_CellText(i, j, str); }
-				else		 pGrid->Set_CellText(i, j, gCap_FAI.sFAIName_FAI[nName]);
+				if (nW == 0) { pGrid->Set_CellText(i, j, "ERR " + gCap_FAI.sFAICode_FAI[nName]); }
+				else		 pGrid->Set_CellText(i, j, "Rate (%)");
 				nW++; if (nW == 2) { nW = 0; nName++; }
 				if (j>=216 && j<=229) pGrid->Set_CellBackClr(i, j, RGB(0xCC, 0xCC, 0xCC));
 				if (j>=230 && j<=245) pGrid->Set_CellBackClr(i, j, RGB(0x99, 0x99, 0x99));
@@ -585,7 +585,7 @@ void OCAPFAI::Check_DEFECT_FAI(int nNo)
 			if (nDefCount == 1) 
 			{
 				gCap_FAI.sAlmLotID_FAI[i] = gCap_FAI.sLotID_FAI[nLotno];
-				gCap_FAI.sAlmFAIName_FAI[i].Format("FAI-%s", gCap_FAI.sFAIName_FAI[i]);
+				gCap_FAI.sAlmFAIName_FAI[i].Format("%s", gCap_FAI.sFAICode_FAI[i]);
 				gCap_FAI.dAlmDefect_FAI[i]  = dPer;
 				gCap_FAI.dAlmThreshold_FAI[i] = dDefect;
 				gCap_FAI.nAlmCount_FAI[i]   = nLotCnt;
@@ -637,7 +637,7 @@ void OCAPFAI::Check_DEFECTF_FAI(int nNo)
 			nDefCount++;
 			if (nDefCount == 1) {
 				gCap_FAI.sAlmLotID_FAI[i] = gCap_FAI.sLotID_FAI[nLotno];
-				gCap_FAI.sAlmFAIName_FAI[i].Format("ERR-%s", gCap_FAI.sFAIName_FAI[i]);
+				gCap_FAI.sAlmFAIName_FAI[i].Format("ERR %s", gCap_FAI.sFAICode_FAI[i]);
 				gCap_FAI.dAlmDefect_FAI[i]  = dPer;
 				gCap_FAI.dAlmThreshold_FAI[i] = dDefect;
 				gCap_FAI.nAlmCount_FAI[i]   = nLotCnt;
