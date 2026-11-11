@@ -625,10 +625,10 @@ BOOL CCommon::Check_MainDoor(BOOL bAuto)
 
 	EQUIP_DATA *pEquipData = g_objDataManager.Get_pEquipData();
 	if (!pEquipData->bUseDoorLock) return TRUE;
-
+	
 #ifdef AJIN_BOARD_USE
 	DX_DATA_14 *pDX14 = g_objAJinAXL.Get_pDX14();
-
+	
 	if (pDX14->iDoor01Unlock) { Show_Error(11); return FALSE; }
 	if (!(gData.nElevatorOpen[1] == 2 || gData.nElevatorOpen[2] == 2)) {
 		if (pDX14->iDoor02Unlock) { Show_Error(12); return FALSE; }
