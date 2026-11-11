@@ -201,6 +201,8 @@ BOOL CSequenceInit::Initial_MainRun()
 		return TRUE;
 
 	case 1:		// Initial Start
+		for(int i = 1;  i <= 6; i++) g_dlgWork.Set_InputEnable(i, TRUE);
+		
 		gData.bElevatorWorking[eElevator::Load1] = FALSE;
 		gData.bElevatorWorking[eElevator::Load2] = FALSE;
 		gData.bElevatorWorking[eElevator::NgEmpty] = FALSE;

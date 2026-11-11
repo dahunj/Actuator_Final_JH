@@ -1555,6 +1555,8 @@ BOOL CSequenceMain::Set_LotStart(CString sLotID, int nPortNo)
 	CIniFileCS INI_EQP(gsCurrentDir + "\\System\\EquipData.ini");
 	INI_EQP.Set_Integer("STD_LOG", "STD_LOT_NO", gData.nStdLotNo);
 
+	g_dlgWork.Set_InputEnable(nPortNo, FALSE);
+
 	g_objLogFile.Save_EfficiencyLog(gLot.sLotID[nNo], "Start", "Elevator", 903, "Lot Start");
 	return TRUE;
 }
@@ -1678,6 +1680,8 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo)
 //	else if (gLot.nCmCount[nNo] != gLot.nRstNgCount[nNo] + gLot.nRstGoodCount[nNo])
 //			g_dlgWork.PostMessage(UM_LOT_END_MSG, nPortNo, 2);	//입력수량과 검사수량이 안맞았을때 알람메세지 보여준다.
 	else	g_dlgWork.PostMessage(UM_LOT_END_MSG, nPortNo, 0);
+
+	g_dlgWork.Set_InputEnable(nPortNo, TRUE);
 
 	g_dlgWork.PostMessage(UM_UPDATE_UPH, NULL, NULL);
 }

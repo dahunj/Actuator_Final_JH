@@ -2612,3 +2612,12 @@ void CWorkDlg::OnBnClickedBtnPdt()
 		g_dlgDownReport.ShowWindow(SW_SHOW);
 	}
 }
+
+
+void CWorkDlg::Set_InputEnable(int nPortNo, BOOL bEnable)
+{
+	if(nPortNo < 1 || nPortNo > 6) return;
+
+	m_stcLotsIdS[nPortNo-1].EnableWindow(bEnable); 
+	m_stcCmsCountS[nPortNo-1].EnableWindow(bEnable);
+}
