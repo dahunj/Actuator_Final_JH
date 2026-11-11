@@ -1743,14 +1743,14 @@ void CLogFile::Save_OCAPDataLog_FAI(int nIdx)
 	DWORD dwCodeHash = 2166136261UL;
 	CString sTitle = "Time,LotID,Total,Good,ROS_NG,ROS_Repair,BCR,MES,MC,";
 	for (int i=0; i<100; i++) {
-		CString sCode = gCap_FAI.sFAICode_FAI[i] + "|" + gCap_FAI.sFAIName_FAI[i];
+		CString sCode = gCap_FAI.sFAICode_FAI[i];
 		for (int j=0; j<sCode.GetLength(); j++) dwCodeHash = (dwCodeHash ^ (BYTE)sCode[j]) * 16777619UL;
 		sCode.Replace("\"", "\"\"");
-		CString s; s.Format("\"%03d-%s Count\",\"%03d Rate\",\"%03d ERR Count\",\"%03d ERR Rate\",", i+1, sCode, i+1, i+1, i+1); sTitle += s;
+		CString s; s.Format("\"%s\",\"%s Rate (%%)\",\"ERR %s\",\"ERR %s Rate (%%)\",", sCode, sCode, sCode, sCode); sTitle += s;
 	}
 	sTitle += "\r\n";
 	CString strFile, strSave, sLot = gCap_FAI.sLotID_FAI[nIdx]; sLot.Replace("\"", "\"\"");
-	strFile.Format("%s\\%04d%02d%02d_OCAPFAI_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
+	strFile.Format("%s\\%04d%02d%02d_OCAPFAICodeV2_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
 	strSave.Format("%02d:%02d:%02d,\"%s\",%d,%d,%d,%d,%d,%d,%d,", time.wHour, time.wMinute, time.wSecond, sLot,
 		gCap_FAI.nTotCount_FAI[nIdx], gCap_FAI.nGoodCount_FAI[nIdx], gCap_FAI.nROSNGCount_FAI[nIdx], gCap_FAI.nROSRfCount_FAI[nIdx],
 		gCap_FAI.nBCRCount_FAI[nIdx], gCap_FAI.nMESCount_FAI[nIdx], gCap_FAI.nMCCount_FAI[nIdx]);
@@ -1780,14 +1780,14 @@ void CLogFile::Save_OCAPDataLog_Cosmetic(int nIdx)
 	DWORD dwCodeHash = 2166136261UL;
 	CString sTitle = "Time,LotID,Total,Good,ROS_NG,ROS_Repair,BCR,MES,MC,";
 	for (int i=0; i<100; i++) {
-		CString sCode = gCap_Cosmetic.sCosmeticCode_Cosmetic[i] + "|" + gCap_Cosmetic.sCosmeticName_Cosmetic[i];
+		CString sCode = gCap_Cosmetic.sCosmeticCode_Cosmetic[i];
 		for (int j=0; j<sCode.GetLength(); j++) dwCodeHash = (dwCodeHash ^ (BYTE)sCode[j]) * 16777619UL;
 		sCode.Replace("\"", "\"\"");
-		CString s; s.Format("\"%03d-%s Count\",\"%03d Rate\",\"%03d ERR Count\",\"%03d ERR Rate\",", i+1, sCode, i+1, i+1, i+1); sTitle += s;
+		CString s; s.Format("\"%s\",\"%s Rate (%%)\",\"ERR %s\",\"ERR %s Rate (%%)\",", sCode, sCode, sCode, sCode); sTitle += s;
 	}
 	sTitle += "\r\n";
 	CString strFile, strSave, sLot = gCap_Cosmetic.sLotID_Cosmetic[nIdx]; sLot.Replace("\"", "\"\"");
-	strFile.Format("%s\\%04d%02d%02d_OCAPCosmetic_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
+	strFile.Format("%s\\%04d%02d%02d_OCAPCosmeticCodeV2_%08lX.csv", strPath, time.wYear, time.wMonth, time.wDay, dwCodeHash);
 	strSave.Format("%02d:%02d:%02d,\"%s\",%d,%d,%d,%d,%d,%d,%d,", time.wHour, time.wMinute, time.wSecond, sLot,
 		gCap_Cosmetic.nTotCount_Cosmetic[nIdx], gCap_Cosmetic.nGoodCount_Cosmetic[nIdx], gCap_Cosmetic.nROSNGCount_Cosmetic[nIdx], gCap_Cosmetic.nROSRfCount_Cosmetic[nIdx],
 		gCap_Cosmetic.nBCRCount_Cosmetic[nIdx], gCap_Cosmetic.nMESCount_Cosmetic[nIdx], gCap_Cosmetic.nMCCount_Cosmetic[nIdx]);

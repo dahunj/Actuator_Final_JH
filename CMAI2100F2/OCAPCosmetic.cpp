@@ -88,7 +88,7 @@ void OCAPCosmetic::OnShowWindow(BOOL bShow, UINT nStatus)
 
 	if (bShow) {
 		Display_Option_Cosmetic();
-		Initial_NameGrid_Cosmetic(&m_grdData_Cosmetic, 51, 416);
+		Initial_NameGrid_Cosmetic(&m_grdData_Cosmetic, 51, 413);
 		Load_CodeData_Cosmetic();
 		Display_CodePage_Cosmetic();
 		Show_CodeControls_Cosmetic();
@@ -210,7 +210,7 @@ void OCAPCosmetic::OnBnClickedOk()
 	Load_CodeData_Cosmetic();
 	Display_CodePage_Cosmetic();
 
-	Initial_NameGrid_Cosmetic(&m_grdData_Cosmetic, 51, 416);
+	Initial_NameGrid_Cosmetic(&m_grdData_Cosmetic, 51, 413);
 	Display_Option_Cosmetic();
 	Display_Status_Cosmetic();
 	AfxMessageBox("OCAP_Data.ini 저장 및 읽기 확인이 완료되었습니다.");
@@ -277,13 +277,13 @@ void OCAPCosmetic::Initial_NameGrid_Cosmetic(CGridCS *pGrid, int nRows, int nCol
 	long lTotalH = pGrid->Get_GridHeight();
 	long lCellW = lTotalW / nCols;
 	long lCellH = 26;
-	long  lWidth[16]= { 60,    60,      100,          60,     60,      60,    50,   50,    50,    50,    50,    50,    50,     50,    50,     50};
-	CString sTxt[16]= {"날짜","시간","Lot ID", "투입", "완공", "양품", "RN", "RR", "치명", "BCR", "MES", "MC", "외관", "001~007", "008~015", "016~020"};
+	long  lWidth[13]= { 60,    60,      100,          60,     60,      60,    50,   50,    50,    50,    50,    50,    50};
+	CString sTxt[13]= {"날짜","시간","Lot ID", "투입", "완공", "양품", "RN", "RR", "치명", "BCR", "MES", "MC", "외관"};
 	long  lWidthName[2]= { 105, 120 };
 
 	for (int i=0; i<nRows; i++) {
 		pGrid->Set_RowHeight(i, lCellH);
-		for (int j=0; j<16; j++) {
+		for (int j=0; j<13; j++) {
 			if(i==0) {
 				pGrid->Set_ColWidth(j, lWidth[j]); pGrid->Set_CellText(i, j, sTxt[j]);
 				pGrid->Set_CellBackClr(i, j, RGB(0xCC, 0xCC, 0xCC));
@@ -291,27 +291,27 @@ void OCAPCosmetic::Initial_NameGrid_Cosmetic(CGridCS *pGrid, int nRows, int nCol
 		}
 
 		int nW = 0, nName=0; 
-		for (int j=16; j<216; j++) {
+		for (int j=13; j<213; j++) {
 			if(i==0) {
 				pGrid->Set_ColWidth(j, lWidthName[nW]);
-				if (nW == 0) { CString str; str.Format("Cosmetic-%03d", nName + 1); pGrid->Set_CellText(i, j, str); }
-				else		 pGrid->Set_CellText(i, j, gCap_Cosmetic.sCosmeticName_Cosmetic[nName]);
+				if (nW == 0) { pGrid->Set_CellText(i, j, gCap_Cosmetic.sCosmeticCode_Cosmetic[nName]); }
+				else		 pGrid->Set_CellText(i, j, "Rate (%)");
 				nW++; if (nW == 2) { nW = 0; nName++; }
-				if (j>=16 && j<=29) pGrid->Set_CellBackClr(i, j, RGB(0xFF, 0xFF, 0xCC));
-				if (j>=30 && j<=45) pGrid->Set_CellBackClr(i, j, RGB(0x99, 0xFF, 0x99));
-				if (j>=46 && j<=215) pGrid->Set_CellBackClr(i, j, RGB(0x33, 0xFF, 0x33));
+				if (j>=13 && j<=26) pGrid->Set_CellBackClr(i, j, RGB(0xFF, 0xFF, 0xCC));
+				if (j>=27 && j<=42) pGrid->Set_CellBackClr(i, j, RGB(0x99, 0xFF, 0x99));
+				if (j>=43 && j<=212) pGrid->Set_CellBackClr(i, j, RGB(0x33, 0xFF, 0x33));
 			}
 		}
 		nW = 0; nName=0; 
-		for (int j=216; j<416; j++) {
+		for (int j=213; j<413; j++) {
 			if(i==0) {
 				pGrid->Set_ColWidth(j, lWidthName[nW]);
-				if (nW == 0) { CString str; str.Format("ERR-%03d", nName + 1); pGrid->Set_CellText(i, j, str); }
-				else		 pGrid->Set_CellText(i, j, gCap_Cosmetic.sCosmeticName_Cosmetic[nName]);
+				if (nW == 0) { pGrid->Set_CellText(i, j, "ERR " + gCap_Cosmetic.sCosmeticCode_Cosmetic[nName]); }
+				else		 pGrid->Set_CellText(i, j, "Rate (%)");
 				nW++; if (nW == 2) { nW = 0; nName++; }
-				if (j>=216 && j<=229) pGrid->Set_CellBackClr(i, j, RGB(0xCC, 0xCC, 0xCC));
-				if (j>=230 && j<=245) pGrid->Set_CellBackClr(i, j, RGB(0x99, 0x99, 0x99));
-				if (j>=246 && j<=415) pGrid->Set_CellBackClr(i, j, RGB(0x66, 0x66, 0x66));
+				if (j>=213 && j<=226) pGrid->Set_CellBackClr(i, j, RGB(0xCC, 0xCC, 0xCC));
+				if (j>=227 && j<=242) pGrid->Set_CellBackClr(i, j, RGB(0x99, 0x99, 0x99));
+				if (j>=243 && j<=412) pGrid->Set_CellBackClr(i, j, RGB(0x66, 0x66, 0x66));
 			}
 		}
 	}
@@ -416,20 +416,8 @@ void OCAPCosmetic::Display_Grid_Cosmetic(int nDp, int nIx)
 	m_grdData_Cosmetic.Set_CellFont(nDp, 12, str, 10, FALSE);
 	m_grdData_Cosmetic.Set_CellText(nDp, 12, str);
 
-	str.Format(_T("%d"), nA1);
-	m_grdData_Cosmetic.Set_CellFont(nDp, 13, str, 10, FALSE);
-	m_grdData_Cosmetic.Set_CellText(nDp, 13, str);
-
-	str.Format(_T("%d"), nA2);
-	m_grdData_Cosmetic.Set_CellFont(nDp, 14, str, 10, FALSE);
-	m_grdData_Cosmetic.Set_CellText(nDp, 14, str);
-
-	str.Format(_T("%d"), nA3);
-	m_grdData_Cosmetic.Set_CellFont(nDp, 15, str, 10, FALSE);
-	m_grdData_Cosmetic.Set_CellText(nDp, 15, str);
-
 	double dValue;
-	int	   nNo = 16;
+	int	   nNo = 13;
 	for(int i=0; i<100; i++) {
 		str.Format(_T("%d"), gCap_Cosmetic.nCount_Cosmetic[nIx][i]);
 		m_grdData_Cosmetic.Set_CellFont(nDp, nNo, str, 10, FALSE);
@@ -448,7 +436,7 @@ void OCAPCosmetic::Display_Grid_Cosmetic(int nDp, int nIx)
 		if (gCap_Cosmetic.nTotCount_Cosmetic[nIx] < gCap_Cosmetic.nGiMinCnt_Cosmetic) m_grdData_Cosmetic.Set_CellBackClr(nDp, nNo, RGB(0xFF, 0xFF, 0xFF));	// 0 Empty
 		nNo++;
 	}
-	nNo = 216;
+	nNo = 213;
 	for(int i=0; i<100; i++) {
 		str.Format(_T("%d"), gCap_Cosmetic.nFCount_Cosmetic[nIx][i]);
 		m_grdData_Cosmetic.Set_CellFont(nDp, nNo, str, 10, FALSE);
@@ -585,7 +573,7 @@ void OCAPCosmetic::Check_DEFECT_Cosmetic(int nNo)
 			if (nDefCount == 1) 
 			{
 				gCap_Cosmetic.sAlmLotID_Cosmetic[i] = gCap_Cosmetic.sLotID_Cosmetic[nLotno];
-				gCap_Cosmetic.sAlmCosmeticName_Cosmetic[i].Format("Cosmetic-%s", gCap_Cosmetic.sCosmeticName_Cosmetic[i]);
+				gCap_Cosmetic.sAlmCosmeticName_Cosmetic[i].Format("%s", gCap_Cosmetic.sCosmeticCode_Cosmetic[i]);
 				gCap_Cosmetic.dAlmDefect_Cosmetic[i]  = dPer;
 				gCap_Cosmetic.dAlmThreshold_Cosmetic[i] = dDefect;
 				gCap_Cosmetic.nAlmCount_Cosmetic[i]   = nLotCnt;
@@ -637,7 +625,7 @@ void OCAPCosmetic::Check_DEFECTF_Cosmetic(int nNo)
 			nDefCount++;
 			if (nDefCount == 1) {
 				gCap_Cosmetic.sAlmLotID_Cosmetic[i] = gCap_Cosmetic.sLotID_Cosmetic[nLotno];
-				gCap_Cosmetic.sAlmCosmeticName_Cosmetic[i].Format("ERR-%s", gCap_Cosmetic.sCosmeticName_Cosmetic[i]);
+				gCap_Cosmetic.sAlmCosmeticName_Cosmetic[i].Format("ERR %s", gCap_Cosmetic.sCosmeticCode_Cosmetic[i]);
 				gCap_Cosmetic.dAlmDefect_Cosmetic[i]  = dPer;
 				gCap_Cosmetic.dAlmThreshold_Cosmetic[i] = dDefect;
 				gCap_Cosmetic.nAlmCount_Cosmetic[i]   = nLotCnt;
