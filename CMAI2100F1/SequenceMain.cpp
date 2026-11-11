@@ -1547,6 +1547,8 @@ BOOL CSequenceMain::Set_LotStart(CString sLotID, int nPortNo)
 	gData.sLotID_Start = gLot.sLotID[nNo];
 	g_objMesAgent.Set_LotStart(1, nNo, gLot.sLotID[nNo], gLot.sRecipeName[nNo], gLot.nCmCount[nNo]);
 
+	g_dlgWork.Set_InputEnable(nPortNo, FALSE);
+
 	return TRUE;
 }
 
@@ -1669,6 +1671,8 @@ void CSequenceMain::Set_LotEnd(CString sLotID, int nPortNo)
 //	else if (gLot.nCmCount[nNo] != gLot.nRstNgCount[nNo] + gLot.nRstGoodCount[nNo])
 //			g_dlgWork.PostMessage(UM_LOT_END_MSG, nPortNo, 2);	//입력수량과 검사수량이 안맞았을때 알람메세지 보여준다.
 	else	g_dlgWork.PostMessage(UM_LOT_END_MSG, nPortNo, 0);
+
+	g_dlgWork.Set_InputEnable(nPortNo, TRUE);
 
 	g_dlgWork.PostMessage(UM_UPDATE_UPH, NULL, NULL);
 }

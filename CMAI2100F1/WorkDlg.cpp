@@ -2552,6 +2552,15 @@ void CWorkDlg::Set_LotCount(int nPortNo, CString sLotID, int nCount)
 }
 
 
+
+void CWorkDlg::Set_InputEnable(int nPortNo, BOOL bEnable)
+{
+	if(nPortNo < 1 || nPortNo > 6) return;
+
+	m_stcLotsIdS[nPortNo-1].EnableWindow(bEnable); 
+	m_stcCmsCountS[nPortNo-1].EnableWindow(bEnable);
+}
+
 void CWorkDlg::OnBnClickedBtnBuzzerOff()
 {
 	g_objCommon.BuzzerOff();
