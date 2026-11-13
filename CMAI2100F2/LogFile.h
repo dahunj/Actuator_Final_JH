@@ -5,8 +5,7 @@
 class CLogFile  
 {
 public:
-	void Save_OCAPDataLog_Cosmetic(int nIdx);
-	void Save_OCAPDataLog_FAI(int nIdx);
+	
 	CLogFile();
 	virtual ~CLogFile();
 
@@ -47,6 +46,9 @@ public:
 	void Save_SpcMccLog(CString sLog, CString sLotID);
 	void Save_SpcMotionLog(CString sLog, CString sLotID);
 	void Save_SpcErrorLog(CString sLog, CString sLotID);
+
+	void Save_OCAPDataLog_Cosmetic(int nIdx);
+	void Save_OCAPDataLog_FAI(int nIdx);
 
 	void Save_StdMotionLog(CString sLotID, CString sType, int nZone, int nCase, int nValue, CString sZone, CString sMsg);
 	void Save_EfficiencyLog(CString sLotID, CString sStatus, CString strZone, int nCode, CString sNote);

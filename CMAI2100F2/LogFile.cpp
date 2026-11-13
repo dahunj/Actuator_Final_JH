@@ -1779,7 +1779,8 @@ void CLogFile::Save_OCAPDataLog_Cosmetic(int nIdx)
 	SYSTEMTIME time; GetLocalTime(&time);
 	DWORD dwCodeHash = 2166136261UL;
 	CString sTitle = "Time,LotID,Total,Good,ROS_NG,ROS_Repair,BCR,MES,MC,";
-	for (int i=0; i<100; i++) {
+	for (int i=0; i<100; i++) 
+	{
 		CString sCode = gCap_Cosmetic.sCosmeticCode_Cosmetic[i];
 		for (int j=0; j<sCode.GetLength(); j++) dwCodeHash = (dwCodeHash ^ (BYTE)sCode[j]) * 16777619UL;
 		sCode.Replace("\"", "\"\"");
@@ -1791,17 +1792,20 @@ void CLogFile::Save_OCAPDataLog_Cosmetic(int nIdx)
 	strSave.Format("%02d:%02d:%02d,\"%s\",%d,%d,%d,%d,%d,%d,%d,", time.wHour, time.wMinute, time.wSecond, sLot,
 		gCap_Cosmetic.nTotCount_Cosmetic[nIdx], gCap_Cosmetic.nGoodCount_Cosmetic[nIdx], gCap_Cosmetic.nROSNGCount_Cosmetic[nIdx], gCap_Cosmetic.nROSRfCount_Cosmetic[nIdx],
 		gCap_Cosmetic.nBCRCount_Cosmetic[nIdx], gCap_Cosmetic.nMESCount_Cosmetic[nIdx], gCap_Cosmetic.nMCCount_Cosmetic[nIdx]);
-	for (int i=0; i<100; i++) {
+	for (int i=0; i<100; i++)
+	{
 		CString s; double dTotal = gCap_Cosmetic.nTotCount_Cosmetic[nIdx];
 		s.Format("%d,%0.3lf,%d,%0.3lf,", gCap_Cosmetic.nCount_Cosmetic[nIdx][i], dTotal > 0 ? gCap_Cosmetic.nCount_Cosmetic[nIdx][i]*100.0/dTotal : 0.0,
 			gCap_Cosmetic.nFCount_Cosmetic[nIdx][i], dTotal > 0 ? gCap_Cosmetic.nFCount_Cosmetic[nIdx][i]*100.0/dTotal : 0.0); strSave += s;
 	}
 	strSave += "\r\n";
 	CFile file;
-	if (!file.Open(strFile, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite | CFile::shareDenyWrite)) {
+	if (!file.Open(strFile, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeWrite | CFile::shareDenyWrite)) 
+	{
 		g_objLogFile.Save_HandlerLog("[OCAP Cosmetic] CSV open failed: " + strFile); return;
 	}
-	try {
+	try
+	{
 		file.SeekToEnd(); if (file.GetLength() == 0) file.Write(sTitle, sTitle.GetLength());
 		file.Write(strSave, strSave.GetLength()); file.Close();
 	} catch (CFileException *pEx) { pEx->Delete(); file.Abort(); g_objLogFile.Save_HandlerLog("[OCAP Cosmetic] CSV write failed: " + strFile); }
